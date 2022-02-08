@@ -68,3 +68,65 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+import React from 'react';
+import './Header.scss';
+import Logo from '../../image/logoFB.png';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Input from '@mui/material/Input';
+import { blue } from '@mui/material/colors';
+import { Search, ChatBubbleOutline, NotificationsActive } from '@mui/icons-material';                   
+
+function Header() {
+    const [value, setValue] = React.useState('');
+
+    const handleChange = (event) => {
+        setValue(event.target.value);
+    };
+    const ariaLabel = { 'aria-label': 'description' };
+    return <div>
+        <div className="header">
+            <div className="header-left">
+                <div className="logo">
+                    <img src={Logo}></img>
+                </div>
+
+
+            </div>
+            <div className="header-center">
+                <div className="search">
+                    <div className="search-input">
+                        <Box
+                            component="form"
+                            sx={{
+                                '& > :not(style)': { m: 1, width: '35ch' },
+                            }}
+                            noValidate
+                            autoComplete="off"
+                        >
+                            <Input placeholder="Search..." inputProps={ariaLabel} />
+                        </Box>
+
+                        <Search className="search-icon" color="primary" fontSize="large" />
+                    </div>
+                </div>
+            </div>
+            <div className="header-right">
+                <ChatBubbleOutline className="header-icon" sx={{ color: blue[400] }} />
+                <NotificationsActive className="header-icon" sx={{ color: blue[400] }} />
+                <div className="file">
+                    <img src={Logo}></img>
+                    <label >Xuân Hạnh</label>
+                </div>
+            </div>
+        </div>
+    </div>;
+};
+
+export default Header;
