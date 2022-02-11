@@ -4,9 +4,10 @@
     grid-template-columns: 1fr 1fr 1fr;
     justify-items: center;
     align-items: center;
-    padding-top: 15px;
-    box-shadow: -1px 1px 1px 0.5px #372b3b inset;
+    // padding-top: 15px;
+    // box-shadow: -1px 1px 1px 0.5px #372b3b inset;
     // 372b3b
+    gap: 166px;
     &-left{
         .logo{
             img{
