@@ -1,23 +1,19 @@
 import React, { useEffect, useState } from "react";
 import Header from '../compoments/Header/Header';
 import CompomentLeft from '../compoments/Compoment/CompomentLeft';
-import ListWatch from '../compoments/Compoment/ListWatch'
+import ListFriend from '../compoments/Compoment/ListFriend'
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 
 
-function Watch() {
-    const [watch, setWatch] = useState(true)
+function Friend() {
+    const [friend, setFriend] = useState(true)
     return (
         <>
-            <ListWatch />
-            <ListWatch />
-            <ListWatch />
-            <ListWatch />
-            <ListWatch />
+            <ListFriend />
 
         </>
     )
 }
 
-export default Watch;
+export default Friend;

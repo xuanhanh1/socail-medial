@@ -1,5 +1,6 @@
 import React from 'react'
 import { styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
@@ -14,15 +15,14 @@ import PeopleIcon from '@mui/icons-material/People';
 import MapsUgcOutlinedIcon from '@mui/icons-material/MapsUgcOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import logoAvata from '../../image/avata.png';
-import CssBaseline from '@mui/material/CssBaseline';
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 import VideocamTwoToneIcon from '@mui/icons-material/VideocamTwoTone';
-import Header from '../Header/Header';
-import Link from '@mui/material/Link';
+// import Link from '@mui/material/Link';
+import { Link } from "react-router-dom";
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -35,9 +35,9 @@ function Copyright(props) {
     return (
         <Typography variant="body2" color="text.secondary" align="center" {...props}>
             {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
-                Great war dog cat
-            </Link>{' '}
+            {/* <Link color="inherit" href="https://mui.com/"> */}
+            Great war dog cat
+            {/* </Link>{' '} */}
             {new Date().getFullYear()}
             {'.'}
         </Typography>
@@ -83,26 +83,32 @@ function CompomentLeft(props) {
                                         <nav aria-label="main mailbox folders">
                                             <List>
                                                 <ListItem disablePadding>
-                                                    <ListItemButton>
-                                                        <ListItemIcon>
-                                                            <Avatar alt="Remy Sharp" src={logoAvata} />
+                                                    <Link to="profile">
 
-                                                        </ListItemIcon>
-                                                        <ListItemText primary="Xuân Hạnh" />
-                                                    </ListItemButton>
+                                                        <ListItemButton>
+                                                            <ListItemIcon>
+                                                                <Avatar alt="Remy Sharp" src={logoAvata} />
+
+                                                            </ListItemIcon>
+                                                            <ListItemText primary="Xuân Hạnh" />
+                                                        </ListItemButton>
+                                                    </Link>
                                                 </ListItem>
                                                 <ListItem disablePadding>
                                                     <ListItemButton>
                                                         <ListItemIcon>
                                                             <WhatshotIcon />
                                                         </ListItemIcon>
-                                                        {trend ?
-                                                            <ListItemText primary="Trending"
-                                                                sx={{ color: 'red' }}
-                                                            />
-                                                            : <ListItemText primary="Trending" />
-                                                        }
-
+                                                        <Link to="trend">
+                                                            {/* <Button href='/trend'> */}
+                                                            {trend ?
+                                                                <ListItemText primary="Trending"
+                                                                    sx={{ color: 'red' }}
+                                                                />
+                                                                : <ListItemText primary="Trending" />
+                                                            }
+                                                            {/* </Button> */}
+                                                        </Link>
                                                     </ListItemButton>
                                                 </ListItem>
 
@@ -111,7 +117,11 @@ function CompomentLeft(props) {
                                                         <ListItemIcon>
                                                             <VideocamTwoToneIcon />
                                                         </ListItemIcon>
-                                                        <ListItemText primary="Watch" />
+                                                        <Link to="watch">
+                                                            {/* <Button href='/watch'> */}
+                                                            <ListItemText primary="Watch" />
+                                                            {/* </Button> */}
+                                                        </Link>
                                                     </ListItemButton>
                                                 </ListItem>
                                                 <ListItem disablePadding>
@@ -119,7 +129,12 @@ function CompomentLeft(props) {
                                                         <ListItemIcon>
                                                             <PeopleIcon />
                                                         </ListItemIcon>
-                                                        <ListItemText primary="Friend" />
+                                                        <Link to="friend">
+
+                                                            {/* <Button href='/friend'> */}
+                                                            <ListItemText primary="Friend" />
+                                                            {/* </Button> */}
+                                                        </Link>
                                                     </ListItemButton>
                                                 </ListItem>
                                                 <ListItem disablePadding>

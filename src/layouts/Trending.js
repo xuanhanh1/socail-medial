@@ -9,22 +9,10 @@ function Trending() {
     const [trend, setTrend] = useState(true)
     return (
         <>
-            <Header />
-            <Box sx={{ flexGrow: 1, mt: 6 }}>
 
-                <Grid container spacing={1}>
-
-                    <CompomentLeft
-                        trend={trend}
-                    />
-
-                    <Grid item xs={9} sx={{ alignItems: 'center', }}>
-                        <ListImageTrending />
-                    </Grid>
-
-                </Grid>
-            </Box>
-
+            <ListImageTrending />
+            <ListImageTrending />
+            <ListImageTrending />
         </>
     )
 }

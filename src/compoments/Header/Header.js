@@ -19,6 +19,12 @@ import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
+import { Link } from "react-router-dom";
+import Typography from '@mui/material/Typography';
+import Popover from '@mui/material/Popover';
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import PopupNotifi from "../Popup/PopupNotifi"
+import PopupMess from "../Popup/PopupMess"
 
 function notificationsLabel(count) {
     if (count === 0) {
@@ -114,10 +120,11 @@ export default function Header(props) {
                     <Toolbar sx={{ justifyContent: 'center', width: '100%' }}>
                         <div className="header">
                             <div className="header-left">
-                                <div className="logo">
-                                    <img src={Logo}></img>
-                                </div>
-
+                                <Link to="home">
+                                    <div className="logo">
+                                        <img src={Logo}></img>
+                                    </div>
+                                </Link>
 
                             </div>
                             <div className="header-center">
@@ -139,16 +146,64 @@ export default function Header(props) {
                                 </div>
                             </div>
                             <div className="header-right">
-                                <IconButton aria-label={notificationsLabel(100)} sx={{ mr: 3 }} >
-                                    <Badge badgeContent={10} color="secondary" sx={{ color: blue[400] }}>
-                                        <ChatBubbleOutline />
-                                    </Badge>
-                                </IconButton>
-                                <IconButton aria-label={notificationsLabel(100)} sx={{ mr: 3 }} >
-                                    <Badge badgeContent={100} color="secondary">
-                                        <NotificationsActive />
-                                    </Badge>
-                                </IconButton>
+
+                                <PopupState variant="popover" popupId="demo-popup-popover">
+                                    {(popupState) => (
+                                        <div>
+                                            <IconButton aria-label={notificationsLabel(100)}
+                                                sx={{ mr: 3 }}
+                                                variant="contained"
+                                                {...bindTrigger(popupState)} >
+                                                <Badge badgeContent={10} color="secondary" sx={{ color: blue[400] }}>
+                                                    <ChatBubbleOutline />
+                                                </Badge>
+                                            </IconButton>
+
+                                            <Popover
+                                                {...bindPopover(popupState)}
+                                                anchorOrigin={{
+                                                    vertical: 'bottom',
+                                                    horizontal: 'center',
+                                                }}
+                                                transformOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'center',
+                                                }}
+                                            >
+                                                <PopupMess />
+                                            </Popover>
+                                        </div>
+                                    )}
+                                </PopupState>
+
+                                <PopupState variant="popover" popupId="demo-popup-popover">
+                                    {(popupState) => (
+                                        <div>
+                                            <IconButton aria-label={notificationsLabel(100)}
+                                                sx={{ mr: 3 }}
+                                                variant="contained"
+                                                {...bindTrigger(popupState)} >
+                                                <Badge badgeContent={100} color="secondary">
+                                                    <NotificationsActive />
+                                                </Badge>
+                                            </IconButton>
+
+                                            <Popover
+                                                {...bindPopover(popupState)}
+                                                anchorOrigin={{
+                                                    vertical: 'bottom',
+                                                    horizontal: 'center',
+                                                }}
+                                                transformOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'center',
+                                                }}
+                                            >
+                                                <PopupNotifi />
+                                            </Popover>
+                                        </div>
+                                    )}
+                                </PopupState>
                                 <div className="file">
                                     {/* <img src={Logo}></img> */}
                                     <div>

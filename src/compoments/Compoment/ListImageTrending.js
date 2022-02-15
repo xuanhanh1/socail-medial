@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
 import CancelSharpIcon from '@mui/icons-material/CancelSharp';
-import ModalTrend from './ModalTrend';
+import ModalTrend from '../Popup/ModalTrend';
 import { makeStyles } from '@mui/styles';
 import Button from '@mui/material/Button';
 

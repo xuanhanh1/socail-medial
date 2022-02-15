@@ -4,6 +4,8 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Home from './Home/Home'
+import Container from '@mui/material/Container';
+import { Outlet } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import PropTypes from 'prop-types';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
@@ -26,7 +28,6 @@ function ElevationScroll(props) {
         threshold: 0,
         target: window ? window() : undefined,
     });
-
     return React.cloneElement(children, {
         elevation: trigger ? 4 : 0,
     });
@@ -41,34 +42,31 @@ ElevationScroll.propTypes = {
     window: PropTypes.func,
 };
 
-
-
 function HomePage() {
-
     return (
         <>
-            <Header />
-            <Box sx={{ flexGrow: 1, mt: 6 }}>
-                <CssBaseline />
+            <div className="bd">
+                <div style={{ backgroundColor: '#e2e8f0' }}>
+                    <Container  >
+                        <Header />
+                        <Box sx={{ flexGrow: 1, mt: 6 }}>
+                            <CssBaseline />
+                            <Grid container spacing={1}>
+                                <CompomentLeft />
+                                <Grid item xs={9} sx={{ alignItems: 'center' }}>
+                                    <Item>
+                                        <Outlet />
 
-                <Grid container spacing={1}>
+                                    </Item>
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </Container>
+                </div>
+            </div>
 
-                    <CompomentLeft />
-
-                    <Grid item xs={9} sx={{ alignItems: 'center' }}>
-                        <Item>
-                            <Home />
-                            <Home />
-                            <Home />
-
-                        </Item>
-                    </Grid>
-
-                </Grid>
-            </Box>
         </>
     )
-
 }
 
 export default HomePage;

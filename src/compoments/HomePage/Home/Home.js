@@ -28,6 +28,7 @@ import Paper from '@mui/material/Paper';
 import './Home.scss';
 import Comment from "./Comment"
 import { makeStyles } from '@mui/styles';
+import Post from '../../Compoment/Post'
 const useStyles = makeStyles({
     popupMore: {
         fontSize: '50px'
@@ -57,6 +58,7 @@ function Home() {
         mb: 5,
 
     }} elevation={8}>
+        <Post />
         <CardHeader
             avatar={
                 <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
