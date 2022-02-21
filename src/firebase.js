@@ -17,7 +17,7 @@ const db = firebaseApp.firestore();
 const auth = firebase.auth();
 const storage = firebaseApp.storage();
 const provider = new firebase.auth.GoogleAuthProvider();
+provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 const database = firebase.database()
 export { db, auth, storage, provider, database };
-
 

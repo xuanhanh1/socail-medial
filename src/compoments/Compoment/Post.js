@@ -89,7 +89,9 @@ function Post() {
                     <IconButton aria-label="add to favorites" className={classes.iconClose}>
                         <CancelSharpIcon />
                     </IconButton>
-                    <ModalPost />
+                    <ModalPost
+
+                    />
                 </Box>
             </Modal>
         </Box>

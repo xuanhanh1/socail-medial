@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from "react";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -16,6 +16,11 @@ import FacebookOutlinedIcon from '@mui/icons-material/FacebookOutlined';
 import GoogleIcon from '@mui/icons-material/Google';
 import './Login.scss';
 import LoginImg from '../../image/war.png'
+import { Navigate } from "react-router-dom";
+import { db, auth, provider } from "../../firebase";
+import firebase from "firebase"
+
+
 function Copyright(props) {
     return (
         <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -32,15 +37,69 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function Login() {
+    const [checkUser, setCheckUser] = React.useState(false);
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         // eslint-disable-next-line no-console
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+        firebase.auth().signInWithEmailAndPassword(data.get('email'), data.get('password'))
+            .then((userCredential) => {
+                // Signed in
+                var user = userCredential.user;
+                // localStorage.setItem("user", user)
+                console.log('user in login', user)
+                setCheckUser(true)
+            })
+            .catch((error) => {
+                var errorCode = error.code;
+                var errorMessage = error.message;
+            });
     };
+    const signUpGoogle = (event) => {
+        event.preventDefault();
+        firebase.auth()
+            .signInWithPopup(provider)
+            .then((result) => {
+                var credential = result.credential;
+                // This gives you a Google Access Token. You can use it to access the Google API.
+                var token = credential.accessToken;
+                // The signed-in user info.
+                var user = result.user;
+                setCheckUser(true);
+                checkSignInWithGoogle(user);
+
+            }).catch((error) => {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                // The email of the user's account used.
+                var email = error.email;
+                // The firebase.auth.AuthCredential type that was used.
+                var credential = error.credential;
+            });
+    }
+    const checkSignInWithGoogle = (authUser) => {
+        const docRef = db.collection("users").doc(authUser.uid);
+        docRef.get().then((doc) => {
+            if (!doc.exists) {
+                docRef.set({
+                    email: authUser.email,
+                    phoneNumber: authUser.phoneNumber,
+                    displayName: authUser.displayName,
+                    photoURL: authUser.photoURL,
+                    uid: authUser.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                }).then(() => {
+                    console.log("Updated")
+                })
+            }
+        }).catch((error) => {
+            console.error("Error ", error);
+        });
+    }
+    if (checkUser) {
+        return <Navigate to="/" />
+    }
 
     return (
         <ThemeProvider theme={theme}>
@@ -145,6 +204,7 @@ export default function Login() {
                                             color: "red",
                                             cursor: "pointer"
                                         }}
+                                        onClick={signUpGoogle}
                                     />
                                 </div>
                             </Typography>

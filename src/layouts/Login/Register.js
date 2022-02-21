@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from "react";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -16,6 +16,10 @@ import GoogleIcon from '@mui/icons-material/Google';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormLabel from '@mui/material/FormLabel';
+import { db, auth, provider } from "../../firebase";
+import { Navigate } from "react-router-dom";
+import './Login.scss';
+import firebase from "firebase"
 
 function Copyright(props) {
     return (
@@ -34,20 +38,162 @@ const theme = createTheme();
 
 export default function SignUp() {
     const [value, setValue] = React.useState('female');
-
+    const [error, setError] = React.useState('');
+    const [valida, setValida] = React.useState(true);
+    const [checkUser, setCheckUser] = React.useState(false);
+    const [user, setUser] = React.useState({})
+    const [allValues, setAllValues] = React.useState({
+        firstName: '',
+        firstName: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    });
     const handleChange = (event) => {
         setValue(event.target.value);
     };
-
+    const handleOnChangeInput = (event) => {
+        setAllValues({ ...allValues, [event.target.name]: event.target.value })
+        setError('')
+    }
     const handleSubmit = (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        // eslint-disable-next-line no-console
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+        handleValidation(allValues);
+        if (valida === true) {
+            addUser(allValues);
+        }
     };
+    const addUser = (data) => {
+        let email = data.email;
+        let password = data.password;
+        let firstName = data.firstName;
+        let lastName = data.lastName;
+        let gender = value;
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+            .then(async (data) => {
+                var user = data.user;
+                await db.collection("users").doc(user.uid).set({
+                    displayName: firstName + " " + lastName,
+                    email: email,
+                    gender: gender,
+                    uid: user.uid
+                })
+                    .then(() => {
+                        console.log("User created ", user)
+                        // localStorage.setItem("user", JSON.stringify(user))
+                        signInWithEmail(email, password)
+                    })
+                    .catch((error) => {
+                        console.error("Error writing document: ", error);
+                    });
+                if (user !== null) {
+                    const uid = user.uid;
+                    var docRef = db.collection("users").doc(uid);
+                    docRef.get().then((doc) => {
+                        if (doc.exists) {
+                            setUser(doc.data());
+                            localStorage.setItem("user", JSON.stringify(doc.data()));
+                            console.log('user in header ', doc.data())
+                        } else {
+                            console.log("No such document!");
+                        }
+                    }).catch((error) => {
+                        console.log("Error getting document:", error);
+                    });
+                }
+                setAllValues({
+                    firstName: '',
+                    firstName: '',
+                    email: '',
+                    password: '',
+                    confirmPassword: ''
+                })
+            })
+            .catch((error) => {
+                setError(error.message)
+            })
+    }
+    const handleValidation = (allValues) => {
+        var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        //set empty
+        if (!allValues.firstName) {
+            setValida(false);
+            setError('First name cannot be empty');
+        }
+        else if (!allValues.lastName) {
+            setValida(false);
+            setError('Last name cannot be empty');
+        }
+        else if (!allValues.email) {
+            setValida(false);
+            setError('Email cannot be empty');
+        }
+        else if (!allValues.password) {
+            setValida(false);
+            setError('Password cannot be empty');
+        }
+        //confirmPassword
+        else if (allValues.password !== allValues.confirmPassword) {
+            setError('Your password and confirmation password do not match');
+        }
+        //validate email 
+        else if (!filter.test(allValues.email)) {
+            setValida(false);
+            setError('is not email address. Please enter your email');
+        } else {
+            return setValida(true);
+        }
+    }
+    const signUpGoogle = (event) => {
+        event.preventDefault();
+        firebase.auth()
+            .signInWithPopup(provider)
+            .then(async (result) => {
+                var credential = result.credential;
+                var token = credential.accessToken;
+                var user = result.user;
+                console.log('user gg in reg', user);
+                setCheckUser(true)
+                await checkSignInWithGoogle(user);
+            }).catch((error) => {
+                var errorCode = error.code;
+
+            });
+    }
+    const checkSignInWithGoogle = (authUser) => {
+        const docRef = db.collection("users").doc(authUser.uid);
+        docRef.get().then((doc) => {
+            if (!doc.exists) {
+                docRef.set({
+                    email: authUser.email,
+                    phoneNumber: authUser.phoneNumber,
+                    displayName: authUser.displayName,
+                    photoURL: authUser.photoURL,
+                    uid: authUser.uid,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                }).then(() => {
+                    console.log("Updated")
+                })
+            }
+        }).catch((error) => {
+            console.error("Error ", error);
+        });
+    }
+    const signInWithEmail = (email, password) => {
+        firebase.auth().signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // Signed in
+                var user = userCredential.user;
+                setCheckUser(true)
+            })
+            .catch((error) => {
+                var errorCode = error.code;
+                var errorMessage = error.message;
+            });
+    }
+    if (checkUser) {
+        return <Navigate to="/" />
+    }
 
     return (
         <ThemeProvider theme={theme}>
@@ -73,11 +219,13 @@ export default function SignUp() {
                                 <TextField
                                     autoComplete="given-name"
                                     name="firstName"
+                                    value={allValues.firstName}
                                     required
                                     fullWidth
                                     id="firstName"
                                     label="First Name"
                                     autoFocus
+                                    onChange={e => handleOnChangeInput(e)}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -86,8 +234,10 @@ export default function SignUp() {
                                     fullWidth
                                     id="lastName"
                                     label="Last Name"
+                                    value={allValues.lastName}
                                     name="lastName"
                                     autoComplete="family-name"
+                                    onChange={e => handleOnChangeInput(e)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -96,8 +246,10 @@ export default function SignUp() {
                                     fullWidth
                                     id="email"
                                     label="Email Address"
+                                    value={allValues.email}
                                     name="email"
                                     autoComplete="email"
+                                    onChange={e => handleOnChangeInput(e)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -105,23 +257,25 @@ export default function SignUp() {
                                     required
                                     fullWidth
                                     name="password"
+                                    value={allValues.password}
                                     label="Password"
                                     type="password"
                                     id="password"
                                     autoComplete="new-password"
+                                    onChange={e => handleOnChangeInput(e)}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
-
+                            <Grid item xs={12}>
                                 <TextField
-                                    id="date"
-                                    label="Birthday"
-                                    type="date"
-                                    defaultValue="2017-05-24"
-                                    sx={{ width: 220 }}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
+                                    required
+                                    fullWidth
+                                    name="confirmPassword"
+                                    value={allValues.confirmPassword}
+                                    label="confirmPassword"
+                                    type="password"
+                                    id="confirmPassword"
+                                    autoComplete="confirmPassword"
+                                    onChange={e => handleOnChangeInput(e)}
                                 />
                             </Grid>
                             <Grid item xs={12}  >
@@ -138,6 +292,14 @@ export default function SignUp() {
                                     <FormControlLabel value="other" control={<Radio />} label="Other" />
                                 </RadioGroup>
                             </Grid>
+                            {
+                                error ?
+                                    <Grid item xs={12} >
+                                        <div className="reg-err">
+                                            <span>{error}</span>
+                                        </div>
+                                    </Grid> : ''
+                            }
                         </Grid>
                         <Button
                             type="submit"
@@ -176,6 +338,7 @@ export default function SignUp() {
                                         color: "red",
                                         cursor: "pointer"
                                     }}
+                                    onClick={signUpGoogle}
                                 />
                             </div>
                         </Typography>

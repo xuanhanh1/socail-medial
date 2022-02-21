@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from "react";
 import Button from '@mui/material/Button';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
@@ -25,6 +25,8 @@ import Popover from '@mui/material/Popover';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import PopupNotifi from "../Popup/PopupNotifi"
 import PopupMess from "../Popup/PopupMess"
+import firebase from "firebase"
+import { db, auth, provider } from "../../firebase";
 
 function notificationsLabel(count) {
     if (count === 0) {
@@ -62,21 +64,19 @@ ElevationScroll.propTypes = {
 
 
 export default function Header(props) {
-
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef(null);
     const ariaLabel = { 'aria-label': 'description' };
+    const [user, setUser] = React.useState({})
     //open setting
+
+
     const handleToggle = () => {
         setOpen((prevOpen) => !prevOpen);
     };
 
     const handleClose = (event) => {
-        if (anchorRef.current && anchorRef.current.contains(event.target)) {
-            return;
-        }
 
-        setOpen(false);
     };
 
     function handleListKeyDown(event) {
@@ -97,7 +97,20 @@ export default function Header(props) {
 
         prevOpen.current = open;
     }, [open]);
-
+    const getUserProfile = () => {
+        let userLocal = JSON.parse(localStorage.getItem('user', user));
+        setUser(userLocal);
+        console.log('set user success in header page on localStorage')
+    }
+    useEffect(getUserProfile, user);
+    const signOut = () => {
+        firebase.auth().signOut().then(() => {
+            setUser()
+            localStorage.removeItem('user', user);
+        }).catch((error) => {
+            // An error happened.
+        });
+    }
     return (
         <div>
             <Box
@@ -120,12 +133,11 @@ export default function Header(props) {
                     <Toolbar sx={{ justifyContent: 'center', width: '100%' }}>
                         <div className="header">
                             <div className="header-left">
-                                <Link to="home">
+                                <Link to="/home">
                                     <div className="logo">
                                         <img src={Logo}></img>
                                     </div>
                                 </Link>
-
                             </div>
                             <div className="header-center">
                                 <div className="search">
@@ -146,7 +158,6 @@ export default function Header(props) {
                                 </div>
                             </div>
                             <div className="header-right">
-
                                 <PopupState variant="popover" popupId="demo-popup-popover">
                                     {(popupState) => (
                                         <div>
@@ -218,41 +229,55 @@ export default function Header(props) {
                                                     aria-haspopup="true"
                                                     onClick={handleToggle}
                                                 >
-                                                    Xuân Hạnh
+                                                    {
+                                                        user && user.displayName ? user.displayName :
+                                                            <div>
+                                                                <Link to="/login">
+                                                                    <Button>Login</Button>
+                                                                </Link>
+                                                                <Link to="/register">
+                                                                    <Button>Sign Up</Button>
+                                                                </Link>
+                                                            </div>
+                                                    }
                                                 </Button>
-                                                <Popper
-                                                    open={open}
-                                                    anchorEl={anchorRef.current}
-                                                    role={undefined}
-                                                    placement="bottom-start"
-                                                    transition
-                                                    disablePortal
-                                                >
-                                                    {({ TransitionProps, placement }) => (
-                                                        <Grow
-                                                            {...TransitionProps}
-                                                            style={{
-                                                                transformOrigin:
-                                                                    placement === 'bottom-start' ? 'left top' : 'left bottom',
-                                                            }}
+                                                {
+                                                    user && user.displayName ?
+                                                        <Popper
+                                                            open={open}
+                                                            anchorEl={anchorRef.current}
+                                                            role={undefined}
+                                                            placement="bottom-start"
+                                                            transition
+                                                            disablePortal
                                                         >
-                                                            <Paper>
-                                                                <ClickAwayListener onClickAway={handleClose}>
-                                                                    <MenuList
-                                                                        autoFocusItem={open}
-                                                                        id="composition-menu"
-                                                                        aria-labelledby="composition-button"
-                                                                        onKeyDown={handleListKeyDown}
-                                                                    >
-                                                                        <MenuItem onClick={handleClose}>Profile</MenuItem>
-                                                                        <MenuItem onClick={handleClose}>My account</MenuItem>
-                                                                        <MenuItem onClick={handleClose}>Logout</MenuItem>
-                                                                    </MenuList>
-                                                                </ClickAwayListener>
-                                                            </Paper>
-                                                        </Grow>
-                                                    )}
-                                                </Popper>
+                                                            {({ TransitionProps, placement }) => (
+                                                                <Grow
+                                                                    {...TransitionProps}
+                                                                    style={{
+                                                                        transformOrigin:
+                                                                            placement === 'bottom-start' ? 'left top' : 'left bottom',
+                                                                    }}
+                                                                >
+                                                                    <Paper>
+                                                                        <ClickAwayListener onClickAway={handleClose}>
+                                                                            <MenuList
+                                                                                autoFocusItem={open}
+                                                                                id="composition-menu"
+                                                                                aria-labelledby="composition-button"
+                                                                                onKeyDown={handleListKeyDown}
+                                                                            >
+                                                                                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                                                                                <MenuItem onClick={handleClose}>My account</MenuItem>
+                                                                                <MenuItem onClick={signOut}>Logout</MenuItem>
+                                                                            </MenuList>
+                                                                        </ClickAwayListener>
+                                                                    </Paper>
+                                                                </Grow>
+                                                            )}
+                                                        </Popper>
+                                                        : ''
+                                                }
                                             </div>
                                         </Stack>
                                     </div>
@@ -261,7 +286,7 @@ export default function Header(props) {
                         </div>
                     </Toolbar>
                 </AppBar>
-            </Box>
-        </div>
+            </Box >
+        </div >
     );
 }

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import firebase from "firebase"
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -14,7 +15,6 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import catanddog from '../../../image/catanddog.jpg'
 import Popper from '@mui/material/Popper';
 import PopupState, { bindToggle, bindPopper } from 'material-ui-popup-state';
 import List from '@mui/material/List';
@@ -25,10 +25,13 @@ import ListItemText from '@mui/material/ListItemText';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import Fade from '@mui/material/Fade';
 import Paper from '@mui/material/Paper';
-import './Home.scss';
-import Comment from "./Comment"
 import { makeStyles } from '@mui/styles';
+import catanddog from '../../../image/catanddog.jpg'
+import './Home.scss';
 import Post from '../../Compoment/Post'
+import Comment from "./Comment"
+import { db, auth, provider } from "../../../firebase";
+
 const useStyles = makeStyles({
     popupMore: {
         fontSize: '50px'
@@ -47,10 +50,29 @@ const ExpandMore = styled((props) => {
 function Home() {
     const [expanded, setExpanded] = React.useState(false);
     const classes = useStyles();
+    const [user, setUser] = useState({})
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
+    const getUserProfile = () => {
+        const user = firebase.auth().currentUser;
+        if (user !== null) {
+            const uid = user.uid;
+            var docRef = db.collection("users").doc(uid);
+            docRef.get().then((doc) => {
+                if (doc.exists) {
+                    setUser(doc.data());
+                    localStorage.setItem("user", JSON.stringify(doc.data()))
 
+                } else {
+                    console.log("No such document!");
+                }
+            }).catch((error) => {
+                console.log("Error getting document:", error);
+            });
+        }
+    }
+    useEffect(getUserProfile, user);
     return <Card sx={{
         ml: 2,
         mr: 2,
@@ -88,9 +110,7 @@ function Home() {
                                                             <ListItemText primary="Save" />
                                                         </ListItemButton>
                                                     </ListItem>
-
                                                 </List>
-
                                             </Typography>
                                         </Paper>
                                     </Fade>
@@ -99,16 +119,12 @@ function Home() {
                         </div>
                     )}
                 </PopupState>
-
-
-
             }
             title="Shrimp and Chorizo Paella"
             subheader="September 14, 2016"
         />
         <CardMedia
             component="img"
-            // height="320"
             image={catanddog}
             alt="Paella dish"
         />
@@ -167,12 +183,10 @@ function Home() {
             </ExpandMore>
         </CardActions>
 
-
         <div className="cart-list-comment">
             <Comment />
         </div>
     </Card >
-
 }
 
 export default Home;

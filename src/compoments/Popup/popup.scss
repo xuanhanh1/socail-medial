@@ -1,0 +1,14 @@
+label{
+    cursor: pointer;
+}
+.post-img{
+    overflow: scroll;
+    height: 250px;
+    padding: 10px;
+    img{
+        width: 240px;
+        height: 220px;
+        padding-right: 10px;
+        object-fit: cover;
+    }
+}
