@@ -62,15 +62,19 @@ ElevationScroll.propTypes = {
     window: PropTypes.func,
 };
 
-
-export default function Header(props) {
+var userLocal = JSON.parse(localStorage.getItem('user'));
+console.log(userLocal)
+export default function Header() {
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef(null);
     const ariaLabel = { 'aria-label': 'description' };
-    const [user, setUser] = React.useState({})
+    const [user, setUser] = React.useState(userLocal)
+
+    useEffect(() => {
+        console.log('compoment mound', userLocal)
+        setUser(userLocal);
+    }, [])
     //open setting
-
-
     const handleToggle = () => {
         setOpen((prevOpen) => !prevOpen);
     };
@@ -97,12 +101,7 @@ export default function Header(props) {
 
         prevOpen.current = open;
     }, [open]);
-    const getUserProfile = () => {
-        let userLocal = JSON.parse(localStorage.getItem('user', user));
-        setUser(userLocal);
-        console.log('set user success in header page on localStorage')
-    }
-    useEffect(getUserProfile, user);
+
     const signOut = () => {
         firebase.auth().signOut().then(() => {
             setUser()
@@ -111,6 +110,7 @@ export default function Header(props) {
             // An error happened.
         });
     }
+    console.log('begin');
     return (
         <div>
             <Box

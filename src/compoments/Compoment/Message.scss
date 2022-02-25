@@ -1,3 +1,38 @@
 .mess-detail-header{
     display: flex;
 }
+.mess-action{
+    position: absolute;
+    bottom: 50px;
+    display: flex;
+    width: 100%;
+    &-input{
+        width: 100%;
+        & input{
+            width: 80%;
+            border-radius: 20px;
+            font-size: 18px;
+            padding: 6px;
+        }
+        &-icon{
+            position: absolute;
+            right: 70px;
+            bottom: -12px;
+        }
+    }
+}
+.mess-content{
+    overflow-y: scroll;
+    height: 80%;
+    &-a{
+        display: block;
+        text-align: end;
+        padding: 10px;
+    }
+    &-b{
+        display: block;
+        text-align: start;  
+        padding: 10px;
+    }
+   
+}

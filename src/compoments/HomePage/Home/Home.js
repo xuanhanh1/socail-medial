@@ -54,25 +54,25 @@ function Home() {
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
-    const getUserProfile = () => {
-        const user = firebase.auth().currentUser;
-        if (user !== null) {
-            const uid = user.uid;
-            var docRef = db.collection("users").doc(uid);
-            docRef.get().then((doc) => {
-                if (doc.exists) {
-                    setUser(doc.data());
-                    localStorage.setItem("user", JSON.stringify(doc.data()))
+    // const getUserProfile = () => {
+    //     const user = firebase.auth().currentUser;
+    //     if (user !== null) {
+    //         const uid = user.uid;
+    //         var docRef = db.collection("users").doc(uid);
+    //         docRef.get().then((doc) => {
+    //             if (doc.exists) {
+    //                 setUser(doc.data());
+    //                 localStorage.setItem("user", JSON.stringify(doc.data()))
 
-                } else {
-                    console.log("No such document!");
-                }
-            }).catch((error) => {
-                console.log("Error getting document:", error);
-            });
-        }
-    }
-    useEffect(getUserProfile, user);
+    //             } else {
+    //                 console.log("No such document!");
+    //             }
+    //         }).catch((error) => {
+    //             console.log("Error getting document:", error);
+    //         });
+    //     }
+    // }
+    // useEffect(getUserProfile, user);
     return <Card sx={{
         ml: 2,
         mr: 2,

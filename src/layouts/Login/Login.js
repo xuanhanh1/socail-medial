@@ -41,13 +41,18 @@ export default function Login() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        // eslint-disable-next-line no-console
         firebase.auth().signInWithEmailAndPassword(data.get('email'), data.get('password'))
             .then((userCredential) => {
-                // Signed in
                 var user = userCredential.user;
-                // localStorage.setItem("user", user)
-                console.log('user in login', user)
+                db.collection('users').doc(user.uid).get().then((doc) => {
+                    if (doc.exists) {
+                        localStorage.setItem("user", JSON.stringify(doc.data()))
+                    } else {
+                        console.log("No such document!");
+                    }
+                }).catch((error) => {
+                    console.log("Error getting document:", error);
+                });
                 setCheckUser(true)
             })
             .catch((error) => {

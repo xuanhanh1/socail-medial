@@ -142,7 +142,9 @@ function CompomentLeft(props) {
                                                         <ListItemIcon>
                                                             <MapsUgcOutlinedIcon />
                                                         </ListItemIcon>
-                                                        <ListItemText primary="Message" />
+                                                        <Link to="/message">
+                                                            <ListItemText primary="Message" />
+                                                        </Link>
                                                     </ListItemButton>
                                                 </ListItem>
                                                 <ListItem disablePadding>

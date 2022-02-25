@@ -9,6 +9,7 @@ import InputBase from '@mui/material/InputBase';
 import MessItem from '../compoments/Compoment/MessItem'
 import Header from '../compoments/Header/Header';
 import MessDetail from '../compoments/Compoment/MessDetail';
+import './Layout.scss'
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -55,20 +56,21 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-export default function FullWidthGrid() {
+export default function Messenger() {
     return (
-        <>
+        <div className="mess-body">
             <Header />
             <Container>
-                <Box sx={{ flexGrow: 1, mt: 6 }}>
-                    <div className="mess-header">
-                        <h2>Messagener</h2>
-                        <Divider
-                            sx={{ mb: 2 }}
-                        />
-                    </div>
+                <Box sx={{ flexGrow: 1, mt: 6, height: '100vh' }}>
+
                     <Grid container spacing={2}>
                         <Grid item xs={6} md={4}>
+                            <div className="mess-header">
+                                <h2>Messagener</h2>
+                                <Divider
+                                    sx={{ mb: 2 }}
+                                />
+                            </div>
                             <Search>
                                 <SearchIconWrapper>
                                     <SearchIcon />
@@ -81,12 +83,12 @@ export default function FullWidthGrid() {
 
                             <MessItem />
                         </Grid>
-                        <Grid item xs={6} md={8} sx={{ position: 'relative' }}>
+                        <Grid item xs={6} md={8} sx={{ position: 'relative', height: '95vh', }}>
                             <MessDetail />
                         </Grid>
                     </Grid>
                 </Box>
             </Container>
-        </>
+        </div>
     );
 }
