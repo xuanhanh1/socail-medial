@@ -35,6 +35,12 @@ import { db, auth, provider } from "../../../firebase";
 const useStyles = makeStyles({
     popupMore: {
         fontSize: '50px'
+    },
+    '@media only screen and (max-width: 740px)': {
+        cardMobile: {
+            marginLeft: '0 !important',
+            marginRight: '0 !important'
+        },
     }
 })
 const ExpandMore = styled((props) => {
@@ -79,7 +85,7 @@ function Home() {
         alignItems: 'center',
         mb: 5,
 
-    }} elevation={8}>
+    }} elevation={8} className={classes.cardMobile}>
         <Post />
         <CardHeader
             avatar={

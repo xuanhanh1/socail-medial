@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Button from '@mui/material/Button';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
-import Paper from '@mui/material/Paper';
+import { Paper, ListItemButton, ListItemIcon } from '@mui/material';
 import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
@@ -27,6 +27,11 @@ import PopupNotifi from "../Popup/PopupNotifi"
 import PopupMess from "../Popup/PopupMess"
 import firebase from "firebase"
 import { db, auth, provider } from "../../firebase";
+import { userLogin } from '../../App'
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import CloseIcon from '@mui/icons-material/Close';
+import ListNav from "../Compoment/ListNav";
+import { makeStyles } from '@mui/styles';
 
 function notificationsLabel(count) {
     if (count === 0) {
@@ -61,28 +66,76 @@ ElevationScroll.propTypes = {
      */
     window: PropTypes.func,
 };
+const linkStyle = {
+    '@media only screen and (max-width:1024px)': {
+        display: 'none'
+    },
 
-var userLocal = JSON.parse(localStorage.getItem('user'));
-console.log(userLocal)
-export default function Header() {
+};
+const useStyles = makeStyles({
+    searchIcon: {
+        position: 'absolute',
+        top: 0,
+        right: '5px',
+    },
+    '@media only screen and (max-width:740px)': {
+        search: {
+            display: 'none',
+            transform: 'translate(-100%)',
+
+        },
+        searchMobile: {
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            transform: 'translate(0)',
+            transition: 'all 0.2s',
+            backgroundColor: '#fff',
+            zIndex: 1000
+        },
+        searchIcon: {
+            top: '-15px'
+        },
+        popupLogin: {
+
+        }
+    }
+});
+export default function Header(props) {
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef(null);
     const ariaLabel = { 'aria-label': 'description' };
-    const [user, setUser] = React.useState(userLocal)
+    const userRef = useContext(userLogin);
+    const [login, setLogin] = React.useState(true);
+    const [user, setUser] = React.useState()
+    const [show, setShow] = React.useState(false);
+    const [showSearch, setShowSearch] = React.useState(false);
+    const classes = useStyles();
 
+    // login 
     useEffect(() => {
-        console.log('compoment mound', userLocal)
-        setUser(userLocal);
-    }, [])
+        if (login) {
+            setUser(userRef);
+        } else {
+            setUser()
+        }
+    })
+
+    const signOut = () => {
+        firebase.auth().signOut().then(() => {
+            setLogin(false);
+
+        }).catch((error) => {
+            // An error happened.
+        });
+    }
     //open setting
     const handleToggle = () => {
         setOpen((prevOpen) => !prevOpen);
     };
-
     const handleClose = (event) => {
 
     };
-
     function handleListKeyDown(event) {
         if (event.key === 'Tab') {
             event.preventDefault();
@@ -91,7 +144,6 @@ export default function Header() {
             setOpen(false);
         }
     }
-
     // return focus to the button when we transitioned from !open -> open
     const prevOpen = React.useRef(open);
     React.useEffect(() => {
@@ -101,16 +153,12 @@ export default function Header() {
 
         prevOpen.current = open;
     }, [open]);
-
-    const signOut = () => {
-        firebase.auth().signOut().then(() => {
-            setUser()
-            localStorage.removeItem('user', user);
-        }).catch((error) => {
-            // An error happened.
-        });
+    const showList = () => {
+        setShow(!show)
     }
-    console.log('begin');
+    const hireSearch = () => {
+        setShowSearch(!showSearch)
+    }
     return (
         <div>
             <Box
@@ -133,12 +181,19 @@ export default function Header() {
                     <Toolbar sx={{ justifyContent: 'center', width: '100%' }}>
                         <div className="header">
                             <div className="header-left">
-                                <Link to="/home">
+                                <label for="nav-input" className="nav-bar">
+                                    <ListItemButton>
+                                        <FormatListBulletedIcon />
+                                    </ListItemButton>
+                                </label>
+                                <Link to="/" >
                                     <div className="logo">
                                         <img src={Logo}></img>
                                     </div>
                                 </Link>
                             </div>
+                            <input id="nav-input" hidden className="nav-input" type="checkbox" onChange={showList}></input>
+                            <label for="nav-input" className="nav-over"></label>
                             <div className="header-center">
                                 <div className="search">
                                     <div className="search-input">
@@ -149,18 +204,20 @@ export default function Header() {
                                             }}
                                             noValidate
                                             autoComplete="off"
+                                            className={showSearch ? classes.searchMobile : classes.search}
                                         >
                                             <Input placeholder="Search..." inputProps={ariaLabel} />
                                         </Box>
 
-                                        <Search className="search-icon" color="primary" fontSize="large" />
+                                        <Search className={classes.searchIcon} color="primary"
+                                            fontSize="large" onClick={hireSearch} />
                                     </div>
                                 </div>
                             </div>
                             <div className="header-right">
                                 <PopupState variant="popover" popupId="demo-popup-popover">
                                     {(popupState) => (
-                                        <div>
+                                        <div className="header-icon">
                                             <IconButton aria-label={notificationsLabel(100)}
                                                 sx={{ mr: 3 }}
                                                 variant="contained"
@@ -189,7 +246,7 @@ export default function Header() {
 
                                 <PopupState variant="popover" popupId="demo-popup-popover">
                                     {(popupState) => (
-                                        <div>
+                                        <div className="header-icon">
                                             <IconButton aria-label={notificationsLabel(100)}
                                                 sx={{ mr: 3 }}
                                                 variant="contained"
@@ -231,14 +288,23 @@ export default function Header() {
                                                 >
                                                     {
                                                         user && user.displayName ? user.displayName :
-                                                            <div>
-                                                                <Link to="/login">
-                                                                    <Button>Login</Button>
-                                                                </Link>
-                                                                <Link to="/register">
-                                                                    <Button>Sign Up</Button>
-                                                                </Link>
-                                                            </div>
+                                                            (
+                                                                <>
+                                                                    <div className="btn-login">
+                                                                        <Link to="/login">
+                                                                            <Button>Login</Button>
+                                                                        </Link>
+                                                                        <Link to="/register" style={linkStyle} >
+                                                                            <Button>Sign Up</Button>
+                                                                        </Link>
+                                                                    </div>
+                                                                    <div className="btn-login-mobile">
+                                                                        <Link to="/login">
+                                                                            <Button>Login</Button>
+                                                                        </Link>
+                                                                    </div>
+                                                                </>
+                                                            )
                                                     }
                                                 </Button>
                                                 {
@@ -259,8 +325,8 @@ export default function Header() {
                                                                             placement === 'bottom-start' ? 'left top' : 'left bottom',
                                                                     }}
                                                                 >
-                                                                    <Paper>
-                                                                        <ClickAwayListener onClickAway={handleClose}>
+                                                                    <Paper className={classes.popupLogin} >
+                                                                        <ClickAwayListener onClickAway={handleClose} >
                                                                             <MenuList
                                                                                 autoFocusItem={open}
                                                                                 id="composition-menu"
@@ -284,9 +350,19 @@ export default function Header() {
                                 </div>
                             </div>
                         </div>
+
                     </Toolbar>
                 </AppBar>
             </Box >
+            <div className={show ? "list-active" : " list-notactive"}>
+                <div className="list-mobile-icon" onClick={showList}>
+                    <ListItemButton>
+                        <CloseIcon />
+                    </ListItemButton>
+                </div>
+                <ListNav />
+
+            </div>
         </div >
     );
 }

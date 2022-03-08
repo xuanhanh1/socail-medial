@@ -13,11 +13,46 @@ import IconButton from '@mui/material/IconButton';
 import ModalPost from '../Popup/ModalPost'
 
 const useStyles = makeStyles({
+    post: {
+        display: 'flex',
+        '& > :not(style)': {
+            m: 1,
+            width: '100%',
+            height: 180,
+        },
+    },
+    postFeel: {
+        mt: 2,
+        justifyContent: 'space-around',
+        height: 'auto'
+    },
     iconClose: {
         position: 'absolute',
         top: 0,
         right: 0,
     },
+    '@media only screen and (max-width:740px)': {
+        postFeel: {
+            display: 'none !important',
+        },
+        post: {
+            display: 'flex',
+            '& > :not(style)': {
+                m: 1,
+                width: '100%',
+                height: 'auto',
+            },
+        },
+        modalMobile: {
+            width: 'auto',
+            top: '0 !important',
+            bottom: '0 !important',
+            left: '0 !important',
+            right: '0 !important',
+            transform: 'translate(0px, 10px) !important',
+        }
+
+    }
 });
 
 const style = {
@@ -30,6 +65,9 @@ const style = {
     border: '2px solid #000',
     boxShadow: 24,
     p: 4,
+    '@media only screen and (max-width:1024px)': {
+        top: '25%'
+    }
 };
 
 function Post() {
@@ -39,14 +77,7 @@ function Post() {
     const handleClose = () => setOpen(false);
     const classes = useStyles();
     return (
-        <Box sx={{
-            display: 'flex',
-            '& > :not(style)': {
-                m: 1,
-                width: '100%',
-                height: 180,
-            },
-        }}>
+        <Box className={classes.post}>
             <Paper variant="outlined" onClick={handleOpen} >
                 <ListItem alignItems="flex-start">
                     <ListItemAvatar>
@@ -66,16 +97,12 @@ function Post() {
                     onChange={(event, newValue) => {
                         setValue(newValue);
                     }}
-                    sx={{
-                        mt: 2,
-                        justifyContent: 'space-around',
-                        height: 'auto'
-                    }}
                     spacing={2}
+                    className={classes.postFeel}
                 >
-                    <Button variant="outlined">Video/Hình ảnh</Button>
-                    <Button variant="outlined">Cảm xúc/ Hoạt động </Button>
-                    <Button variant="outlined">Trục tiếp</Button>
+                    <Button variant="outlined" >Video/Hình ảnh</Button>
+                    <Button variant="outlined" >Cảm xúc/ Hoạt động </Button>
+                    <Button variant="outlined"  >Trục tiếp</Button>
                 </BottomNavigation>
             </Paper>
             <Modal
@@ -83,10 +110,17 @@ function Post() {
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
-
+                className={classes.modalMobile}
             >
-                <Box sx={style} >
-                    <IconButton aria-label="add to favorites" className={classes.iconClose}>
+                <Box sx={style} className={classes.modalMobile} >
+                    <IconButton aria-label="add to favorites" className={classes.iconClose}
+                        sx={{
+                            position: 'absolute',
+                            top: 0,
+                            right: 0
+                        }}
+                        onClick={handleClose}
+                    >
                         <CancelSharpIcon />
                     </IconButton>
                     <ModalPost

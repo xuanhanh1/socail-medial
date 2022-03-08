@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -12,13 +12,18 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
-import ListSubheader from '@mui/material/ListSubheader';
 import Avatar from '@mui/material/Avatar';
-import MenuIcon from '@mui/icons-material/Menu';
-import AddIcon from '@mui/icons-material/Add';
-import SearchIcon from '@mui/icons-material/Search';
-import MoreIcon from '@mui/icons-material/MoreVert';
+import { makeStyles } from '@mui/styles'
+import { userLogin } from '../../App'
+import { db, } from '../../firebase'
+const useStyles = makeStyles({
+    '@media only screen and (max-width:1024px)': {
+        inbox: {
+            // display: 'none'
+        }
+    }
 
+})
 const messages = [
     {
         id: 1,
@@ -73,19 +78,40 @@ const StyledFab = styled(Fab)({
     margin: '0 auto',
 });
 
-export default function BottomAppBar() {
+export default function MessItem() {
+    const userRef = useContext(userLogin);
+    const [login, setLogin] = React.useState(true);
+    const [user, setUser] = React.useState(userRef)
+    const classes = useStyles();
+
+    useEffect(() => {
+        if (login) {
+            setUser(userRef);
+        } else {
+            setUser()
+        }
+    }, [userRef])
+    const listFriend = (user) => {
+        console.log(user)
+        let friendRef = db.collection("chat").doc("M2uarcOxNarLdCpVk4mI")
+        friendRef.onSnapshot((doc) => {
+            console.log("Current data: ", doc.data());
+        });
+    }
+    useEffect(() => {
+        listFriend(user)
+    }, [user])
+    console.log(user)
     return (
         <React.Fragment>
             <CssBaseline />
-            <Paper square sx={{ pb: '50px' }}>
+            <Paper square sx={{ pb: '50px' }} className={classes.inbox}>
                 <Typography variant="h5" gutterBottom component="div" sx={{ p: 2, pb: 0 }}>
                     Inbox
                 </Typography>
                 <List sx={{ mb: 2 }}>
                     {messages.map(({ id, primary, secondary, person }) => (
                         <React.Fragment key={id}>
-
-
                             <ListItem button>
                                 <ListItemAvatar>
                                     <Avatar alt="Profile Picture" src={person} />

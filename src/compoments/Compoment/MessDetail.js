@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { ListItem, AppBar, Toolbar, Box } from '@mui/material/';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -26,6 +26,10 @@ import 'emoji-mart/css/emoji-mart.css'
 import { Picker } from 'emoji-mart'
 import PropTypes from 'prop-types';
 import './Message.scss'
+import { db, auth } from '../../firebase';
+import firebase from 'firebase';
+import userLogin from '../../App'
+
 function ElevationScroll(props) {
     const { children, window } = props;
     // Note that you normally won't need to set the window ref as useScrollTrigger
@@ -55,6 +59,7 @@ function MessDetail() {
     const [input, setInput] = React.useState('')
     const [image, setImage] = useState([]);
     const [isImage, setIsImage] = useState(false);
+    const userRef = useContext(userLogin);
 
     const choseEmoji = (emoji, event) => {
         let emojiXX = emoji.native;
@@ -78,6 +83,7 @@ function MessDetail() {
         }
 
     }
+    console.log('user login ', userRef)
     return (
         <>
             <Box

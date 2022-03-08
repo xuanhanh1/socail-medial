@@ -11,8 +11,16 @@ import Stack from '@mui/material/Stack';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import avataHome from "../../../image/avata.png";
 import DriveFileMoveOutlinedIcon from '@mui/icons-material/DriveFileMoveOutlined';
-
+import { makeStyles } from '@mui/styles';
+const useStyles = makeStyles({
+    '@media only screen and (max-width: 740px)': {
+        comment: {
+            marginLeft: '0 !important'
+        }
+    }
+})
 export default function Comment() {
+    const classes = useStyles();
     return (
         <>
             <div className="card-comment">
@@ -50,7 +58,7 @@ export default function Comment() {
 
                 </Stack>
             </div>
-            <List sx={{ bgcolor: 'background.paper', ml: 7 }}>
+            <List sx={{ bgcolor: 'background.paper', ml: 7 }} className={classes.comment}>
                 <ListItem alignItems="flex-start">
                     <ListItemAvatar>
                         <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />

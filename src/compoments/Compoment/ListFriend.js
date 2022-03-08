@@ -12,8 +12,20 @@ import AddIcon from '@mui/icons-material/Add';
 import { Typography, Grid, Divider, ListItemButton, ListItemIcon } from '@mui/material/';
 import logoAvata from '../../image/avata.png';
 import EmailIcon from '@mui/icons-material/Email';
+import { makeStyles } from '@mui/styles'
+const useStyles = makeStyles({
+    '@media only screen and (max-width:740px)': {
+        listFriend: {
+            flexDirection: 'column !important',
+        },
+        itemFriend: {
+            maxWidth: '100% !important',
+        }
+    }
+})
 
 export default function ListFriend() {
+    const classes = useStyles();
     return (
         <Box
             sx={{
@@ -23,8 +35,8 @@ export default function ListFriend() {
             <div className="friend-header">
                 <h1 >Danh sách bạn bè</h1>
             </div>
-            <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                <Grid item xs={6}  >
+            <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }} className={classes.listFriend}>
+                <Grid item xs={6} className={classes.itemFriend} >
                     <Paper sx={{ mb: '10px' }} >
                         <ListItem alignItems="flex-start">
                             <ListItemButton>
@@ -52,7 +64,7 @@ export default function ListFriend() {
                         </ListItem>
                     </Paper>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={6} className={classes.itemFriend}>
                     <Paper >
                         <ListItem alignItems="flex-start">
                             <ListItemButton>
@@ -86,8 +98,8 @@ export default function ListFriend() {
             <div className="friend-header">
                 <h1 >Thêm bạn mới </h1>
             </div>
-            <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                <Grid item xs={6}>
+            <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }} className={classes.listFriend}>
+                <Grid item xs={6} className={classes.itemFriend}>
                     <Paper >
                         <ListItem alignItems="flex-start">
 
@@ -108,7 +120,7 @@ export default function ListFriend() {
                         </ListItem>
                     </Paper>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={6} className={classes.itemFriend}>
                     <Paper >
                         <ListItem alignItems="flex-start">
 

@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 import Header from '../Header/Header';
 import CompomentLeft from "../Compoment/CompomentLeft"
+import { makeStyles } from '@mui/styles';
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
     padding: theme.spacing(1),
@@ -42,18 +43,44 @@ ElevationScroll.propTypes = {
     window: PropTypes.func,
 };
 
+const useStyles = makeStyles({
+    mainMobile: {
+        display: "none",
+    },
+    '@media only screen and (max-width:1024px)': {
+        main: {
+            display: 'none'
+        },
+        mainMobile: {
+            display: 'block',
+        }
+    },
+    '@media only screen and (max-width:740px)': {
+        contai: {
+            padding: '0 !important',
+            paddingLeft: '0 !important',
+            paddingRight: '0 !important',
+        },
+        mainMobile: {
+            padding: '0 !important',
+            paddingLeft: '0 !important',
+            paddingRight: '0 !important',
+        }
+    }
+});
 function HomePage() {
+    const classes = useStyles();
     return (
         <>
             <div className="bd">
                 <div style={{ backgroundColor: '#e2e8f0' }}>
-                    <Container  >
+                    <Container className={classes.contai} >
                         <Header />
-                        <Box sx={{ flexGrow: 1, mt: 6 }}>
+                        <Box sx={{ flexGrow: 1, mt: 6 }} className={classes.main}>
                             <CssBaseline />
                             <Grid container spacing={1}>
                                 <CompomentLeft />
-                                <Grid item xs={9} sx={{ alignItems: 'center' }}>
+                                <Grid item xs={9} sx={{ alignItems: 'center' }} >
                                     <Item>
                                         <Outlet />
 
@@ -61,6 +88,18 @@ function HomePage() {
                                 </Grid>
                             </Grid>
                         </Box>
+                        <Box sx={{ flexGrow: 1, mt: 6 }} className={classes.mainMobile}>
+                            <CssBaseline />
+                            <Grid container spacing={1} className={classes.contai}>
+                                <Grid item xs={12} sx={{ alignItems: 'center' }} >
+                                    <Item>
+                                        <Outlet />
+
+                                    </Item>
+                                </Grid>
+                            </Grid>
+                        </Box>
+
                     </Container>
                 </div>
             </div>

@@ -37,28 +37,33 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function Login() {
-    const [checkUser, setCheckUser] = React.useState(false);
+    const [input, setInput] = useState({
+        email: '',
+        password: '',
+    })
+    const [checkUser, setCheckUser] = useState(false);
+
+    const handleChangeInnput = (event) => {
+        setInput({
+            ...input,
+            [event.target.name]: event.target.value
+        })
+    }
     const handleSubmit = (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        firebase.auth().signInWithEmailAndPassword(data.get('email'), data.get('password'))
+        firebase.auth().signInWithEmailAndPassword(input.email, input.password)
             .then((userCredential) => {
+                // Signed in 
                 var user = userCredential.user;
-                db.collection('users').doc(user.uid).get().then((doc) => {
-                    if (doc.exists) {
-                        localStorage.setItem("user", JSON.stringify(doc.data()))
-                    } else {
-                        console.log("No such document!");
-                    }
-                }).catch((error) => {
-                    console.log("Error getting document:", error);
-                });
+                // ...
                 setCheckUser(true)
             })
             .catch((error) => {
                 var errorCode = error.code;
                 var errorMessage = error.message;
+                // ..
             });
+
     };
     const signUpGoogle = (event) => {
         event.preventDefault();
@@ -70,8 +75,8 @@ export default function Login() {
                 var token = credential.accessToken;
                 // The signed-in user info.
                 var user = result.user;
-                setCheckUser(true);
                 checkSignInWithGoogle(user);
+                setCheckUser(true)
 
             }).catch((error) => {
                 // Handle Errors here.
@@ -102,6 +107,7 @@ export default function Login() {
             console.error("Error ", error);
         });
     }
+
     if (checkUser) {
         return <Navigate to="/" />
     }
@@ -151,6 +157,7 @@ export default function Login() {
                                 name="email"
                                 autoComplete="email"
                                 autoFocus
+                                onChange={(event) => { handleChangeInnput(event) }}
                             />
                             <TextField
                                 margin="normal"
@@ -161,6 +168,7 @@ export default function Login() {
                                 type="password"
                                 id="password"
                                 autoComplete="current-password"
+                                onChange={(event) => { handleChangeInnput(event) }}
                             />
                             <FormControlLabel
                                 control={<Checkbox value="remember" color="primary" />}

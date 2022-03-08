@@ -9,6 +9,9 @@
     // 372b3b
     gap: 166px;
     &-left{
+        & .nav-bar{
+            display: none;
+        }
         .logo{
             img{
                 width: 50px;
@@ -61,5 +64,119 @@
                 right: 0px;
             }
         }
+    }
+    .list-mobile{
+        display: none;
+    }
+}
+.list-notactive{
+    display: none;
+}
+.list-active{
+    display: none;
+}
+.nav-over{
+    display: none;
+}
+.btn-login-mobile{
+    display: none;
+}
+
+@media only screen and (max-width:1024px){
+    .header{
+        gap: 0px;
+        &-icon{
+            margin-top: 10px;
+        }
+    }
+    .nav-over{
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.3)
+    }
+    .header-left{
+        display: flex;
+        & .nav-bar{
+            display: block;
+            color: black;
+        }
+    }
+    .list-mobile{
+        
+        .active{
+           
+        }
+        .notactive{
+            transform: translateX(-100%)
+        }
+        &-list{
+            margin-top: 20px;
+            list-style: none;
+        }
+        &-link{
+            text-decoration: none;
+            color: #333;
+            display: block;
+            padding: 8px 0; 
+        }
+        &-icon{
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 20px 12px
+        }
+    }
+    .list-active{
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 320px;
+        max-width: 100%;
+        background-color: #fff;
+        z-index: 10000;
+        transform: translateX(0);
+        transition: all 0.2s;
+    }
+    .list-notactive{
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 320px;
+        max-width: 100%;
+        background-color: #fff;
+        z-index: 10000;
+        transform: translateX(-100%);
+
+    }
+    .nav-input:checked ~ .nav-over{
+        display: block;
+    }
+    .btn-login Link:last-child {
+        display: none;
+    }
+    .btn-login-mobile{
+        display: block;
+    }
+    .btn-login{
+        display: none;
+    }
+   
+}
+@media only screen and (max-width:740px) {
+    .header-left{
+        & .logo{
+            display: none;
+        }
+    }
+    .header{
+        grid-template-columns: 1fr 1fr 1fr
     }
 }

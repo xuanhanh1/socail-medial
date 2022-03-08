@@ -19,6 +19,7 @@ import 'emoji-mart/css/emoji-mart.css'
 import { Picker } from 'emoji-mart'
 import catanddog from '../../image/catanddog.jpg';
 import './popup.scss';
+import { makeStyles } from '@mui/styles';
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -31,13 +32,36 @@ const ExpandMore = styled((props) => {
     }),
 }));
 
+const useStyles = makeStyles({
 
+    postModalmobile: {
+        width: 720,
+        minHeight: 600,
+    },
+    '@media only screen and (max-width:1024px)': {
+        postModalmobile: {
+            top: '30%'
+        }
+    },
+    '@media only screen and (max-width:740px)': {
+        postModalmobile: {
+            width: 'auto',
+            top: '0 !important',
+            bottom: '0 !important',
+            left: '0 !important',
+            right: '0 !important',
+            transform: 'translate(0px, 10px) !important',
+        }
+    },
+});
 export default function ModalPost() {
     const [expanded, setExpanded] = React.useState(false);
     const [input, setInput] = React.useState('')
     const [image, setImage] = useState([]);
     const [isImage, setIsImage] = useState(false);
     const [emoji, setEmoji] = useState(null);
+    const classes = useStyles();
+
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
@@ -62,9 +86,7 @@ export default function ModalPost() {
     }
     console.log(emoji)
     return (
-        <Card sx={{
-            width: 720
-        }}>
+        <Card className={classes.postModalmobile} >
             <CardHeader
                 avatar={
                     <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">

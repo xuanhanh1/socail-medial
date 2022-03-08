@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -21,10 +21,12 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 import VideocamTwoToneIcon from '@mui/icons-material/VideocamTwoTone';
+import HomeIcon from '@mui/icons-material/Home';
 // import Link from '@mui/material/Link';
 import { Link } from "react-router-dom";
-
-
+import { userLogin } from '../../App'
+import { makeStyles } from '@mui/styles';
+import ListNav from './ListNav'
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
     padding: theme.spacing(1),
@@ -67,97 +69,35 @@ ElevationScroll.propTypes = {
      */
     window: PropTypes.func,
 };
+const useStyles = makeStyles({
+    '@media only screen and (max-width:1024px)': {
 
-
+    }
+});
 function CompomentLeft(props) {
     let trend = props.trend
+    const userRef = useContext(userLogin);
+    const [login, setLogin] = React.useState(true);
+    const [user, setUser] = React.useState()
+    const classes = useStyles();
+    useEffect(() => {
+        if (login) {
+            setUser(userRef);
+        } else {
+            setUser()
+        }
+    }, [userRef])
     return (
         <>
-            <Grid item xs className="list-homepage">
+            <Grid item xs className={classes.listHomePage}>
                 <ElevationScroll {...props}>
                     <AppBar>
                         <Toolbar sx={{ position: 'fixed', top: 70, left: 180, }} >
                             <Typography sx={{ pr: 8 }} >
                                 <Item sx={{ pr: 8 }} >
                                     <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
-                                        <nav aria-label="main mailbox folders">
-                                            <List>
-                                                <ListItem disablePadding>
-                                                    <Link to="profile">
 
-                                                        <ListItemButton>
-                                                            <ListItemIcon>
-                                                                <Avatar alt="Remy Sharp" src={logoAvata} />
-
-                                                            </ListItemIcon>
-                                                            <ListItemText primary="Xuân Hạnh" />
-                                                        </ListItemButton>
-                                                    </Link>
-                                                </ListItem>
-                                                <ListItem disablePadding>
-                                                    <ListItemButton>
-                                                        <ListItemIcon>
-                                                            <WhatshotIcon />
-                                                        </ListItemIcon>
-                                                        <Link to="trend">
-                                                            {/* <Button href='/trend'> */}
-                                                            {trend ?
-                                                                <ListItemText primary="Trending"
-                                                                    sx={{ color: 'red' }}
-                                                                />
-                                                                : <ListItemText primary="Trending" />
-                                                            }
-                                                            {/* </Button> */}
-                                                        </Link>
-                                                    </ListItemButton>
-                                                </ListItem>
-
-                                                <ListItem disablePadding>
-                                                    <ListItemButton>
-                                                        <ListItemIcon>
-                                                            <VideocamTwoToneIcon />
-                                                        </ListItemIcon>
-                                                        <Link to="watch">
-                                                            {/* <Button href='/watch'> */}
-                                                            <ListItemText primary="Watch" />
-                                                            {/* </Button> */}
-                                                        </Link>
-                                                    </ListItemButton>
-                                                </ListItem>
-                                                <ListItem disablePadding>
-                                                    <ListItemButton>
-                                                        <ListItemIcon>
-                                                            <PeopleIcon />
-                                                        </ListItemIcon>
-                                                        <Link to="friend">
-
-                                                            {/* <Button href='/friend'> */}
-                                                            <ListItemText primary="Friend" />
-                                                            {/* </Button> */}
-                                                        </Link>
-                                                    </ListItemButton>
-                                                </ListItem>
-                                                <ListItem disablePadding>
-                                                    <ListItemButton>
-                                                        <ListItemIcon>
-                                                            <MapsUgcOutlinedIcon />
-                                                        </ListItemIcon>
-                                                        <Link to="/message">
-                                                            <ListItemText primary="Message" />
-                                                        </Link>
-                                                    </ListItemButton>
-                                                </ListItem>
-                                                <ListItem disablePadding>
-                                                    <ListItemButton>
-                                                        <ListItemIcon>
-                                                            <SettingsOutlinedIcon />
-                                                        </ListItemIcon>
-                                                        <ListItemText primary="Setting" />
-                                                    </ListItemButton>
-                                                </ListItem>
-                                            </List>
-                                        </nav>
-
+                                        <ListNav />
                                     </Box>
                                 </Item>
 

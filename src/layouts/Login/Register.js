@@ -92,7 +92,6 @@ export default function SignUp() {
                     docRef.get().then((doc) => {
                         if (doc.exists) {
                             setUser(doc.data());
-                            localStorage.setItem("user", JSON.stringify(doc.data()));
                             console.log('user in header ', doc.data())
                         } else {
                             console.log("No such document!");
@@ -153,8 +152,8 @@ export default function SignUp() {
                 var token = credential.accessToken;
                 var user = result.user;
                 console.log('user gg in reg', user);
+                checkSignInWithGoogle(user);
                 setCheckUser(true)
-                await checkSignInWithGoogle(user);
             }).catch((error) => {
                 var errorCode = error.code;
 

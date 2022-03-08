@@ -16,8 +16,16 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import Fade from '@mui/material/Fade';
 import Paper from '@mui/material/Paper';
 import Comment from '../HomePage/Home/Comment'
-
+import { makeStyles } from '@mui/styles'
+const useStyles = makeStyles({
+    '@media only screen and (max-width:740px)': {
+        cartVideo: {
+            width: '350 !important',
+        }
+    },
+})
 export default function ListImageTrending() {
+    const classes = useStyles();
     return (
         <Box sx={{
             // height: '100vh'
@@ -84,6 +92,7 @@ export default function ListImageTrending() {
                             objectFit: 'cover',
                             borderRadius: '5px'
                         }}
+                        className={classes.cartVideo}
                     />
                 </CardActionArea>
 

@@ -16,13 +16,24 @@ import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded';
 import LensBlurIcon from '@mui/icons-material/LensBlur';
 import './Profile.scss';
 import DetailProfile from './DetailProfile';
+import { makeStyles } from '@mui/styles';
+const useStyles = makeStyles({
+    '@media only screen and (max-width:740px)': {
+        contai: {
+            padding: '0 !important',
+            paddingLeft: '0 !important',
+            paddingRight: '0 !important',
+        },
 
+    }
+})
 function Profile(props) {
     const [expanded, setExpanded] = React.useState(false);
     const { sx, ...other } = props;
-    return (<div>
-        <Header />
-        <Container>
+    const classes = useStyles()
+    return (
+        <Container className={classes.contai}>
+            <Header />
             <Card sx={{
                 ml: 2,
                 mr: 2,
@@ -32,6 +43,7 @@ function Profile(props) {
                 // height: '95vh'
 
             }} elevation={8}>
+
                 <div className="profile-header">
                     <div className="profile-header-img">
                         <img src={catanddog} />
@@ -107,7 +119,7 @@ function Profile(props) {
 
             </Card >
         </Container>
-    </div>)
+    )
 }
 
 export default Profile;

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
@@ -17,6 +17,23 @@ const useStyles = makeStyles({
         top: 0,
         right: 0,
     },
+    trend: {
+        columnCount: 3,
+    },
+    '@media only screen and (max-width: 1024px)': {
+        modalTrend: {
+            top: '0 !important',
+            left: '0 !important',
+            right: '0 !important',
+            bottom: '0 !important',
+            transform: ' translate(0px, 0px) !important',
+        }
+    },
+    '@media only screen and (max-width:740)': {
+        trend: {
+            columnCount: 2
+        },
+    }
 });
 
 const style = {
@@ -35,11 +52,18 @@ export default function ListImageTrending() {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const [Cd, setCd] = React.useState(false);
     const classes = useStyles();
-    return (
-        <Box sx={{}}>
+    useEffect(() => {
+        if (window.innerWidth < 740) {
+            setCd(true)
+        }
+    }, [])
 
-            <ImageList variant="masonry" cols={3} gap={8}>
+    return (
+        <Box sx={{}} >
+
+            <ImageList variant="masonry" gap={8} cols={Cd ? 2 : 3} >
                 <div data-aos="zoom-in">
 
                     {itemData.map((item) => (
@@ -62,8 +86,10 @@ export default function ListImageTrending() {
                 aria-describedby="modal-modal-description"
 
             >
-                <Box sx={style} >
-                    <IconButton aria-label="add to favorites" className={classes.iconClose}>
+                <Box sx={style} className={classes.modalTrend}>
+                    <IconButton aria-label="add to favorites"
+                        className={classes.iconClose}
+                        onClick={handleClose}>
                         <CancelSharpIcon />
                     </IconButton>
                     <ModalTrend />
