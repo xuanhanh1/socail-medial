@@ -3,13 +3,11 @@ import Box from '@mui/material/Box';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
 import CancelSharpIcon from '@mui/icons-material/CancelSharp';
 import ModalTrend from '../Popup/ModalTrend';
 import { makeStyles } from '@mui/styles';
-import Button from '@mui/material/Button';
 
 const useStyles = makeStyles({
     iconClose: {
@@ -62,10 +60,8 @@ export default function ListImageTrending() {
 
     return (
         <Box sx={{}} >
-
             <ImageList variant="masonry" gap={8} cols={Cd ? 2 : 3} >
                 <div data-aos="zoom-in">
-
                     {itemData.map((item) => (
                         <ImageListItem ImageListItem key={item.img} onClick={handleOpen} >
                             <img
@@ -84,7 +80,6 @@ export default function ListImageTrending() {
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
-
             >
                 <Box sx={style} className={classes.modalTrend}>
                     <IconButton aria-label="add to favorites"

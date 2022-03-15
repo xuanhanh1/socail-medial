@@ -1,32 +1,16 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { styled } from '@mui/material/styles';
-import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import WhatshotIcon from '@mui/icons-material/Whatshot';
-import Avatar from '@mui/material/Avatar';
-import PeopleIcon from '@mui/icons-material/People';
-import MapsUgcOutlinedIcon from '@mui/icons-material/MapsUgcOutlined';
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
-import logoAvata from '../../image/avata.png';
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
-import VideocamTwoToneIcon from '@mui/icons-material/VideocamTwoTone';
-import HomeIcon from '@mui/icons-material/Home';
-// import Link from '@mui/material/Link';
-import { Link } from "react-router-dom";
-import { userLogin } from '../../App'
 import { makeStyles } from '@mui/styles';
-import ListNav from './ListNav'
+import ListNav from '../compoments/Compoment/ListNav'
+import { useSelector } from 'react-redux'
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
     padding: theme.spacing(1),
@@ -76,36 +60,26 @@ const useStyles = makeStyles({
 });
 function CompomentLeft(props) {
     let trend = props.trend
-    const userRef = useContext(userLogin);
-    const [login, setLogin] = React.useState(true);
-    const [user, setUser] = React.useState()
+    const userInfor = useSelector(state => state.userInfor)
+    const [user, setUser] = React.useState(userInfor)
     const classes = useStyles();
-    useEffect(() => {
-        if (login) {
-            setUser(userRef);
-        } else {
-            setUser()
-        }
-    }, [userRef])
+
     return (
         <>
             <Grid item xs className={classes.listHomePage}>
                 <ElevationScroll {...props}>
                     <AppBar>
-                        <Toolbar sx={{ position: 'fixed', top: 70, left: 180, }} >
-                            <Typography sx={{ pr: 8 }} >
-                                <Item sx={{ pr: 8 }} >
-                                    <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
-
+                        <Toolbar sx={{ position: 'fixed', top: 70, left: 150, }} >
+                            <Typography>
+                                <Item >
+                                    <Box sx={{ width: '240px', bgcolor: 'background.paper' }}>
                                         <ListNav />
                                     </Box>
                                 </Item>
-
                             </Typography>
                         </Toolbar>
                     </AppBar>
                 </ElevationScroll>
-
                 <Copyright sx={{ position: 'fixed', bottom: 15, left: 180, ml: 5 }} />
             </Grid>
         </>

@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import './App.scss';
 import Router from './route';
 import firebase from 'firebase'
 import { db, auth, provider } from "./firebase";
-export const userLogin = React.createContext();
+import { login } from './app/reudx/actions'
+import theme from './globalStyles/them/GlobalThem'
+import { ThemeProvider } from '@mui/material/styles';
 export default function App() {
-  const [user, setUser] = useState()
+  const [userRef, setUserRef] = useState()
+  const [user, serUser] = useState()
+  const dispatch = useDispatch();
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -14,8 +19,7 @@ export default function App() {
         var docRef = db.collection("users").doc(uid);
         docRef.get().then((doc) => {
           if (doc.exists) {
-            setUser(doc.data());
-            // console.log('user  ', doc.data())
+            setUserRef(doc.data());
           } else {
             console.log("No such document!");
           }
@@ -27,15 +31,15 @@ export default function App() {
         // ...
       }
     });
+
   }, [])
-
-
-
+  dispatch(login(userRef));
+  const userInfor = useSelector(state => state.userInfor)
   return (
     <>
-      <userLogin.Provider value={user}>
-        <Router />
-      </userLogin.Provider>
+      <ThemeProvider theme={theme}>
+        <Router userInfor={userInfor ? userInfor : ''} />
+      </ThemeProvider>
     </>
   )
 }

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { ListItem, AppBar, Toolbar, Box } from '@mui/material/';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -28,7 +28,8 @@ import PropTypes from 'prop-types';
 import './Message.scss'
 import { db, auth } from '../../firebase';
 import firebase from 'firebase';
-import userLogin from '../../App'
+import { useSelector } from 'react-redux';
+// import userLogin from '../../App'
 
 function ElevationScroll(props) {
     const { children, window } = props;
@@ -59,8 +60,12 @@ function MessDetail() {
     const [input, setInput] = React.useState('')
     const [image, setImage] = useState([]);
     const [isImage, setIsImage] = useState(false);
-    const userRef = useContext(userLogin);
+    const [user, setUser] = useState();
+    const userInfor = useSelector(state => state.userInfor)
 
+    useEffect(() => {
+        setUser(userInfor)
+    }, userInfor)
     const choseEmoji = (emoji, event) => {
         let emojiXX = emoji.native;
         setInput(input + emojiXX);
@@ -83,7 +88,6 @@ function MessDetail() {
         }
 
     }
-    console.log('user login ', userRef)
     return (
         <>
             <Box
@@ -100,7 +104,7 @@ function MessDetail() {
                     textAlign: 'center',
                     fontSize: '0.875rem',
                     fontWeight: '700',
-                    height: '95vh',
+                    height: '87vh',
                     position: 'relative',
                 }}
             >
@@ -139,7 +143,8 @@ function MessDetail() {
                 </div>
                 <div className="mess-action">
                     <div className="mess-action-input">
-                        <input type="text"></input>
+                        <span className="input"><input type="text" placeholder="Gradient border focus fun" /></span>
+
                         <div className="mess-action-input-icon">
                             <CardActions disableSpacing>
                                 <div className="file-action" >
@@ -158,13 +163,11 @@ function MessDetail() {
                                     </IconButton>
                                 </div>
                                 <div className="icon-feel">
-
                                     <PopupState variant="popover" popupId="demo-popup-popover">
                                         {(popupState) => (
                                             <div>
                                                 <IconButton aria-label="share"
                                                     {...bindTrigger(popupState)} >
-
                                                     <InsertEmoticonIcon />
                                                 </IconButton>
                                                 <Popover
@@ -188,7 +191,6 @@ function MessDetail() {
                                         )}
                                     </PopupState>
                                 </div>
-
                             </CardActions>
                         </div>
                     </div>

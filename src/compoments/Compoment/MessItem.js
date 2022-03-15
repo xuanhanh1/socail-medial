@@ -14,9 +14,13 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
 import { makeStyles } from '@mui/styles'
-import { userLogin } from '../../App'
+// import { userLogin } from '../../App'
 import { db, } from '../../firebase'
 const useStyles = makeStyles({
+    messItem: {
+        overflow: 'scroll',
+        height: '60vh'
+    },
     '@media only screen and (max-width:1024px)': {
         inbox: {
             // display: 'none'
@@ -24,6 +28,53 @@ const useStyles = makeStyles({
     }
 
 })
+const StyledFab = styled(Fab)({
+    position: 'absolute',
+    zIndex: 1,
+    top: -30,
+    left: 0,
+    right: 0,
+    margin: '0 auto',
+
+});
+
+
+export default function MessItem() {
+    const [user, setUser] = React.useState()
+    const classes = useStyles();
+    const listFriend = (user) => {
+        console.log(user)
+        let friendRef = db.collection("chat").doc("M2uarcOxNarLdCpVk4mI")
+        friendRef.onSnapshot((doc) => {
+            // console.log("Current data: ", doc.data());
+        });
+    }
+
+    return (
+        <React.Fragment>
+            <CssBaseline />
+            <Paper square sx={{ pb: '50px' }} className={classes.inbox}>
+                <Typography variant="h5" gutterBottom component="div" sx={{ p: 2, pb: 0 }}>
+                    Inbox
+                </Typography>
+                <List sx={{ mb: 2 }} className={classes.messItem}>
+                    {messages.map(({ id, primary, secondary, person }) => (
+                        <React.Fragment key={id}>
+                            <ListItem button>
+                                <ListItemAvatar>
+                                    <Avatar alt="Profile Picture" src={person} />
+                                </ListItemAvatar>
+                                <ListItemText primary={primary} secondary={secondary} />
+                            </ListItem>
+                        </React.Fragment>
+                    ))}
+                </List>
+            </Paper>
+
+        </React.Fragment>
+    );
+}
+
 const messages = [
     {
         id: 1,
@@ -68,63 +119,3 @@ const messages = [
         person: '/static/images/avatar/1.jpg',
     },
 ];
-
-const StyledFab = styled(Fab)({
-    position: 'absolute',
-    zIndex: 1,
-    top: -30,
-    left: 0,
-    right: 0,
-    margin: '0 auto',
-
-});
-// change from useContext to react reduct
-
-export default function MessItem() {
-    const userRef = useContext(userLogin);
-    const [login, setLogin] = React.useState(true);
-    const [user, setUser] = React.useState(userRef)
-    const classes = useStyles();
-
-    useEffect(() => {
-        if (login) {
-            setUser(userRef);
-        } else {
-            setUser()
-        }
-    }, [userRef])
-    const listFriend = (user) => {
-        console.log(user)
-        let friendRef = db.collection("chat").doc("M2uarcOxNarLdCpVk4mI")
-        friendRef.onSnapshot((doc) => {
-            console.log("Current data: ", doc.data());
-        });
-    }
-    useEffect(() => {
-        listFriend(user)
-    }, [user])
-    console.log(user)
-    return (
-        <React.Fragment>
-            <CssBaseline />
-            <Paper square sx={{ pb: '50px' }} className={classes.inbox}>
-                <Typography variant="h5" gutterBottom component="div" sx={{ p: 2, pb: 0 }}>
-                    Inbox
-                </Typography>
-                <List sx={{ mb: 2 }}>
-                    {messages.map(({ id, primary, secondary, person }) => (
-                        <React.Fragment key={id}>
-                            <ListItem button>
-                                <ListItemAvatar>
-                                    <Avatar alt="Profile Picture" src={person} />
-                                </ListItemAvatar>
-                                <ListItemText primary={primary} secondary={secondary} />
-                            </ListItem>
-                        </React.Fragment>
-                    ))}
-                </List>
-            </Paper>
-
-        </React.Fragment>
-    );
-}

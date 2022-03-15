@@ -9,8 +9,8 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
-import avataHome from "../../../image/avata.png";
 import DriveFileMoveOutlinedIcon from '@mui/icons-material/DriveFileMoveOutlined';
+import avataHome from "../../image/avata.png";
 import { makeStyles } from '@mui/styles';
 const useStyles = makeStyles({
     '@media only screen and (max-width: 740px)': {

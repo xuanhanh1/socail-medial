@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
@@ -75,18 +76,24 @@ function Post() {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const userInfor = useSelector(state => state.userInfor)
+    const [user, setUser] = useState();
     const classes = useStyles();
+
+    useEffect(() => {
+        setUser(userInfor);
+    }, userInfor)
     return (
         <Box className={classes.post}>
-            <Paper variant="outlined" onClick={handleOpen} >
-                <ListItem alignItems="flex-start">
+            <Paper variant="outlined"  >
+                <ListItem alignItems="flex-start" onClick={handleOpen}>
                     <ListItemAvatar>
-                        <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                        <Avatar alt="Remy Sharp" src={user && user.photoURL ? user.photoURL : ''} />
                     </ListItemAvatar>
                     <TextField
                         helperText=" "
                         id="demo-helper-text-aligned-no-helper"
-                        label="Xuân Hạnh ơi, bạn đang nghỉ gì thế? "
+                        label={user && user.displayName ? user.displayName + ` ơi, bạn đang nghỉ gì thế?` : ''}
                         fullWidth
                     />
                 </ListItem>
@@ -99,10 +106,11 @@ function Post() {
                     }}
                     spacing={2}
                     className={classes.postFeel}
+
                 >
-                    <Button variant="outlined" >Video/Hình ảnh</Button>
-                    <Button variant="outlined" >Cảm xúc/ Hoạt động </Button>
-                    <Button variant="outlined"  >Trục tiếp</Button>
+                    <Button variant="outlined" onClick={handleOpen} >Video/Hình ảnh</Button>
+                    <Button variant="outlined" onClick={handleOpen} >Cảm xúc/ Hoạt động </Button>
+                    <Button variant="outlined" onClick={handleOpen} >Trục tiếp</Button>
                 </BottomNavigation>
             </Paper>
             <Modal
@@ -119,12 +127,13 @@ function Post() {
                             top: 0,
                             right: 0
                         }}
+                        color="secondaryDark"
                         onClick={handleClose}
                     >
                         <CancelSharpIcon />
                     </IconButton>
                     <ModalPost
-
+                        user={user}
                     />
                 </Box>
             </Modal>

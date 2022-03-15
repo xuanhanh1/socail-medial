@@ -33,7 +33,7 @@ export default function PopupMess() {
             subheader={<li />}>
             <List component="nav" aria-label="main mailbox folders">
                 <div className="popupnotifi-header" >
-                    <h1 style={{ paddindLeft: '10px' }} >Mesenger </h1>
+                    <h3 style={{ paddindLeft: '10px', textAlign: 'center' }} >Mesenger </h3>
                 </div>
                 <ListItemButton
                     selected={selectedIndex === 0}

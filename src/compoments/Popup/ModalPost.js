@@ -20,7 +20,7 @@ import { Picker } from 'emoji-mart'
 import catanddog from '../../image/catanddog.jpg';
 import './popup.scss';
 import { makeStyles } from '@mui/styles';
-
+import { db, auth } from '../../firebase'
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
     return <IconButton {...other} />;
@@ -33,10 +33,23 @@ const ExpandMore = styled((props) => {
 }));
 
 const useStyles = makeStyles({
-
     postModalmobile: {
         width: 720,
         minHeight: 600,
+    },
+    inputArea: {
+        fontSize: '17px',
+        border: 'none',
+        paddingLeft: '25px',
+        paddingBottom: '15px',
+        outline: 'none',
+        backgroundColor: 'transparent',
+        borderStyle: 'none',
+        resize: 'none',
+    },
+    btnPost: {
+        position: 'absolute !important',
+        bottom: '35px'
     },
     '@media only screen and (max-width:1024px)': {
         postModalmobile: {
@@ -54,23 +67,38 @@ const useStyles = makeStyles({
         }
     },
 });
-export default function ModalPost() {
+export default function ModalPost(props) {
     const [expanded, setExpanded] = React.useState(false);
     const [input, setInput] = React.useState('')
     const [image, setImage] = useState([]);
     const [isImage, setIsImage] = useState(false);
     const [emoji, setEmoji] = useState(null);
     const classes = useStyles();
+    const { user } = props;
+    const SubmitPost = () => {
+        console.log('user in modal post ', image)
+        // var data = db.collection("posts").doc();
+        // data.set({
+        //     content: input,
+        //     image: image,
+        //     user_id: user.uid,
+        //     user_name: user.displayName,
 
+        // })
+        //     .then(() => {
+        //         console.log("Document successfully written!");
+        //     })
+        //     .catch((error) => {
+        //         console.error("Error writing document: ", error);
+        //     });
+    }
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
     const handleChange = (event) => {
         const imageList = event.target.files;
-        // console.log(imageList)
         if (imageList) {
             const fileArray = Array.from(imageList).map(file => URL.createObjectURL(file))
-            console.log(fileArray)
             setImage((prevImage) => prevImage.concat(fileArray));
         }
         if (imageList.length > 0) {
@@ -84,17 +112,16 @@ export default function ModalPost() {
         let emojiXX = emoji.native;
         setInput(input + emojiXX);
     }
-    console.log(emoji)
     return (
         <Card className={classes.postModalmobile} >
             <CardHeader
                 avatar={
-                    <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                        R
-                    </Avatar>
+                    <Avatar src={user && user.photoURL ? user.photoURL : ''}
+                    />
+
                 }
 
-                title="Xuân Hạnh"
+                title={user && user.displayName ? user.displayName : ''}
 
             />
 
@@ -108,8 +135,8 @@ export default function ModalPost() {
                     width: '100%',
                     display: 'scroll',
                 }}
+                className={classes.inputArea}
             >
-
             </TextareaAutosize>
             {
                 isImage ?
@@ -185,7 +212,7 @@ export default function ModalPost() {
                 </ExpandMore>
             </CardActions>
             <Stack spacing={2} direction="row" sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Button variant="contained">Đăng</Button>
+                <Button variant="contained" onClick={SubmitPost} className={classes.btnPost}>Đăng</Button>
             </Stack>
         </Card>
     );

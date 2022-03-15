@@ -14,7 +14,7 @@ import ApartmentSharpIcon from '@mui/icons-material/ApartmentSharp';
 import WorkIcon from '@mui/icons-material/Work';
 import SchoolIcon from '@mui/icons-material/School';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import Home from '../compoments/HomePage/Home/Home'
+import Home from '../containers/HomePage/Home/Home'
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -24,9 +24,10 @@ const Item = styled(Paper)(({ theme }) => ({
     color: theme.palette.text.secondary,
 }));
 
-export default function DetailProfile() {
+export default function DetailProfile(props) {
     const [selectedIndex, setSelectedIndex] = React.useState(1);
-
+    const { user } = props;
+    console.log('user in detail profile', user)
     const handleListItemClick = (event, index) => {
         setSelectedIndex(index);
     };
@@ -36,7 +37,7 @@ export default function DetailProfile() {
                 <Grid item xs={4}>
                     <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                         <div className="detail-header">
-                            <h3>Giới thiệu</h3>
+                            <h3 style={{ paddindLeft: '10px', textAlign: 'center' }}>Giới thiệu</h3>
                         </div>
                         <List component="nav" aria-label="main mailbox folders">
                             <ListItemButton
@@ -44,16 +45,16 @@ export default function DetailProfile() {
                                 onClick={(event) => handleListItemClick(event, 0)}
                             >
                                 <ListItemIcon>
-                                    <Avatar alt="Remy Sharp" src={LogoAvata} />
+                                    <Avatar alt="Remy Sharp" src={user && user.photoURL ? user.photoURL : ''} />
                                 </ListItemIcon>
-                                <ListItemText primary="Xuân Hạnh" />
+                                <ListItemText primary={user && user.displayName ? user.displayName : ''} />
                             </ListItemButton>
                             <ListItemButton
                                 selected={selectedIndex === 1}
                                 onClick={(event) => handleListItemClick(event, 1)}
                             >
                                 <ListItemIcon>
-                                    <ApartmentSharpIcon />
+                                    <ApartmentSharpIcon color="backgroundColorDark" />
                                 </ListItemIcon>
                                 <ListItemText primary="Phú Hòa, Phú Yên" />
                             </ListItemButton>
@@ -62,7 +63,7 @@ export default function DetailProfile() {
                                 onClick={(event) => handleListItemClick(event, 2)}
                             >
                                 <ListItemIcon>
-                                    <WorkIcon />
+                                    <WorkIcon color="backgroundColorDark" />
                                 </ListItemIcon>
                                 <ListItemText primary="133 Tân Cảng, Bình Thạnh" />
                             </ListItemButton>
@@ -71,7 +72,7 @@ export default function DetailProfile() {
                                 onClick={(event) => handleListItemClick(event, 4)}
                             >
                                 <ListItemIcon>
-                                    <SchoolIcon />
+                                    <SchoolIcon color="backgroundColorDark" />
                                 </ListItemIcon>
                                 <ListItemText primary="Đh Công Nghệ Thông Tin" />
                             </ListItemButton>
@@ -80,13 +81,11 @@ export default function DetailProfile() {
                                 onClick={(event) => handleListItemClick(event, 3)}
                             >
                                 <ListItemIcon>
-                                    <SportsEsportsIcon />
+                                    <SportsEsportsIcon color="backgroundColorDark" />
                                 </ListItemIcon>
                                 <ListItemText primary="Chơi game, nuôi chó" />
                             </ListItemButton>
-
                         </List>
-
                     </Box>
                 </Grid>
                 <Grid item xs={8}>

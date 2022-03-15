@@ -2,7 +2,7 @@ import React from "react";
 import { Navigate, useRoutes } from 'react-router-dom';
 import Home from "./layouts/Home"
 import Trending from './layouts/Trending';
-import HomePage from './compoments/HomePage/HomePage';
+import HomePage from './containers/HomePage/HomePage';
 import Login from './layouts/Login/Login';
 import SignUp from './layouts/Login/Register';
 import DefaultLayout from './layouts/DefaultLayout';

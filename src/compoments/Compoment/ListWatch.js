@@ -15,7 +15,7 @@ import ListItemText from '@mui/material/ListItemText';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import Fade from '@mui/material/Fade';
 import Paper from '@mui/material/Paper';
-import Comment from '../HomePage/Home/Comment'
+import Comment from './Comment'
 import { makeStyles } from '@mui/styles'
 const useStyles = makeStyles({
     '@media only screen and (max-width:740px)': {

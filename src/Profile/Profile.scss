@@ -17,9 +17,11 @@
     justify-content: space-around;
     align-items: center;
     &-img{
-        border-radius: 100px;
-        border: 1px solid seagreen;
-        margin-right: 25px;
+        & img{
+            border-radius: 100px;
+            border: 1px solid seagreen;
+            margin-right: 25px;
+        }
     }
     &-left{
         display: flex;

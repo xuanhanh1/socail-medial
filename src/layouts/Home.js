@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import Home from "../compoments/HomePage/Home/Home"
+import Home from "../containers/HomePage/Home/Home"
 
 function Watch() {
     return (
         <>
             <Home />
+
         </>
     )
 }

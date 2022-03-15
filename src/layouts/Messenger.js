@@ -7,7 +7,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import MessItem from '../compoments/Compoment/MessItem'
-import Header from '../compoments/Header/Header';
+import Header from '../containers/Header/Header';
 import MessDetail from '../compoments/Compoment/MessDetail';
 import { makeStyles } from '@mui/styles'
 import './Layout.scss'
@@ -97,7 +97,7 @@ export default function Messenger() {
 
                             <MessItem />
                         </Grid>
-                        <Grid item xs={6} md={8} sx={{ position: 'relative', height: '95vh', }} className={classes.messDetail}>
+                        <Grid item xs={6} md={8} sx={{ position: 'relative' }} className={classes.messDetail}>
                             <MessDetail />
                         </Grid>
                     </Grid>

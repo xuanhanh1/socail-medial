@@ -30,7 +30,7 @@ export default function PopupNotifi() {
             subheader={<li />}
         >
             <div className="popupnotifi-header" >
-                <h1 style={{ paddindLeft: '10px' }} >Thông báo </h1>
+                <h3 style={{ paddindLeft: '10px', textAlign: 'center' }} >Thông báo </h3>
             </div>
             <ListItemButton
                 selected={selectedIndex === 0}

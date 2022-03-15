@@ -10,7 +10,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import PropTypes from 'prop-types';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 import Header from '../Header/Header';
-import CompomentLeft from "../Compoment/CompomentLeft"
+import CompomentLeft from "../CompomentLeft"
 import { makeStyles } from '@mui/styles';
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -94,7 +94,6 @@ function HomePage() {
                                 <Grid item xs={12} sx={{ alignItems: 'center' }} >
                                     <Item>
                                         <Outlet />
-
                                     </Item>
                                 </Grid>
                             </Grid>

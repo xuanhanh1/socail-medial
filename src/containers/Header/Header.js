@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import Button from '@mui/material/Button';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
-import { Paper, ListItemButton, ListItemIcon } from '@mui/material';
+import { Paper, ListItemButton, Avatar } from '@mui/material';
 import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
@@ -23,15 +23,16 @@ import { Link } from "react-router-dom";
 import Typography from '@mui/material/Typography';
 import Popover from '@mui/material/Popover';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
-import PopupNotifi from "../Popup/PopupNotifi"
-import PopupMess from "../Popup/PopupMess"
+import PopupNotifi from "../../compoments/Popup/PopupNotifi"
+import PopupMess from "../../compoments/Popup/PopupMess"
 import firebase from "firebase"
 import { db, auth, provider } from "../../firebase";
 import { userLogin } from '../../App'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import CloseIcon from '@mui/icons-material/Close';
-import ListNav from "../Compoment/ListNav";
+import ListNav from "../../compoments/Compoment/ListNav";
 import { makeStyles } from '@mui/styles';
+import { useSelector } from 'react-redux'
 
 function notificationsLabel(count) {
     if (count === 0) {
@@ -77,6 +78,27 @@ const useStyles = makeStyles({
         position: 'absolute',
         top: 0,
         right: '5px',
+        cursor: 'pointer'
+    },
+    iconHeader: {
+        color: '#F20519 !important'
+    },
+    avataLogin: {
+        display: 'none !important'
+    },
+    nameLogin: {
+        fontSize: '18px !important'
+    },
+    searchHeader: {
+        fontSize: '18px'
+    },
+    '@media only screen and (max-width:1024px)': {
+        avataLogin: {
+            display: 'block !important'
+        },
+        nameLogin: {
+            display: 'none !important'
+        }
     },
     '@media only screen and (max-width:740px)': {
         search: {
@@ -105,21 +127,16 @@ export default function Header(props) {
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef(null);
     const ariaLabel = { 'aria-label': 'description' };
-    const userRef = useContext(userLogin);
+    const userInfor = useSelector(state => state.userInfor);
     const [login, setLogin] = React.useState(true);
     const [user, setUser] = React.useState()
     const [show, setShow] = React.useState(false);
     const [showSearch, setShowSearch] = React.useState(false);
     const classes = useStyles();
 
-    // login 
     useEffect(() => {
-        if (login) {
-            setUser(userRef);
-        } else {
-            setUser()
-        }
-    })
+        setUser(userInfor)
+    }, userInfor)
 
     const signOut = () => {
         firebase.auth().signOut().then(() => {
@@ -206,7 +223,7 @@ export default function Header(props) {
                                             autoComplete="off"
                                             className={showSearch ? classes.searchMobile : classes.search}
                                         >
-                                            <Input placeholder="Search..." inputProps={ariaLabel} />
+                                            <Input placeholder="Search..." className={classes.searchHeader} inputProps={ariaLabel} />
                                         </Box>
 
                                         <Search className={classes.searchIcon} color="primary"
@@ -219,10 +236,11 @@ export default function Header(props) {
                                     {(popupState) => (
                                         <div className="header-icon">
                                             <IconButton aria-label={notificationsLabel(100)}
+                                                className={classes.iconHeader}
                                                 sx={{ mr: 3 }}
                                                 variant="contained"
                                                 {...bindTrigger(popupState)} >
-                                                <Badge badgeContent={10} color="secondary" sx={{ color: blue[400] }}>
+                                                <Badge badgeContent={10} color='primary' sx={{ color: blue[400] }}>
                                                     <ChatBubbleOutline />
                                                 </Badge>
                                             </IconButton>
@@ -249,9 +267,10 @@ export default function Header(props) {
                                         <div className="header-icon">
                                             <IconButton aria-label={notificationsLabel(100)}
                                                 sx={{ mr: 3 }}
+                                                className={classes.iconHeader}
                                                 variant="contained"
                                                 {...bindTrigger(popupState)} >
-                                                <Badge badgeContent={100} color="secondary">
+                                                <Badge badgeContent={100} color="primary" sx={{ color: blue[400] }}>
                                                     <NotificationsActive />
                                                 </Badge>
                                             </IconButton>
@@ -273,10 +292,8 @@ export default function Header(props) {
                                     )}
                                 </PopupState>
                                 <div className="file">
-                                    {/* <img src={Logo}></img> */}
                                     <div>
                                         <Stack direction="row" spacing={2}>
-
                                             <div>
                                                 <Button
                                                     ref={anchorRef}
@@ -285,9 +302,21 @@ export default function Header(props) {
                                                     aria-expanded={open ? 'true' : undefined}
                                                     aria-haspopup="true"
                                                     onClick={handleToggle}
+                                                    className={classes.btnLogin}
                                                 >
                                                     {
-                                                        user && user.displayName ? user.displayName :
+                                                        user && user.displayName ?
+                                                            (
+                                                                <>
+                                                                    <Typography variant="caption" display="block" className={classes.nameLogin} gutterBottom>
+                                                                        {user.displayName}
+                                                                    </Typography>
+                                                                    <Avatar src={user && user.photoURL ? user.photoURl : ''}
+                                                                        className={classes.avataLogin}
+                                                                    />
+                                                                </>
+                                                            )
+                                                            :
                                                             (
                                                                 <>
                                                                     <div className="btn-login">

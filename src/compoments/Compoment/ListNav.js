@@ -11,9 +11,8 @@ import MapsUgcOutlinedIcon from '@mui/icons-material/MapsUgcOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import VideocamTwoToneIcon from '@mui/icons-material/VideocamTwoTone';
 import HomeIcon from '@mui/icons-material/Home';
-// import Link from '@mui/material/Link';
+import { useSelector } from 'react-redux';
 import { Link } from "react-router-dom";
-import { userLogin } from '../../App'
 import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles({
@@ -23,17 +22,13 @@ const useStyles = makeStyles({
 });
 function ListNav(props) {
     let trend = props.trend
-    const userRef = useContext(userLogin);
-    const [login, setLogin] = React.useState(true);
+    const userInfor = useSelector(state => state.userInfor)
     const [user, setUser] = React.useState()
-    const classes = useStyles();
     useEffect(() => {
-        if (login) {
-            setUser(userRef);
-        } else {
-            setUser()
-        }
-    }, [userRef])
+        setUser(userInfor)
+    }, userInfor)
+
+
     return (
         <nav aria-label="main mailbox folders">
             <List>
@@ -49,7 +44,6 @@ function ListNav(props) {
                                                 src={user.photoURL ? user.photoURL : ''}
                                             >
                                             </Avatar>
-
                                         </ListItemIcon>
                                         <ListItemText primary={user.displayName} />
                                     </ListItemButton>
@@ -62,14 +56,12 @@ function ListNav(props) {
                                         <HomeIcon />
                                     </ListItemIcon>
                                     <Link to="/">
-                                        {/* <Button href='/trend'> */}
                                         {trend ?
                                             <ListItemText primary="home"
                                                 sx={{ color: 'red' }}
                                             />
                                             : <ListItemText primary="home" />
                                         }
-                                        {/* </Button> */}
                                     </Link>
                                 </ListItemButton>
                             </ListItem>
@@ -79,17 +71,15 @@ function ListNav(props) {
                 <ListItem disablePadding>
                     <ListItemButton>
                         <ListItemIcon>
-                            <WhatshotIcon />
+                            <WhatshotIcon color="secondaryDark" />
                         </ListItemIcon>
                         <Link to="trend">
-                            {/* <Button href='/trend'> */}
                             {trend ?
                                 <ListItemText primary="Trending"
                                     sx={{ color: 'red' }}
                                 />
                                 : <ListItemText primary="Trending" />
                             }
-                            {/* </Button> */}
                         </Link>
                     </ListItemButton>
                 </ListItem>
@@ -97,31 +87,26 @@ function ListNav(props) {
                 <ListItem disablePadding>
                     <ListItemButton>
                         <ListItemIcon>
-                            <VideocamTwoToneIcon />
+                            <VideocamTwoToneIcon color="secondaryLight" />
                         </ListItemIcon>
                         <Link to="watch">
-                            {/* <Button href='/watch'> */}
                             <ListItemText primary="Watch" />
-                            {/* </Button> */}
                         </Link>
                     </ListItemButton>
                 </ListItem>
                 {
                     user && user.displayName ?
                         (
-
                             <ListItem disablePadding>
                                 <ListItemButton>
                                     <ListItemIcon>
-                                        <PeopleIcon />
+                                        <PeopleIcon color="secondaryLight" />
                                     </ListItemIcon>
                                     <Link to="friend">
                                         <ListItemText primary="Friend" />
                                     </Link>
                                 </ListItemButton>
                             </ListItem>
-
-
                         ) : ''
                 }
                 {
@@ -130,7 +115,7 @@ function ListNav(props) {
                             <ListItem disablePadding>
                                 <ListItemButton>
                                     <ListItemIcon>
-                                        <MapsUgcOutlinedIcon />
+                                        <MapsUgcOutlinedIcon color="secondaryLight" />
                                     </ListItemIcon>
                                     <Link to="/message">
                                         <ListItemText primary="Message" />
@@ -144,14 +129,15 @@ function ListNav(props) {
                         <ListItem disablePadding>
                             <ListItemButton>
                                 <ListItemIcon>
-                                    <SettingsOutlinedIcon />
+                                    <SettingsOutlinedIcon color="backgroundColorDark" />
                                 </ListItemIcon>
-                                <ListItemText primary="Setting" />
+                                <Link to="/profile">
+                                    <ListItemText primary="Setting" />
+                                </Link>
                             </ListItemButton>
                         </ListItem>
                     ) : ''
                 }
-
             </List>
         </nav>
     )
