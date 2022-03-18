@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { styled } from '@mui/material/styles';
-import { Card } from '@mui/material';
-import CardHeader from '@mui/material/CardHeader';
+import { Card, CardActionArea } from '@mui/material';
 import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
@@ -16,11 +15,17 @@ import Popover from '@mui/material/Popover';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import Grid from '@mui/material/Grid';
 import 'emoji-mart/css/emoji-mart.css'
-import { Picker } from 'emoji-mart'
-import catanddog from '../../image/catanddog.jpg';
+import { Picker } from 'emoji-mart';
+import CancelSharpIcon from '@mui/icons-material/CancelSharp';
 import './popup.scss';
 import { makeStyles } from '@mui/styles';
 import { db, auth } from '../../firebase'
+import moment from 'moment';
+import firebase from "firebase";
+import { toast } from 'react-toastify';
+import CardHeader from '@mui/material/CardHeader';
+import CardMedia from '@mui/material/CardMedia';
+import Video from '../../image/video.mp4'
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
     return <IconButton {...other} />;
@@ -34,7 +39,7 @@ const ExpandMore = styled((props) => {
 
 const useStyles = makeStyles({
     postModalmobile: {
-        width: 720,
+        width: 750,
         minHeight: 600,
     },
     inputArea: {
@@ -50,6 +55,9 @@ const useStyles = makeStyles({
     btnPost: {
         position: 'absolute !important',
         bottom: '35px'
+    },
+    modalPostGrid:{
+        position: 'relative'
     },
     '@media only screen and (max-width:1024px)': {
         postModalmobile: {
@@ -72,43 +80,116 @@ export default function ModalPost(props) {
     const [input, setInput] = React.useState('')
     const [image, setImage] = useState([]);
     const [isImage, setIsImage] = useState(false);
+    const [isSet, setIsSet] = useState(false);
     const [emoji, setEmoji] = useState(null);
     const classes = useStyles();
     const { user } = props;
-    const SubmitPost = () => {
-        console.log('user in modal post ', image)
-        // var data = db.collection("posts").doc();
-        // data.set({
-        //     content: input,
-        //     image: image,
-        //     user_id: user.uid,
-        //     user_name: user.displayName,
+    const [file, setFile] = useState(null);
+    const [base64URL, setBase64URL] = useState([])
 
-        // })
-        //     .then(() => {
-        //         console.log("Document successfully written!");
-        //     })
-        //     .catch((error) => {
-        //         console.error("Error writing document: ", error);
-        //     });
+    const handleCloseImgItem = (e) =>{
+        var selectedImg = parseInt(e.currentTarget.value);
+        var newImages = [];
+        var item = image.splice(selectedImg, 1);
+        newImages = newImages.concat(image)
+        setImage(newImages);
+        var newBase64URL = [];
+        var itemBase64URL = base64URL.splice(selectedImg, 1);
+        newBase64URL = newBase64URL.concat(base64URL);
+        setBase64URL(newBase64URL);
+    }
+    const getBase64 = (file) => {
+        return new Promise(resolve => {
+            let fileInfo;
+            let baseURL = "";
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                baseURL = reader.result;
+                resolve(baseURL);
+            };
+        });
+    };
+    const SubmitPost = () => {
+        var createdAt = new Date();
+        var myDate = moment(createdAt).format("DD-MM-YYYY").split("-");
+        var newDate = new Date(myDate[2], myDate[1] - 1, myDate[0]);
+        var data = db.collection("posts").doc();
+        data.set({
+            content: input,
+            imageURL: base64URL,
+            user_id: user.uid,
+            user_name: user.displayName,
+            type: isImage ? "image" : "video",
+            createdAt: newDate.getTime(),
+        })
+            .then(() => {
+                console.log("Document successfully written!");
+               
+                // toast.success('post success')
+                const resolveAfter3Sec = new Promise(resolve => setTimeout(resolve, 3000));
+                toast.promise(
+                    resolveAfter3Sec,
+                    {
+                    pending: 'chờ đợi trong giây lát',
+                    success: 'post successfully',
+                    }
+                )
+                setInput('');
+                setBase64URL([]);
+                setImage([])
+            })
+            .catch(() => {
+                const resolveAfter3Sec = new Promise(resolve => setTimeout(resolve, 3000));
+                toast.promise(
+                    resolveAfter3Sec,
+                    {
+                    pending:'chờ đợi trong dây lat' ,
+                    error: 'Error file nhiều quá load méo nổi'
+                    }
+                )
+            });
+       
     }
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
-    const handleChange = (event) => {
-        const imageList = event.target.files;
-        if (imageList) {
-            const fileArray = Array.from(imageList).map(file => URL.createObjectURL(file))
+    const deCodeBase64 = (files) => {
+        var dataBase64 = [];
+        for (var i = 0; i < files.length; i++) {
+            getBase64(files[i])
+                .then(result => {
+                    dataBase64.push(result)
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }
+        return dataBase64
+    }
+    const handleChange = async (event) => {
+        //convert base 64
+        const files = event.target.files;
+        const dataImg = await deCodeBase64(files)
+        setBase64URL(dataImg);
+        //show img
+        if (files) {
+            const fileArray = Array.from(files).map(file => URL.createObjectURL(file))
             setImage((prevImage) => prevImage.concat(fileArray));
         }
-        if (imageList.length > 0) {
-            if (!isImage) {
-                setIsImage(true);
-            }
+        if (files.length > 0) {
+            Array.from(files).map((file) => {
+                if (file.type.includes('image')) {
+                    setIsImage(true);
+                } else if (file.type.includes('video')) {
+                    setIsImage(false);
+                } else {
+                    alert('Please select video or image')
+                }
+            })
         }
-
     }
-    const choseEmoji = (emoji, event) => {
+    const choseEmoji = (emoji) => {
         let emojiXX = emoji.native;
         setInput(input + emojiXX);
     }
@@ -118,13 +199,9 @@ export default function ModalPost(props) {
                 avatar={
                     <Avatar src={user && user.photoURL ? user.photoURL : ''}
                     />
-
                 }
-
                 title={user && user.displayName ? user.displayName : ''}
-
             />
-
             <TextareaAutosize
                 maxRows={8}
                 aria-label="maximum height"
@@ -141,20 +218,67 @@ export default function ModalPost(props) {
             {
                 isImage ?
                     <div className="post-img">
-                        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 4, md: 12 }}>
+                        <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 3, sm: 3, md: 12 }}>
                             {
                                 image && image.length > 0 ?
                                     image.map((img, i) => {
-                                        return (<Grid item xs={2} sm={4} md={4} key={i}>
-                                            <img src={img} />
+                                        return (<Grid item xs={3} sm={4} md={4} key={i} 
+                                        className={classes.modalPostGrid}>
+                                            <IconButton aria-label="add to favorites" 
+                                            className={classes.iconClose}
+                                            value={i}
+                                            onClick={(e) => handleCloseImgItem(e)}
+                                                sx={{
+                                                    position: 'absolute',
+                                                    top: 10,
+                                                    right: -20
+                                                }}
+                                                color="secondaryDark"
+                                            >
+                                                <CancelSharpIcon />
+                                            </IconButton>
+                                            <img src={img} className="imgGridItem" />
                                         </Grid>)
                                     }) : ''
                             }
                         </Grid>
-
-                    </div> : ''
+                    </div> :
+                    (
+                        <div className="post-img">
+                            <Grid container spacing={{ xs: 2, md: 3 }} columns={{}}>
+                                {
+                                    image && image.length > 0 ?
+                                        image.map((video, i) => {
+                                            return (<Grid item xs={2} sm={4} md={4} key={i}>
+                                                <CardActionArea width="auto"
+                                                    sx={{
+                                                        textAlign: '-webkit-center',
+                                                        padding: '10px',
+                                                    }}
+                                                >
+                                                    <CardMedia
+                                                        component='video'
+                                                        height="auto"
+                                                        src={video}
+                                                        alt="Paella dish"
+                                                        controls
+                                                        // autoPlay
+                                                        sx={{
+                                                            width: "auto",
+                                                            height: "400px",
+                                                            objectFit: 'cover',
+                                                            borderRadius: '5px'
+                                                        }}
+                                                        className={classes.cartVideo}
+                                                    />
+                                                </CardActionArea>
+                                            </Grid>)
+                                        }) : ''
+                                }
+                            </Grid>
+                        </div>
+                    )
             }
-
             <CardActions disableSpacing>
                 <div className="file-action" >
                     <input id="file-input" accept="image/*|video/*"
@@ -172,7 +296,6 @@ export default function ModalPost(props) {
                     </IconButton>
                 </div>
                 <div className="icon-feel">
-
                     <PopupState variant="popover" popupId="demo-popup-popover">
                         {(popupState) => (
                             <div>

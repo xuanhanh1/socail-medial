@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
@@ -12,6 +13,7 @@ import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import DriveFileMoveOutlinedIcon from '@mui/icons-material/DriveFileMoveOutlined';
 import avataHome from "../../image/avata.png";
 import { makeStyles } from '@mui/styles';
+
 const useStyles = makeStyles({
     '@media only screen and (max-width: 740px)': {
         comment: {
@@ -21,12 +23,18 @@ const useStyles = makeStyles({
 })
 export default function Comment() {
     const classes = useStyles();
+    const userInfor = useSelector(state => state.userInfor);
+    const [user, setUser] = useState();
+
+    useEffect(() => {
+        setUser(userInfor)
+    }, userInfor)
     return (
         <>
             <div className="card-comment">
                 <Avatar
                     alt="Cindy Baker"
-                    src={avataHome}
+                    src={user && user.photoURL ? user.photoURL : ''}
                     sx={{
                         display: 'flex',
                         width: "40px",

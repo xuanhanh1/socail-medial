@@ -13,13 +13,17 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import Avatar from '@mui/material/Avatar';
-import { makeStyles } from '@mui/styles'
+import { makeStyles } from '@mui/styles';
+import CustomScrollbars from '../Compoment/Scrollbar'
 // import { userLogin } from '../../App'
 import { db, } from '../../firebase'
 const useStyles = makeStyles({
     messItem: {
         overflow: 'scroll',
         height: '60vh'
+    },
+    active: {
+        backgroundColor: 'rgba(0, 0, 0, 0.2)'
     },
     '@media only screen and (max-width:1024px)': {
         inbox: {
@@ -42,6 +46,7 @@ const StyledFab = styled(Fab)({
 export default function MessItem() {
     const [user, setUser] = React.useState()
     const classes = useStyles();
+    const [isActive, setIsActive] = useState();
     const listFriend = (user) => {
         console.log(user)
         let friendRef = db.collection("chat").doc("M2uarcOxNarLdCpVk4mI")
@@ -50,28 +55,38 @@ export default function MessItem() {
         });
     }
 
+    const handleSeleted = (e) => {
+        let currentValue = e.currentTarget.value;
+        setIsActive(currentValue)
+    }
     return (
         <React.Fragment>
+
             <CssBaseline />
             <Paper square sx={{ pb: '50px' }} className={classes.inbox}>
                 <Typography variant="h5" gutterBottom component="div" sx={{ p: 2, pb: 0 }}>
                     Inbox
                 </Typography>
-                <List sx={{ mb: 2 }} className={classes.messItem}>
-                    {messages.map(({ id, primary, secondary, person }) => (
-                        <React.Fragment key={id}>
-                            <ListItem button>
-                                <ListItemAvatar>
-                                    <Avatar alt="Profile Picture" src={person} />
-                                </ListItemAvatar>
-                                <ListItemText primary={primary} secondary={secondary} />
-                            </ListItem>
-                        </React.Fragment>
-                    ))}
-                </List>
+                <CustomScrollbars style={{ height: '100vh', width: '100%' }}>
+                    <List sx={{ mb: 2 }} className={classes.messItem}>
+                        {messages.map(({ id, primary, secondary, person }) => (
+                            <React.Fragment key={id}>
+                                <ListItem disablePadding onClick={(e) => { handleSeleted(e) }} value={id}
+                                    className={isActive === id ? classes.active : ''}
+                                >
+                                    <ListItem button>
+                                        <ListItemAvatar>
+                                            <Avatar alt="Profile Picture" src={person} />
+                                        </ListItemAvatar>
+                                        <ListItemText primary={primary} secondary={secondary} />
+                                    </ListItem>
+                                </ListItem>
+                            </React.Fragment>
+                        ))}
+                    </List>
+                </CustomScrollbars>
             </Paper>
-
-        </React.Fragment>
+        </React.Fragment >
     );
 }
 

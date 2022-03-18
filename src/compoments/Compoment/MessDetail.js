@@ -143,7 +143,7 @@ function MessDetail() {
                 </div>
                 <div className="mess-action">
                     <div className="mess-action-input">
-                        <span className="input"><input type="text" placeholder="Gradient border focus fun" /></span>
+                        <span className="input"><input type="text" placeholder="Aa" /></span>
 
                         <div className="mess-action-input-icon">
                             <CardActions disableSpacing>

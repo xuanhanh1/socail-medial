@@ -7,6 +7,8 @@ import { db, auth, provider } from "./firebase";
 import { login } from './app/reudx/actions'
 import theme from './globalStyles/them/GlobalThem'
 import { ThemeProvider } from '@mui/material/styles';
+import CustomScrollbars from './compoments/Compoment/Scrollbar'
+import { ToastContainer, toast } from 'react-toastify';
 export default function App() {
   const [userRef, setUserRef] = useState()
   const [user, serUser] = useState()
@@ -38,7 +40,20 @@ export default function App() {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <Router userInfor={userInfor ? userInfor : ''} />
+        <CustomScrollbars style={{ height: '100vh', width: '100%' }}>
+          <Router userInfor={userInfor ? userInfor : ''} />
+          <ToastContainer
+            position="bottom-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
+        </CustomScrollbars>
       </ThemeProvider>
     </>
   )

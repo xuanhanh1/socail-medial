@@ -18,16 +18,24 @@ import { makeStyles } from '@mui/styles';
 const useStyles = makeStyles({
     '@media only screen and (max-width:1024px)': {
 
+    },
+    active: {
+        backgroundColor: '#77BDD9'
     }
 });
 function ListNav(props) {
     let trend = props.trend
-    const userInfor = useSelector(state => state.userInfor)
-    const [user, setUser] = React.useState()
+    const userInfor = useSelector(state => state.userInfor);
+    const [user, setUser] = React.useState();
+    const classes = useStyles();
+    const [isActive, setIsActive] = useState();
     useEffect(() => {
         setUser(userInfor)
     }, userInfor)
-
+    const tabSelected = (e) => {
+        let currentValue = e.currentTarget.value;
+        setIsActive(currentValue)
+    }
 
     return (
         <nav aria-label="main mailbox folders">
@@ -35,7 +43,7 @@ function ListNav(props) {
                 {
                     user && user.displayName ?
                         (
-                            <ListItem disablePadding>
+                            <ListItem disablePadding >
                                 <Link to="profile">
 
                                     <ListItemButton>
@@ -50,41 +58,40 @@ function ListNav(props) {
                                 </Link>
                             </ListItem>
                         ) : (
-                            <ListItem disablePadding>
+                            <ListItem disablePadding >
                                 <ListItemButton>
                                     <ListItemIcon>
                                         <HomeIcon />
                                     </ListItemIcon>
                                     <Link to="/">
-                                        {trend ?
-                                            <ListItemText primary="home"
-                                                sx={{ color: 'red' }}
-                                            />
-                                            : <ListItemText primary="home" />
-                                        }
+                                        <ListItemText primary="home"
+                                        />
                                     </Link>
                                 </ListItemButton>
                             </ListItem>
                         )
                 }
 
-                <ListItem disablePadding>
+                <ListItem disablePadding
+                    onClick={(e) => { tabSelected(e) }}
+                    value="1"
+                    className={isActive === 1 ? classes.active : ''}
+                >
                     <ListItemButton>
                         <ListItemIcon>
                             <WhatshotIcon color="secondaryDark" />
                         </ListItemIcon>
                         <Link to="trend">
-                            {trend ?
-                                <ListItemText primary="Trending"
-                                    sx={{ color: 'red' }}
-                                />
-                                : <ListItemText primary="Trending" />
-                            }
+                            <ListItemText primary="Trending"
+                            />
                         </Link>
                     </ListItemButton>
                 </ListItem>
 
-                <ListItem disablePadding>
+                <ListItem disablePadding onClick={(e) => { tabSelected(e) }}
+                    value="2"
+                    className={isActive === 2 ? classes.active : ''}
+                >
                     <ListItemButton>
                         <ListItemIcon>
                             <VideocamTwoToneIcon color="secondaryLight" />
@@ -97,7 +104,10 @@ function ListNav(props) {
                 {
                     user && user.displayName ?
                         (
-                            <ListItem disablePadding>
+                            <ListItem disablePadding onClick={(e) => { tabSelected(e) }}
+                                value="3"
+                                className={isActive === 3 ? classes.active : ''}
+                            >
                                 <ListItemButton>
                                     <ListItemIcon>
                                         <PeopleIcon color="secondaryLight" />

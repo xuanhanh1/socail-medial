@@ -108,8 +108,8 @@ function Post() {
                     className={classes.postFeel}
 
                 >
-                    <Button variant="outlined" onClick={handleOpen} >Video/Hình ảnh</Button>
-                    <Button variant="outlined" onClick={handleOpen} >Cảm xúc/ Hoạt động </Button>
+                    <Button variant="outlined" onClick={handleOpen} >Hình ảnh/Cảm xúc</Button>
+                    <Button variant="outlined" onClick={handleOpen} > Video/ Hoạt động </Button>
                     <Button variant="outlined" onClick={handleOpen} >Trục tiếp</Button>
                 </BottomNavigation>
             </Paper>

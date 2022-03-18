@@ -6,6 +6,8 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import store from './app/reudx/store'
 import { Provider } from 'react-redux'
+import 'react-toastify/dist/ReactToastify.css';
+
 
 ReactDOM.render(
   <React.StrictMode>

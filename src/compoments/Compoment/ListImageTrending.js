@@ -8,16 +8,21 @@ import Modal from '@mui/material/Modal';
 import CancelSharpIcon from '@mui/icons-material/CancelSharp';
 import ModalTrend from '../Popup/ModalTrend';
 import { makeStyles } from '@mui/styles';
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles({
-    iconClose: {
-        position: 'absolute',
+    btnClose: {
+        position: 'absolute !important',
         top: 0,
         right: 0,
     },
     trend: {
         columnCount: 3,
     },
+    modalTrend: {
+        position: 'relative',
+    },
+
     '@media only screen and (max-width: 1024px)': {
         modalTrend: {
             top: '0 !important',
@@ -39,7 +44,7 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 'auto',
+    width: 720,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -52,12 +57,15 @@ export default function ListImageTrending() {
     const handleClose = () => setOpen(false);
     const [Cd, setCd] = React.useState(false);
     const classes = useStyles();
+    let navigate = useNavigate();
     useEffect(() => {
         if (window.innerWidth < 740) {
             setCd(true)
         }
     }, [])
-
+    const changesNewRouter = () => {
+        navigate(`/`);
+    }
     return (
         <Box sx={{}} >
             <ImageList variant="masonry" gap={8} cols={Cd ? 2 : 3} >
@@ -80,12 +88,13 @@ export default function ListImageTrending() {
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
+                onClick={changesNewRouter}
             >
                 <Box sx={style} className={classes.modalTrend}>
                     <IconButton aria-label="add to favorites"
-                        className={classes.iconClose}
+                        className={classes.btnClose}
                         onClick={handleClose}>
-                        <CancelSharpIcon />
+                        <CancelSharpIcon color="secondaryDark" />
                     </IconButton>
                     <ModalTrend />
                 </Box>
