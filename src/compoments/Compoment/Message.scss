@@ -29,11 +29,6 @@
     padding: 10px;
   }
 }
-@media only screen and (min-width: 1024px) {
-  .list-homepage {
-    // display: none;
-  }
-}
 
 .input {
   position: relative;
@@ -65,4 +60,16 @@ input {
   line-height: inherit;
   color: #2e3750;
   min-width: 12em;
+}
+.comment-more {
+  display: inline-block;
+}
+.btn-img-post {
+  width: 25px;
+  margin-right: 10px;
+}
+@media only screen and (min-width: 1024px) {
+  .list-homepage {
+    // display: none;
+  }
 }

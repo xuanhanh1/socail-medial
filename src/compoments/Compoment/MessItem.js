@@ -47,7 +47,10 @@ export default function MessItem(props) {
     let currentValue = e.currentTarget.value;
     setIsActive(currentValue);
     const userInfor = conversations[currentValue];
-    console.log("🚀 ~ file: MessItem.js ~ line 50 ~ handleSeleted ~ userInfor", userInfor)
+    console.log(
+      "🚀 ~ file: MessItem.js ~ line 50 ~ handleSeleted ~ userInfor",
+      userInfor
+    );
     onSelect(userInfor);
   };
   return (
@@ -73,8 +76,6 @@ export default function MessItem(props) {
                         onClick={(e) => {
                           handleSeleted(e);
                         }}
-                        
-
                         value={i}
                         className={isActive === i ? classes.active : ""}
                       >

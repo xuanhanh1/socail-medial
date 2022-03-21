@@ -20,7 +20,7 @@ import { makeStyles } from '@mui/styles'
 const useStyles = makeStyles({
     '@media only screen and (max-width:740px)': {
         cartVideo: {
-            width: '350 !important',
+            width: 'auto !important',
         }
     },
 })

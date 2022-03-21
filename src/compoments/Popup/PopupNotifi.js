@@ -62,8 +62,8 @@ export default function PopupNotifi() {
             </ListItemButton>
             <Divider variant="inset" component="li" />
             <ListItemButton
-                selected={selectedIndex === 0}
-                onClick={(event) => handleListItemClick(event, 0)}
+                selected={selectedIndex === 1}
+                onClick={(event) => handleListItemClick(event, 1)}
             >
                 <ListItem alignItems="flex-start"
 
@@ -91,8 +91,8 @@ export default function PopupNotifi() {
             </ListItemButton>
             <Divider variant="inset" component="li" />
             <ListItemButton
-                selected={selectedIndex === 0}
-                onClick={(event) => handleListItemClick(event, 0)}
+                selected={selectedIndex === 2}
+                onClick={(event) => handleListItemClick(event, 2)}
             >
                 <ListItem alignItems="flex-start"
 

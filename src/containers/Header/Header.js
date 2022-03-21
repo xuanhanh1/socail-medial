@@ -274,7 +274,7 @@ export default function Header(props) {
                                                 className={classes.iconHeader}
                                                 variant="contained"
                                                 {...bindTrigger(popupState)} >
-                                                <Badge badgeContent={100} color="primary" sx={{ color: blue[400] }}>
+                                                <Badge badgeContent={3} color="primary" sx={{ color: blue[400] }}>
                                                     <NotificationsActive />
                                                 </Badge>
                                             </IconButton>
