@@ -62,10 +62,42 @@ function MessDetail() {
     const [isImage, setIsImage] = useState(false);
     const [user, setUser] = useState();
     const userInfor = useSelector(state => state.userInfor)
-
+    const [userContact, setUserContact] =useState();
+    const getKeyByValue =(object, value)=> {
+        return Object.keys(object).find(key => object[key] === value);
+      }
+      
     useEffect(() => {
         setUser(userInfor)
     }, userInfor)
+    // useEffect(() =>{
+    //     if(user){
+    //         db.collection("chat").get().then((querySnapshot) => {
+    //             querySnapshot.forEach((doc) => {
+    //                 // doc.data() is never undefined for query doc snapshots
+    //                 // console.log(doc.id, " => ", doc.data());
+    //                 var userId = doc.data();
+    //                 var userSend = getKeyByValue(userId, user.uid)
+    //                 var userContactId = ''; 
+    //                 if(userSend === 'contact1'){
+    //                     userContactId = userId.contact2;
+    //                 } else {
+    //                     userContactId = userId.contact1;
+    //                 }
+    //                 db.collection("users").doc(userContactId).get()
+    //                 .then((doc) => {
+    //                     if (doc.exists) {
+    //                         console.log("Document data:", doc.data());
+    //                         // setUserContact(doc.data());
+    //                     } else {
+    //                         // doc.data() will be undefined in this case
+    //                         console.log("No such document!");
+    //                     }
+    //                 })
+    //             });
+    //         });
+    //     }
+    // }, [])
     const choseEmoji = (emoji, event) => {
         let emojiXX = emoji.native;
         setInput(input + emojiXX);
@@ -108,8 +140,6 @@ function MessDetail() {
                     position: 'relative',
                 }}
             >
-                {/* <AppBar > */}
-                {/* <Toolbar> */}
                 <div className="mess-detail-header">
                     <ListItem disablePadding>
                         <ListItemButton>
@@ -125,9 +155,6 @@ function MessDetail() {
                         </ListItemIcon>
                     </ListItemButton>
                 </div>
-                {/* </Toolbar> */}
-
-                {/* </AppBar> */}
                 <div className="mess-content">
                     <div className="mess-content-a">
                         <span>Messagener </span>
@@ -143,7 +170,9 @@ function MessDetail() {
                 </div>
                 <div className="mess-action">
                     <div className="mess-action-input">
-                        <span className="input"><input type="text" placeholder="Aa" /></span>
+                        <span className="input"><input type="text" placeholder="Aa" />
+                        
+                        </span>
 
                         <div className="mess-action-input-icon">
                             <CardActions disableSpacing>

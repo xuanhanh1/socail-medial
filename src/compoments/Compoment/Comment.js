@@ -15,6 +15,11 @@ import avataHome from "../../image/avata.png";
 import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles({
+    listComment:{
+        borderRadius: '15px',
+        padding: '10px',
+        background: '#f0f2f5',
+    },
     '@media only screen and (max-width: 740px)': {
         comment: {
             marginLeft: '0 !important'
@@ -71,7 +76,8 @@ export default function Comment() {
                     <ListItemAvatar>
                         <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
                     </ListItemAvatar>
-                    <ListItemText
+                    <ListItemText 
+                        className={classes.listComment}
                         primary="Brunch this weekend?"
                         secondary={
                             <React.Fragment>
@@ -94,6 +100,7 @@ export default function Comment() {
                         <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
                     </ListItemAvatar>
                     <ListItemText
+                        className={classes.listComment}
                         primary="Summer BBQ"
                         secondary={
                             <React.Fragment>
@@ -116,6 +123,7 @@ export default function Comment() {
                         <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
                     </ListItemAvatar>
                     <ListItemText
+                        className={classes.listComment}
                         primary="Oui Oui"
                         secondary={
                             <React.Fragment>

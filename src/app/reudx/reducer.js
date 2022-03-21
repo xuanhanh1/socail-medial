@@ -2,6 +2,7 @@ import types from './contains'
 
 const initialState = {
     userInfor: {},
+    posts: [],
 }
 
 const rootReducer = (state = initialState, action) => {
@@ -10,6 +11,12 @@ const rootReducer = (state = initialState, action) => {
             return {
                 ...state,
                 userInfor: action.userInfor,
+            }
+
+        case types.GET_ALL_POSTS:
+            return{
+                ...state,
+                posts: action.posts
             }
         default:
             return state;

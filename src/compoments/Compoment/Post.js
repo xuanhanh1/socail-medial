@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import ListItem from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
@@ -11,7 +11,8 @@ import Button from '@mui/material/Button';
 import { TextField, Box, Paper } from '@mui/material/';
 import { makeStyles } from '@mui/styles';
 import IconButton from '@mui/material/IconButton';
-import ModalPost from '../Popup/ModalPost'
+import ModalPost from '../Popup/ModalPost';
+import {db, auth} from '../../firebase'
 
 const useStyles = makeStyles({
     post: {
@@ -79,10 +80,13 @@ function Post() {
     const userInfor = useSelector(state => state.userInfor)
     const [user, setUser] = useState();
     const classes = useStyles();
-
+    const dispatch = useDispatch();
+    const posts = useSelector(state => state.posts);
+    
     useEffect(() => {
         setUser(userInfor);
     }, userInfor)
+
     return (
         <Box className={classes.post}>
             <Paper variant="outlined"  >

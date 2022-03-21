@@ -121,6 +121,7 @@ export default function ModalPost(props) {
             user_id: user.uid,
             user_name: user.displayName,
             type: isImage ? "image" : "video",
+            photoURL: user.photoURL,
             createdAt: newDate.getTime(),
         })
             .then(() => {

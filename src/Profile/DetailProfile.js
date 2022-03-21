@@ -15,7 +15,23 @@ import WorkIcon from '@mui/icons-material/Work';
 import SchoolIcon from '@mui/icons-material/School';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import Home from '../containers/HomePage/Home/Home'
+import { makeStyles } from '@mui/styles';
 
+
+const useStyles = makeStyles({
+    mobileProfileItem:{
+        display: 'none',
+    },
+    '@media only screen and (max-width: 1024px)':{
+        profileItem:{
+            display: 'none !important',
+        },
+        mobileProfileItem:{
+            display: 'block'
+        }
+    }
+   
+})
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
@@ -27,14 +43,14 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function DetailProfile(props) {
     const [selectedIndex, setSelectedIndex] = React.useState(1);
     const { user } = props;
-    console.log('user in detail profile', user)
+    const classes = useStyles();
     const handleListItemClick = (event, index) => {
         setSelectedIndex(index);
     };
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <Grid container spacing={2}>
-                <Grid item xs={4}>
+            <Grid container spacing={2} className={classes.profileItem}>
+                <Grid item xs={4} >
                     <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                         <div className="detail-header">
                             <h3 style={{ paddindLeft: '10px', textAlign: 'center' }}>Giới thiệu</h3>
@@ -88,9 +104,12 @@ export default function DetailProfile(props) {
                         </List>
                     </Box>
                 </Grid>
-                <Grid item xs={8}>
+                <Grid item xs={8} >
                     <Home />
                 </Grid>
+            </Grid>
+            <Grid item xs={12}  container spacing={2} className={classes.mobileProfileItem} >
+                    <Home />
             </Grid>
         </Box>
     );

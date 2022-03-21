@@ -83,7 +83,6 @@ function HomePage() {
                                 <Grid item xs={9} sx={{ alignItems: 'center' }} >
                                     <Item>
                                         <Outlet />
-
                                     </Item>
                                 </Grid>
                             </Grid>

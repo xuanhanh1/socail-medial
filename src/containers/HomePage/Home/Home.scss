@@ -1,7 +1,13 @@
-.card-comment{
-    display: flex;
-    padding: 10px 30px;
-    justify-items: center;
-    justify-content: space-between;
-    gap: 10px;
+.card-comment {
+  display: flex;
+  padding: 10px 30px;
+  justify-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.div-home-image {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-items: center;
 }

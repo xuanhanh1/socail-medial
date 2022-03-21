@@ -9,11 +9,10 @@ import InputBase from '@mui/material/InputBase';
 import MessItem from '../compoments/Compoment/MessItem'
 import Header from '../containers/Header/Header';
 import MessDetail from '../compoments/Compoment/MessDetail';
-import { makeStyles } from '@mui/styles'
+import { makeStyles } from '@mui/styles';
+import {db, auth} from '../firebase';
+import { useSelector } from 'react-redux';
 import './Layout.scss'
-
-
-
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
@@ -65,20 +64,56 @@ const useStyles = makeStyles({
         },
         messDetail: {
             maxWidth: '100% !important',
+        },
+        messDetailMobile:{
+          display: 'none'
         }
+
 
     }
 })
 export default function Messenger() {
     const classes = useStyles();
+    const userInfor = useSelector(state => state.userInfor);
+    const [user, setUser] = React.useState(userInfor)
+    const [conversation, setConversation] = useState([]);
+    const [showDetail, setShowDetail] = useState(false);
+    const [userContact, setUserContact] = useState();
+    useEffect(() => {
+        setUser(userInfor)
+    }, userInfor)
+    useEffect(() => {
+        var userContact = []
+        db.collection("conversations").get().then( (querySnapshot) => {
+            querySnapshot.forEach(async(doc) => {
+                var  userConversations = await doc.data().users
+                userConversations.map(userConversation =>{
+                    if(userConversation.user_Id === user.uid){
+                        console.log(111)
+                    } else{
+                      //  userContact.push(userConversation)
+                       setConversation(prevUserConversation => prevUserConversation.concat( userConversation))
+                    }
+                })
+            });
+        });
+        // setConversation(userContact)
+    },[user])
+    console.log(conversation)
+    const onSelect = (i) =>{
+      if(i !== null){
+        setShowDetail(true);
+        setUserContact(i);
+      }
+    }
+    console.log('ueser ContactL ', userContact)
     return (
         <div className="mess-body">
             <Header />
             <Container>
                 <Box sx={{ flexGrow: 1, mt: 6, height: '100vh' }}>
-
                     <Grid container spacing={2} className={classes.mess}>
-                        <Grid item xs={6} md={4} className={classes.messDetail}>
+                        <Grid item xs={6} md={4} className={ showDetail ?classes.messDetailMobile : classes.messDetail}>
                             <div className="mess-header">
                                 <h2>Messagener</h2>
                                 <Divider
@@ -94,10 +129,11 @@ export default function Messenger() {
                                     inputProps={{ 'aria-label': 'search' }}
                                 />
                             </Search>
-
-                            <MessItem />
+                            <MessItem conversations = {conversation} onSelect={(i) => onSelect(i)}  />
                         </Grid>
-                        <Grid item xs={6} md={8} sx={{ position: 'relative' }} className={classes.messDetail}>
+                        <Grid item xs={6} md={8} sx={{ position: 'relative' }}
+                         className={classes.messDetail}
+                         >
                             <MessDetail />
                         </Grid>
                     </Grid>

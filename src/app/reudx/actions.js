@@ -6,3 +6,10 @@ export const login = (userInfor) => {
         userInfor: userInfor
     }
 }
+
+export const getAllPosts = (posts) =>{
+    return{
+        type: types.GET_POSTS,
+        posts: posts
+    }
+}

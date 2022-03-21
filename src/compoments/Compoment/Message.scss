@@ -1,72 +1,68 @@
-.mess-detail-header{
-    display: flex;
+.mess-detail-header {
+  display: flex;
 }
-.mess-action{
-    position: absolute;
-    bottom: 10px;
-    display: flex;
+.mess-action {
+  position: absolute;
+  bottom: 10px;
+  display: flex;
+  width: 100%;
+  &-input {
     width: 100%;
-    &-input{
-        width: 100%;
-        &-icon{
-            position: absolute;
-            right: 70px;
-            bottom: -12px;
-        }
+    &-icon {
+      position: absolute;
+      right: 70px;
+      bottom: -12px;
     }
+  }
 }
-.mess-content{
-    overflow-y: scroll;
-    height: 80%;
-    &-a{
-        display: block;
-        text-align: end;
-        padding: 10px;
-    }
-    &-b{
-        display: block;
-        text-align: start;  
-        padding: 10px;
-    }
-   
+.mess-content {
+  overflow-y: scroll;
+  height: 80%;
+  &-a {
+    display: block;
+    text-align: end;
+    padding: 10px;
+  }
+  &-b {
+    display: block;
+    text-align: start;
+    padding: 10px;
+  }
 }
-@media only screen and (min-width:1024px){
-    .list-homepage{
-        // display: none;
-    }
-
+@media only screen and (min-width: 1024px) {
+  .list-homepage {
+    // display: none;
+  }
 }
 
 .input {
-	font-size: 1.5em;
-	background: linear-gradient(21deg, #10abff, #1beabd);
-	padding: 3px;
-	display: inline-block;
-	border-radius: 9999em;
-	width: 80%;
-	> * {
-		display: inherit;
-		border-radius: inherit;
-		margin: 0;
-		border: none;
-		outline: none;
-		padding: 0 .325em;
-		transition: all .25s;
-		width: 100%;
-        height: 35px;
-		// fancy shadow styles when focussed
-		&:focus {
-			box-shadow: inset 0 0 0 2px #fff,
-				0 0 0 3px #fff,
-				3px -3px 9px #1beabd, 
-				-3px 3px 9px #10abff;
-		}
-	}
+  position: relative;
+  font-size: 1.5em;
+  background: linear-gradient(21deg, #10abff, #1beabd);
+  padding: 3px;
+  display: inline-block;
+  border-radius: 9999em;
+  width: 80%;
+  > * {
+    display: inherit;
+    border-radius: inherit;
+    margin: 0;
+    border: none;
+    outline: none;
+    padding: 0 1.325em;
+    transition: all 0.25s;
+    width: 100%;
+    height: 35px;
+    // fancy shadow styles when focussed
+    &:focus {
+      box-shadow: inset 0 0 0 2px #fff, 0 0 0 3px #fff, 3px -3px 9px #1beabd,
+        -3px 3px 9px #10abff;
+    }
+  }
 }
 input {
-	font-family: inherit;
-	line-height:inherit;
-	color:#2e3750;
-	min-width:12em;
-    
+  font-family: inherit;
+  line-height: inherit;
+  color: #2e3750;
+  min-width: 12em;
 }

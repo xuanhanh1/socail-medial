@@ -111,8 +111,9 @@ const useStyles = makeStyles({
             top: 0,
             left: 0,
             transform: 'translate(0)',
-            transition: 'all 0.2s',
+            transition: 'all 0.5s',
             backgroundColor: '#fff',
+            width: '100%',
             zIndex: 1000
         },
         searchIcon: {
@@ -223,11 +224,14 @@ export default function Header(props) {
                                             autoComplete="off"
                                             className={showSearch ? classes.searchMobile : classes.search}
                                         >
-                                            <Input placeholder="Search..." className={classes.searchHeader} inputProps={ariaLabel} />
+                                            <Input placeholder="Search..." 
+                                            className={classes.searchHeader} 
+                                            inputProps={ariaLabel} 
+                                            onBlur={hireSearch}
+                                            />
                                         </Box>
-
                                         <Search className={classes.searchIcon} color="primary"
-                                            fontSize="large" onClick={hireSearch} />
+                                            fontSize="large" onMouseOver={hireSearch} />
                                     </div>
                                 </div>
                             </div>
