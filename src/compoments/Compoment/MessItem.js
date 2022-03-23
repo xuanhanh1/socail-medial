@@ -16,13 +16,18 @@ import Avatar from "@mui/material/Avatar";
 import { makeStyles } from "@mui/styles";
 import CustomScrollbars from "../Compoment/Scrollbar";
 import { db } from "../../firebase";
+import { Divider } from "@mui/material";
 const useStyles = makeStyles({
   messItem: {
-    overflow: "scroll",
+    overflowY: "auto",
     height: "60vh",
   },
   active: {
     backgroundColor: "rgba(0, 0, 0, 0.2)",
+    borderRadius: "10px",
+    paddingLeft: "4px",
+    marginBottom: "4px",
+    marginTop: "4px",
   },
   "@media only screen and (max-width:1024px)": {
     inbox: {
@@ -92,6 +97,7 @@ export default function MessItem(props) {
                           />
                         </ListItem>
                       </ListItem>
+                      <Divider />
                     </React.Fragment>
                   );
                 })

@@ -1,22 +1,36 @@
 .mess-detail-header {
   display: flex;
 }
+.follow-icon {
+  position: absolute;
+  top: 15px;
+  right: 10px;
+}
 .mess-action {
   position: absolute;
   bottom: 10px;
   display: flex;
   width: 100%;
+  margin-left: 0;
+  margin-right: 10px;
+  padding-right: 14px;
   &-input {
     width: 100%;
+    & .input {
+      width: 100%;
+      & input {
+        width: 100%;
+      }
+    }
     &-icon {
       position: absolute;
-      right: 70px;
-      bottom: -12px;
+      right: 12px;
+      bottom: -10px;
     }
   }
 }
 .mess-content {
-  overflow-y: scroll;
+  overflow-y: auto;
   height: 80%;
   &-a {
     display: block;
@@ -67,6 +81,21 @@ input {
 .btn-img-post {
   width: 25px;
   margin-right: 10px;
+}
+.list-comment {
+  list-style: none;
+  padding-left: 80px;
+  display: flex;
+  margin-top: -5px;
+  margin-bottom: 10px;
+  & li {
+    display: block;
+    margin-right: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #65676b;
+    cursor: pointer;
+  }
 }
 @media only screen and (min-width: 1024px) {
   .list-homepage {

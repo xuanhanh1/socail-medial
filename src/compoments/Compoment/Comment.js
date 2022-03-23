@@ -36,39 +36,6 @@ export default function Comment() {
   }, userInfor);
   return (
     <>
-      <div className="card-comment">
-        <Avatar
-          alt="Cindy Baker"
-          src={user && user.photoURL ? user.photoURL : ""}
-          sx={{
-            display: "flex",
-            width: "40px",
-            height: "40px",
-          }}
-        />
-        <TextField
-          id="standard-basic"
-          placeholder="Viết bình luận tại đây..."
-          variant="standard"
-          fullWidth
-          width="65%"
-          padding="50px"
-        />
-
-        <Stack direction="row" spacing={2}>
-          <DriveFileMoveOutlinedIcon
-            sx={{
-              fontSize: "2rem",
-            }}
-          />
-          <SendOutlinedIcon
-            sx={{
-              fontSize: "2rem",
-              color: "#2563eb",
-            }}
-          />
-        </Stack>
-      </div>
       <List
         sx={{ bgcolor: "background.paper", ml: 7 }}
         className={classes.comment}
@@ -97,7 +64,11 @@ export default function Comment() {
             }
           />
         </ListItem>
-        <Divider variant="inset" component="li" />
+        <ul className="list-comment">
+          <li>Thích</li>
+          <li>September 14</li>
+        </ul>
+
         <ListItem alignItems="flex-start">
           <ListItemAvatar>
             <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
@@ -120,7 +91,10 @@ export default function Comment() {
             }
           />
         </ListItem>
-        <Divider variant="inset" component="li" />
+        <ul className="list-comment">
+          <li>Thích</li>
+          <li>November 14</li>
+        </ul>
         <ListItem alignItems="flex-start">
           <ListItemAvatar>
             <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
@@ -143,7 +117,46 @@ export default function Comment() {
             }
           />
         </ListItem>
+        <ul className="list-comment">
+          <li>Thích</li>
+          <li>September 14</li>
+        </ul>
       </List>
+
+      <div className="card-comment">
+        <Avatar
+          alt="Cindy Baker"
+          src={user && user.photoURL ? user.photoURL : ""}
+          sx={{
+            display: "flex",
+            width: "40px",
+            height: "40px",
+          }}
+        />
+        <TextField
+          id="standard-basic"
+          placeholder="Viết bình luận tại đây..."
+          variant="standard"
+          fullWidth
+          width="65%"
+          padding="50px"
+        />
+
+        <Stack direction="row" spacing={2}>
+          <DriveFileMoveOutlinedIcon
+            sx={{
+              fontSize: "2rem",
+            }}
+            color="secondaryLight"
+          />
+          <SendOutlinedIcon
+            color="secondaryLight"
+            sx={{
+              fontSize: "2rem",
+            }}
+          />
+        </Stack>
+      </div>
     </>
   );
 }

@@ -39,35 +39,43 @@ function ListNav(props) {
     <nav aria-label="main mailbox folders">
       <List>
         {user && user.displayName ? (
-          <ListItem disablePadding>
-            <Link to="profile">
+          <>
+            <ListItem disablePadding>
+              <Link to="profile">
+                <ListItemButton>
+                  <ListItemIcon>
+                    <Avatar
+                      alt="Remy Sharp"
+                      src={user.photoURL ? user.photoURL : ""}
+                    ></Avatar>
+                  </ListItemIcon>
+                  <ListItemText primary={user.displayName} />
+                </ListItemButton>
+              </Link>
+            </ListItem>
+            <Divider />
+            <Divider />
+            <Divider />
+          </>
+        ) : (
+          <>
+            <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                  <Avatar
-                    alt="Remy Sharp"
-                    src={user.photoURL ? user.photoURL : ""}
-                  ></Avatar>
+                  <HomeIcon />
                 </ListItemIcon>
-                <ListItemText primary={user.displayName} />
+                <Link to="/">
+                  <ListItemText primary="Home" />
+                </Link>
               </ListItemButton>
-            </Link>
-          </ListItem>
-        ) : (
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <HomeIcon />
-              </ListItemIcon>
-              <Link to="/">
-                <ListItemText primary="home" />
-              </Link>
-            </ListItemButton>
-          </ListItem>
+            </ListItem>
+            <Divider />
+            <Divider />
+            <Divider />
+          </>
         )}
       </List>
-      <Divider />
-      <Divider />
-      <Divider />
+
       <List>
         <ListItem
           disablePadding

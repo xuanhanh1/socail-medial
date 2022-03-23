@@ -1,11 +1,11 @@
-import * as React from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import List from "@mui/material/List";
 import Card from "@mui/material/Card";
-import { CardHeader, CardContent, CardActions } from "@mui/material";
+import { CardHeader, CardContent, CardActions, Divider } from "@mui/material";
 import CardMedia from "@mui/material/CardMedia";
 import Collapse from "@mui/material/Collapse";
 import Avatar from "@mui/material/Avatar";
@@ -30,6 +30,7 @@ import ApartmentSharpIcon from "@mui/icons-material/ApartmentSharp";
 import WorkIcon from "@mui/icons-material/Work";
 import SchoolIcon from "@mui/icons-material/School";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
+import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import Home from "../containers/HomePage/Home/Home";
 import { makeStyles } from "@mui/styles";
 import Comment from "../compoments/Compoment/Comment";
@@ -37,6 +38,9 @@ import Comment from "../compoments/Compoment/Comment";
 const useStyles = makeStyles({
   mobileProfileItem: {
     display: "none !important",
+  },
+  homeBtnAction: {
+    justifyContent: "space-around",
   },
   "@media only screen and (max-width: 1024px)": {
     profileItem: {
@@ -70,6 +74,7 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function DetailProfile(props) {
   const [selectedIndex, setSelectedIndex] = React.useState(1);
   const { user } = props;
+  const [showComment, setShowComment] = useState();
   const classes = useStyles();
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
@@ -78,33 +83,37 @@ export default function DetailProfile(props) {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
+  const handleShowComment = (e) => {
+    e.preventDefault();
+    var index = e.target.value;
+    console.log(index);
+    setShowComment(index);
+    console.log(showComment);
+  };
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2} className={classes.profileItem}>
         <Grid item xs>
-          <Box
-            sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+          <Card
+            // sx={{  , bgcolor: "background.paper" }}
+            sx={{
+              ml: 2,
+              mr: 2,
+              alignItems: "center",
+              mb: 5,
+              maxWidth: 360,
+              width: "100%",
+            }}
+            elevation={4}
           >
             <div className="detail-header">
-              <h3 style={{ paddindLeft: "10px", textAlign: "center" }}>
+              <span style={{ paddindLeft: "10px", textAlign: "center" }}>
                 Giới thiệu
-              </h3>
+              </span>
             </div>
+            <hr></hr>
+
             <List component="nav" aria-label="main mailbox folders">
-              <ListItemButton
-                selected={selectedIndex === 0}
-                onClick={(event) => handleListItemClick(event, 0)}
-              >
-                <ListItemIcon>
-                  <Avatar
-                    alt="Remy Sharp"
-                    src={user && user.photoURL ? user.photoURL : ""}
-                  />
-                </ListItemIcon>
-                <ListItemText
-                  primary={user && user.displayName ? user.displayName : ""}
-                />
-              </ListItemButton>
               <ListItemButton
                 selected={selectedIndex === 1}
                 onClick={(event) => handleListItemClick(event, 1)}
@@ -142,7 +151,7 @@ export default function DetailProfile(props) {
                 <ListItemText primary="Chơi game, nuôi chó" />
               </ListItemButton>
             </List>
-          </Box>
+          </Card>
         </Grid>
         <Grid item xs={9}>
           <Card
@@ -214,7 +223,7 @@ export default function DetailProfile(props) {
               </Typography>
             </CardContent>
 
-            <div className="div-home-image">
+            <div className="div-home-image-one">
               <CardMedia
                 component="img"
                 image={LogoAvata}
@@ -222,22 +231,27 @@ export default function DetailProfile(props) {
                 className={classes.homeImage}
               />
             </div>
-            <CardActions disableSpacing>
+            <Divider />
+            <CardActions disableSpacing className={classes.homeBtnAction}>
               <IconButton aria-label="add to favorites">
                 <FavoriteIcon />
+                <span className="home-comment-icon">Thích</span>
+              </IconButton>
+
+              <IconButton
+                aria-label="comment"
+                onClick={(e) => handleShowComment(e)}
+                // value={index}
+              >
+                <ChatBubbleOutlineOutlinedIcon />
+                <span className="home-comment-icon">Bình luận</span>
               </IconButton>
               <IconButton aria-label="share">
                 <ShareIcon />
+                <span className="home-comment-icon">Chia sẻ</span>
               </IconButton>
-              <ExpandMore
-                expand={expanded}
-                onClick={handleExpandClick}
-                aria-expanded={expanded}
-                aria-label="show more"
-              >
-                <ExpandMoreIcon />
-              </ExpandMore>
             </CardActions>
+            <Divider />
 
             <div className="cart-list-comment">
               <Comment />

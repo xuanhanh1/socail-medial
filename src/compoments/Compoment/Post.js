@@ -30,6 +30,9 @@ const useStyles = makeStyles({
     justifyContent: "space-evenly !important",
     height: "auto",
   },
+  postFeelBtn: {
+    width: "210px",
+  },
   iconClose: {
     position: "absolute",
     top: 0,
@@ -132,15 +135,27 @@ function Post() {
           spacing={2}
           className={classes.postFeel}
         >
-          <Button variant="outlined" onClick={handleOpen}>
+          <Button
+            variant="outlined"
+            onClick={handleOpen}
+            className={classes.postFeelBtn}
+          >
             <img src={feel} className="btn-img-post"></img>
             Hình ảnh/Cảm xúc
           </Button>
-          <Button variant="outlined" onClick={handleOpen}>
+          <Button
+            variant="outlined"
+            onClick={handleOpen}
+            className={classes.postFeelBtn}
+          >
             <img src={video} className="btn-img-post"></img>
             Video/ Hoạt động{" "}
           </Button>
-          <Button variant="outlined" onClick={handleOpen}>
+          <Button
+            variant="outlined"
+            onClick={handleOpen}
+            className={classes.postFeelBtn}
+          >
             <img src={live} className="btn-img-post"></img>
             Trục tiếp
           </Button>

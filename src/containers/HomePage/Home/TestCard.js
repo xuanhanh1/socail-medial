@@ -8,8 +8,9 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
+import AddTaskTwoToneIcon from "@mui/icons-material/AddTaskTwoTone";
 import { makeStyles } from "@mui/styles";
-import ListNav from "../compoments/Compoment/ListNav";
+import ListFollow from "../../../compoments/Compoment/ListFollow";
 import { useSelector } from "react-redux";
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -72,18 +73,23 @@ function CompomentLeft(props) {
       <Grid item xs className={classes.listHomePage}>
         <ElevationScroll {...props}>
           <AppBar>
-            <Toolbar sx={{ position: "fixed", top: "70px", left: "6.4%" }}>
+            <Toolbar sx={{ position: "fixed", top: "70px", right: "5%" }}>
               <Typography>
                 <Item>
-                  <Box sx={{ width: "240px", bgcolor: "background.paper" }}>
-                    <ListNav />
+                  <Box
+                    sx={{
+                      width: "260px",
+                      bgcolor: "background.paper",
+                      height: "50vh",
+                    }}
+                  >
+                    <ListFollow />
                   </Box>
                 </Item>
               </Typography>
             </Toolbar>
           </AppBar>
         </ElevationScroll>
-        <Copyright sx={{ position: "fixed", bottom: 15, left: "5%", ml: 5 }} />
       </Grid>
     </>
   );

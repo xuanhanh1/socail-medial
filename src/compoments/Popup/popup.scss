@@ -2,10 +2,13 @@ label {
   cursor: pointer;
 }
 .post-img {
-  overflow: scroll;
+  overflow-y: scroll;
   height: 400px;
   padding: 10px;
   width: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   img {
     width: 240px;
     height: 280px;

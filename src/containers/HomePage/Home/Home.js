@@ -42,6 +42,10 @@ const useStyles = makeStyles({
   popupMore: {
     fontSize: "50px",
   },
+  cardMobile: {
+    marginLeft: "0 !important",
+    marginRight: "0 !important",
+  },
   homePost: {
     marginBottom: "10px",
     width: "100%",
@@ -63,6 +67,12 @@ const useStyles = makeStyles({
   homeBtnAction: {
     justifyContent: "space-around",
   },
+  homeImage: {
+    width: "350px !important",
+  },
+  loading: {
+    padding: 20,
+  },
   "@media only screen and (max-width: 1024px)": {
     cardMobile: {
       //  marginRight: '0 !important'
@@ -73,12 +83,6 @@ const useStyles = makeStyles({
       marginLeft: "0 !important",
       marginRight: "0 !important",
     },
-  },
-  homeImage: {
-    width: "380px !important",
-  },
-  loading: {
-    padding: 20,
   },
 });
 const ExpandMore = styled((props) => {
@@ -145,149 +149,136 @@ function Home() {
         ""
       ) : (
         <>
-          <CircularProgress color="secondary" />
-          <CircularProgress color="success" />
-          <CircularProgress color="inherit" />
+          <CircularProgress color="primary" />
         </>
       )}
-      <InfiniteScroll
-        dataLength={dataPosts.length}
-        // next={getData}
-        hasMore={true}
-        loader={<h4>Loading...</h4>}
-        endMessage={
-          <p style={{ textAlign: "center" }}>
-            <b>Yay! You have seen it all</b>
-          </p>
-        }
-      >
-        {dataPosts.map((post, index) => {
-          return (
-            <Card
-              sx={{
-                ml: 2,
-                mr: 2,
-                alignItems: "center",
-                mb: 5,
-              }}
-              elevation={8}
-              className={classes.cardMobile}
-            >
-              <CardHeader
-                className={classes.homeCard}
-                avatar={
-                  <Avatar
-                    sx={{ bgcolor: red[500] }}
-                    aria-label="recipe"
-                    src={post.photoURL}
-                  ></Avatar>
-                }
-                action={
-                  <PopupState variant="popper" popupId="demo-popup-popper">
-                    {(popupState) => (
-                      <div className={classes.popupMore}>
-                        <IconButton
-                          aria-label="settings"
-                          variant="contained"
-                          {...bindToggle(popupState)}
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
 
-                        <Popper
-                          {...bindPopper(popupState)}
-                          transition
-                          placement="left-start"
-                        >
-                          {({ TransitionProps }) => (
-                            <Fade {...TransitionProps} timeout={350}>
-                              <Paper>
-                                <Typography>
-                                  <List>
-                                    <ListItem disablePadding>
-                                      <ListItemButton>
-                                        <ListItemIcon>
-                                          <BookmarkIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Save" />
-                                      </ListItemButton>
-                                    </ListItem>
-                                  </List>
-                                </Typography>
-                              </Paper>
-                            </Fade>
-                          )}
-                        </Popper>
-                      </div>
-                    )}
-                  </PopupState>
-                }
-                title={post.user_name}
-                subheader="September 14, 2016"
-              />
-              <CardContent>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  className={classes.homeContent}
-                >
-                  {post.content}
-                </Typography>
-              </CardContent>
+      {dataPosts.map((post, index) => {
+        console.log("post in home, ", post);
+        return (
+          <Card
+            sx={{
+              ml: 2,
+              mr: 2,
+              alignItems: "center",
+              mb: 5,
+            }}
+            elevation={8}
+            className={classes.cardMobile}
+          >
+            <CardHeader
+              className={classes.homeCard}
+              avatar={
+                <Avatar
+                  sx={{ bgcolor: red[500] }}
+                  aria-label="recipe"
+                  src={post.photoURL}
+                ></Avatar>
+              }
+              action={
+                <PopupState variant="popper" popupId="demo-popup-popper">
+                  {(popupState) => (
+                    <div className={classes.popupMore}>
+                      <IconButton
+                        aria-label="settings"
+                        variant="contained"
+                        {...bindToggle(popupState)}
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
 
-              <div className="div-home-image">
-                {post.imageURL.map((img) => {
-                  return (
-                    <CardMedia
-                      component="img"
-                      image={img}
-                      alt="Paella dish"
-                      className={classes.homeImage}
-                    />
-                  );
-                })}
-              </div>
-              <Divider />
-              <CardActions disableSpacing className={classes.homeBtnAction}>
-                <IconButton aria-label="add to favorites">
-                  <FavoriteIcon />
-                  <span className="home-comment-icon">Thích</span>
-                </IconButton>
-                <IconButton
-                  aria-label="comment"
-                  onClick={(e) => handleShowComment(e)}
-                  value={index}
-                >
-                  <ChatBubbleOutlineOutlinedIcon />
-                  <span className="home-comment-icon">Bình luận</span>
-                </IconButton>
-                <IconButton aria-label="share">
-                  <ShareIcon />
-                  <span className="home-comment-icon">Chia sẻ</span>
-                </IconButton>
-                {/* <ExpandMore
-                  expand={expanded}
-                  onClick={handleExpandClick}
-                  aria-expanded={expanded}
-                  aria-label="show more"
-                >
-                  <ExpandMoreIcon />
-                </ExpandMore> */}
-              </CardActions>
-              <Divider />
-              <div
-                className={
-                  showComment == index
-                    ? "card-list-comment-mobile"
-                    : "cart-list-comment"
-                }
+                      <Popper
+                        {...bindPopper(popupState)}
+                        transition
+                        placement="left-start"
+                      >
+                        {({ TransitionProps }) => (
+                          <Fade {...TransitionProps} timeout={350}>
+                            <Paper>
+                              <Typography>
+                                <List>
+                                  <ListItem disablePadding>
+                                    <ListItemButton>
+                                      <ListItemIcon>
+                                        <BookmarkIcon />
+                                      </ListItemIcon>
+                                      <ListItemText primary="Save" />
+                                    </ListItemButton>
+                                  </ListItem>
+                                </List>
+                              </Typography>
+                            </Paper>
+                          </Fade>
+                        )}
+                      </Popper>
+                    </div>
+                  )}
+                </PopupState>
+              }
+              title={post.user_name}
+              subheader="September 14, 2016"
+            />
+            <CardContent>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                className={classes.homeContent}
               >
-                <Comment />
-              </div>
-            </Card>
-          );
-        })}
-      </InfiniteScroll>
+                {post.content}
+              </Typography>
+            </CardContent>
+            <Divider />
+            <div
+              className={
+                post.imageURL.length === 1
+                  ? "div-home-image-one"
+                  : "div-home-image"
+              }
+            >
+              {post.imageURL.map((img) => {
+                return (
+                  <CardMedia
+                    component="img"
+                    image={img}
+                    alt="Paella dish"
+                    className={classes.homeImage}
+                  />
+                );
+              })}
+            </div>
+            <Divider />
+            <CardActions disableSpacing className={classes.homeBtnAction}>
+              <IconButton aria-label="add to favorites">
+                <FavoriteIcon />
+                <span className="home-comment-icon">Thích</span>
+              </IconButton>
+
+              <IconButton
+                aria-label="comment"
+                onClick={(e) => handleShowComment(e)}
+                value={index}
+              >
+                <ChatBubbleOutlineOutlinedIcon />
+                <span className="home-comment-icon">Bình luận</span>
+              </IconButton>
+              <IconButton aria-label="share">
+                <ShareIcon />
+                <span className="home-comment-icon">Chia sẻ</span>
+              </IconButton>
+            </CardActions>
+            <Divider />
+            <div
+              className={
+                showComment == index
+                  ? "card-list-comment-mobile"
+                  : "cart-list-comment"
+              }
+            >
+              <Comment />
+            </div>
+          </Card>
+        );
+      })}
     </>
   );
 }
