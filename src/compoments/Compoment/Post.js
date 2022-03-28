@@ -169,6 +169,9 @@ function Post() {
         className={classes.modalMobile}
       >
         <Box sx={style} className={classes.modalMobile}>
+          <div className="post-modal-header">
+            <span>Tạo Bài Viết</span>
+          </div>
           <IconButton
             aria-label="add to favorites"
             className={classes.iconClose}

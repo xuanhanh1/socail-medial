@@ -79,19 +79,14 @@ export default function ModalPost(props) {
   const [expanded, setExpanded] = React.useState(false);
   const [input, setInput] = React.useState("");
   const [image, setImage] = useState([]);
-  const [isImage, setIsImage] = useState(false);
+  const [isImage, setIsImage] = useState();
   const [isSet, setIsSet] = useState(false);
   const [emoji, setEmoji] = useState(null);
   const classes = useStyles();
   const { user } = props;
   const [file, setFile] = useState(null);
   const [base64URL, setBase64URL] = useState([]);
-  var myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
-  console.log(
-    "🚀 ~ file: ModalPost.js ~ line 90 ~ ModalPost ~ myTimestamp",
-    myTimestamp
-  );
-
+  const [imageURL, setImageURL] = useState([]);
   const handleCloseImgItem = (e) => {
     var selectedImg = parseInt(e.currentTarget.value);
     var newImages = [];
@@ -117,34 +112,52 @@ export default function ModalPost(props) {
   };
   const SubmitPost = () => {
     var createdAt = new Date();
-    var myDate = moment(createdAt).format("DD-MM-YYYY").split("-");
-    var newDate = new Date(myDate[2], myDate[1] - 1, myDate[0]);
-
-    var data = db.collection("posts").doc();
+    console.log("handle submit ", imageURL);
+    var data = db.collection("posts");
     data
-      .set({
+      .add({
         content: input,
-        imageURL: base64URL,
+        // imageURL: base64URL,
+        imageURL: imageURL,
         user_id: user.uid,
         user_name: user.displayName,
         type: isImage ? "image" : "video",
         photoURL: user.photoURL,
-        createdAt: newDate.getTime(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       })
-      .then(() => {
-        console.log("Document successfully written!");
+      .then((res) => {
+        var post = db.collection("posts").doc(res.id);
 
+        // Set the "capital" field of the city 'DC'
+        return post
+          .update({
+            post_id: res.id,
+          })
+          .then(() => {
+            console.log("Document successfully updated!");
+            const resolveAfter3Sec = new Promise((resolve) =>
+              setTimeout(resolve, 3000)
+            );
+            toast.promise(resolveAfter3Sec, {
+              pending: "chờ đợi trong giây lát",
+              success: "post successfully",
+            });
+            setInput("");
+            // setBase64URL([]);
+            setImage([]);
+            setImageURL([]);
+          })
+          .catch((error) => {
+            console.error("Error updating document: ", error);
+            const resolveAfter3Sec = new Promise((resolve) =>
+              setTimeout(resolve, 3000)
+            );
+            toast.promise(resolveAfter3Sec, {
+              pending: "chờ đợi trong dây lat",
+              error: "Error file nhiều quá load méo nổi",
+            });
+          });
         // toast.success('post success')
-        const resolveAfter3Sec = new Promise((resolve) =>
-          setTimeout(resolve, 3000)
-        );
-        toast.promise(resolveAfter3Sec, {
-          pending: "chờ đợi trong giây lát",
-          success: "post successfully",
-        });
-        setInput("");
-        setBase64URL([]);
-        setImage([]);
       })
       .catch(() => {
         const resolveAfter3Sec = new Promise((resolve) =>
@@ -173,28 +186,71 @@ export default function ModalPost(props) {
     return dataBase64;
   };
   const handleChange = async (event) => {
-    //convert base 64
-    const files = event.target.files;
-    const dataImg = await deCodeBase64(files);
-    setBase64URL(dataImg);
-    //show img
+    let files = event.target.files;
+    // console.log(files);
+    if (files.length > 0) {
+      Array.from(files).map((f) => {
+        var name = f.name;
+        var pathName = `${user.uid}/${name}`;
+        console.log("name da duoc fix ", pathName);
+        if (f.type.includes("image")) {
+          setIsImage(true);
+          var uploadTask = firebase
+            .storage()
+            .ref()
+            .child(`image/${pathName}`)
+            .put(f);
+        } else if (f.type.includes("video")) {
+          console.log("vong if la video");
+          setIsImage(false);
+          var uploadTask = firebase
+            .storage()
+            .ref()
+            .child(`video/${pathName}`)
+            .put(f);
+        } else {
+          alert("Please select video or image");
+        }
+        console.log("co phai la img", isImage);
+        //upload files
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            var progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            // console.log("Upload is " + progress + "% done");
+            switch (snapshot.state) {
+              case firebase.storage.TaskState.PAUSED: // or 'paused'
+                console.log("Upload is paused");
+                break;
+              case firebase.storage.TaskState.RUNNING: // or 'running'
+                console.log("Upload is running");
+                break;
+            }
+          },
+          (error) => {
+            // Handle unsuccessful uploads
+          },
+          () => {
+            // Handle successful uploads on complete
+            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+              console.log("File available at", downloadURL);
+              setImageURL((prevImageURL) => prevImageURL.concat(downloadURL));
+            });
+          }
+        );
+      });
+    }
+    // console.log(imageURL);
+    // //show img
     if (files) {
       const fileArray = Array.from(files).map((file) =>
         URL.createObjectURL(file)
       );
       setImage((prevImage) => prevImage.concat(fileArray));
     }
-    if (files.length > 0) {
-      Array.from(files).map((file) => {
-        if (file.type.includes("image")) {
-          setIsImage(true);
-        } else if (file.type.includes("video")) {
-          setIsImage(false);
-        } else {
-          alert("Please select video or image");
-        }
-      });
-    }
+    console.log("o ngoai vong if la image ", isImage);
   };
   const choseEmoji = (emoji) => {
     let emojiXX = emoji.native;

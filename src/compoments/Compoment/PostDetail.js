@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import {
-  CardActionArea,
-  Card,
-  Avatar,
-  IconButton,
-  Typography,
-  CardActions,
-} from "@mui/material";
-import CardHeader from "@mui/material/CardHeader";
+import { useSelector } from "react-redux";
+import firebase from "firebase";
+import { styled } from "@mui/material/styles";
+import Card from "@mui/material/Card";
+import { CardHeader, Divider } from "@mui/material";
 import CardMedia from "@mui/material/CardMedia";
-import Video from "../../image/video.mp4";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import Collapse from "@mui/material/Collapse";
+import Avatar from "@mui/material/Avatar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import { red } from "@mui/material/colors";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
-import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Popper from "@mui/material/Popper";
 import PopupState, { bindToggle, bindPopper } from "material-ui-popup-state";
 import List from "@mui/material/List";
@@ -24,10 +25,17 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import Fade from "@mui/material/Fade";
-import { Paper, CardContent, Divider } from "@mui/material";
-import Comment from "./Comment";
+import Paper from "@mui/material/Paper";
 import { makeStyles } from "@mui/styles";
-import { db } from "../../firebase";
+import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
+import "../../containers/HomePage/Home/Home.scss";
+import Comment from "./Comment.js";
+import { db, auth, provider } from "../../firebase";
+import { PostAddSharp } from "@mui/icons-material";
+import CircularProgress from "@mui/material/CircularProgress";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { getData } from "emoji-mart/dist/utils";
+
 const useStyles = makeStyles({
   popupMore: {
     fontSize: "50px",
@@ -81,28 +89,38 @@ const useStyles = makeStyles({
       marginRight: "0 !important",
     },
   },
-  "@media only screen and (max-width:740px)": {
-    cartVideo: {
-      width: "auto !important",
-    },
-  },
 });
-export default function ListImageTrending(props) {
+const ExpandMore = styled((props) => {
+  const { expand, ...other } = props;
+  return <IconButton {...other} />;
+})(({ theme, expand }) => ({
+  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
+  marginLeft: "auto",
+  transition: theme.transitions.create("transform", {
+    duration: theme.transitions.duration.shortest,
+  }),
+}));
+function PostDetail(props) {
+  const { post, index, userId } = props;
   const classes = useStyles();
-  const { post, userId, index } = props;
   const [like, setLike] = useState(false);
   const [numberLike, setNumberLike] = useState();
   const [showComment, setShowComment] = useState();
-  console.log("data in list watch", userId);
+  // console.log("user id props ", userId);
   useEffect(() => {
     if (userId !== "") {
       if (isLike(userId)) {
         setLike(true);
-        // console.log("number like in useEffect ", post.likeBy);
+        console.log("number like in useEffect ", post.likeBy);
         setNumberLike(post.likeBy.length);
       }
     }
   }, []);
+  const handleShowComment = (e) => {
+    e.preventDefault();
+    var index = e.target.value;
+    setShowComment(index);
+  };
   const isLike = (id) => {
     var arrIsLike = post.likeBy;
     if (arrIsLike !== undefined && arrIsLike.includes(id)) {
@@ -146,24 +164,23 @@ export default function ListImageTrending(props) {
         console.error("Error updating document: ", error);
       });
   };
-  const handleShowComment = (e) => {
-    e.preventDefault();
-    var index = e.target.value;
-    setShowComment(index);
-  };
   return (
-    <Box
-      sx={{
-        // height: '100vh'
-        marginBottom: "10px",
-      }}
-    >
-      <Card raised={true}>
+    <>
+      <Card
+        sx={{
+          ml: 2,
+          mr: 2,
+          alignItems: "center",
+          mb: 5,
+        }}
+        elevation={8}
+        className={classes.cardMobile}
+      >
         <CardHeader
           className={classes.homeCard}
           avatar={
             <Avatar
-              //   sx={{ bgcolor: red[500] }}
+              sx={{ bgcolor: red[500] }}
               aria-label="recipe"
               src={post.photoURL}
             ></Avatar>
@@ -221,29 +238,22 @@ export default function ListImageTrending(props) {
           </Typography>
         </CardContent>
         <Divider />
-        <CardActionArea
-          width="auto"
-          sx={{
-            textAlign: "-webkit-center",
-            padding: "10px",
-          }}
+        <div
+          className={
+            post.imageURL.length === 1 ? "div-home-image-one" : "div-home-image"
+          }
         >
-          <CardMedia
-            component="video"
-            height="auto"
-            src={post.imageURL}
-            alt="Paella dish"
-            controls
-            autoPlay
-            sx={{
-              width: "450px",
-              height: "600px",
-              objectFit: "cover",
-              borderRadius: "5px",
-            }}
-            className={classes.cartVideo}
-          />
-        </CardActionArea>
+          {post.imageURL.map((img) => {
+            return (
+              <CardMedia
+                component="img"
+                image={img}
+                alt="Paella dish"
+                className={classes.homeImage}
+              />
+            );
+          })}
+        </div>
         <Divider />
         <CardActions disableSpacing className={classes.homeBtnAction}>
           <ListItemButton
@@ -279,8 +289,18 @@ export default function ListImageTrending(props) {
           </ListItemButton>
         </CardActions>
         <Divider />
-        <Comment postId={post.post_id} />
+        <div
+          className={
+            showComment == index
+              ? "card-list-comment-mobile"
+              : "cart-list-comment"
+          }
+        >
+          <Comment postId={post.post_id} />
+        </div>
       </Card>
-    </Box>
+    </>
   );
 }
+
+export default PostDetail;

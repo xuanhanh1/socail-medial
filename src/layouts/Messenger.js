@@ -120,55 +120,65 @@ export default function Messenger() {
   return (
     <div className="mess-body">
       <Header />
-      <Container>
-        <Box sx={{ flexGrow: 1, mt: 6, height: "100vh" }}>
-          <Grid container spacing={2} className={classes.mess}>
-            <Grid
-              item
-              xs={6}
-              md={4}
-              className={
-                showDetail ? classes.messDetailMobile : classes.messDetail
-              }
-            >
-              <Card elevation={2}>
-                <div className="mess-header">
-                  <h2>Messagener</h2>
-                  <Divider sx={{ mb: 2 }} />
-                </div>
-                <Search>
-                  <SearchIconWrapper>
-                    <SearchIcon
-                      color="secondaryDark"
-                      className={classes.messSearchIcon}
+      <div style={{ backgroundColor: "#e2e8f0" }}>
+        <Container>
+          <Box
+            sx={{
+              flexGrow: 1,
+              mt: 6,
+              height: "100vh",
+              backgroundColor: "#f0f2f5",
+            }}
+          >
+            <Grid container spacing={2} className={classes.mess}>
+              <Grid
+                item
+                xs={6}
+                md={4}
+                className={
+                  showDetail ? classes.messDetailMobile : classes.messDetail
+                }
+              >
+                <Card elevation={2} className={classes.bgCard}>
+                  <div className="mess-header">
+                    <h2>Messagener</h2>
+                    <Divider sx={{ mb: 2 }} />
+                  </div>
+                  <Search>
+                    <SearchIconWrapper>
+                      <SearchIcon
+                        color="secondaryDark"
+                        className={classes.messSearchIcon}
+                      />
+                    </SearchIconWrapper>
+                    <StyledInputBase
+                      placeholder="Search in messages"
+                      inputProps={{ "aria-label": "search" }}
+                      className={classes.messSearchInput}
                     />
-                  </SearchIconWrapper>
-                  <StyledInputBase
-                    placeholder="Search in messages"
-                    inputProps={{ "aria-label": "search" }}
-                    className={classes.messSearchInput}
+                  </Search>
+                  <MessItem
+                    conversations={conversation}
+                    onSelect={(i) => onSelect(i)}
+                    sx
                   />
-                </Search>
-                <MessItem
-                  conversations={conversation}
-                  onSelect={(i) => onSelect(i)}
-                />
-              </Card>
+                </Card>
+              </Grid>
+              <Grid
+                item
+                xs={6}
+                md={8}
+                sx={{ position: "relative" }}
+                className={classes.messDetail}
+              >
+                <Card elevation={4}>
+                  <MessDetail />
+                </Card>
+              </Grid>
             </Grid>
-            <Grid
-              item
-              xs={6}
-              md={8}
-              sx={{ position: "relative" }}
-              className={classes.messDetail}
-            >
-              <Card elevation={4}>
-                <MessDetail />
-              </Card>
-            </Grid>
-          </Grid>
-        </Box>
-      </Container>
+          </Box>
+        </Container>
+      </div>
     </div>
   );
 }

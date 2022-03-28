@@ -16,10 +16,20 @@
   justify-content: space-around;
   align-items: center;
   &-img {
+    position: relative;
     & img {
       border-radius: 100px;
       border: 1px solid seagreen;
-      margin-right: 25px;
+      margin-right: 15px;
+    }
+    &-icon {
+      position: absolute;
+      bottom: 0;
+      right: 15px;
+      cursor: pointer;
+      background-color: cornsilk;
+      border-radius: 39px;
+      font-size: 20px;
     }
   }
   &-left {
@@ -47,4 +57,17 @@
     font-weight: bold;
     font-size: 17px;
   }
+}
+.edit-profile-header {
+  & h3 {
+    margin-left: 20px;
+    margin-bottom: 80px;
+  }
+}
+.profile-label {
+  position: absolute;
+  bottom: 0;
+  right: 0px;
+  background-color: #e0e0e0;
+  border-radius: 100px;
 }

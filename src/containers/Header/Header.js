@@ -135,10 +135,6 @@ export default function Header(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const userInfor = useSelector((state) => state.userInfor);
-  console.log(
-    "🚀 ~ file: Header.js ~ line 138 ~ Header ~ userInfor",
-    userInfor
-  );
 
   useEffect(() => {
     setUser(userInfor);
@@ -272,7 +268,7 @@ export default function Header(props) {
                             {...bindTrigger(popupState)}
                           >
                             <Badge
-                              badgeContent={10}
+                              badgeContent={1}
                               color="primary"
                               sx={{ color: blue[400] }}
                             >

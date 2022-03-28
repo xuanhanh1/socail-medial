@@ -71,25 +71,21 @@ function CompomentLeft(props) {
   return (
     <>
       <Grid item xs className={classes.listHomePage}>
-        <ElevationScroll {...props}>
-          <AppBar>
-            <Toolbar sx={{ position: "fixed", top: "70px", right: "5%" }}>
-              <Typography>
-                <Item>
-                  <Box
-                    sx={{
-                      width: "260px",
-                      bgcolor: "background.paper",
-                      height: "50vh",
-                    }}
-                  >
-                    <ListFollow />
-                  </Box>
-                </Item>
-              </Typography>
-            </Toolbar>
-          </AppBar>
-        </ElevationScroll>
+        <Toolbar>
+          <Typography>
+            <Item>
+              <Box
+                sx={{
+                  width: "260px",
+                  bgcolor: "background.paper",
+                  height: "50vh",
+                }}
+              >
+                <ListFollow />
+              </Box>
+            </Item>
+          </Typography>
+        </Toolbar>
       </Grid>
     </>
   );

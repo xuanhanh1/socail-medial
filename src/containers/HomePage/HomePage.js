@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -13,6 +13,7 @@ import Header from "../Header/Header";
 import CompomentLeft from "../CompomentLeft";
 import { makeStyles } from "@mui/styles";
 import TestCard from "./Home/TestCard";
+import { useSelector } from "react-redux";
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -70,7 +71,14 @@ const useStyles = makeStyles({
   },
 });
 function HomePage() {
+  const userInfor = useSelector((state) => state.userInfor);
+  const [user, setUser] = useState(userInfor);
   const classes = useStyles();
+  useEffect(() => {
+    // console.log("user in useEffect", user);
+    setUser(userInfor);
+  }, userInfor);
+  console.log("user in home page ", user);
   return (
     <>
       <div className="bd">
@@ -85,7 +93,7 @@ function HomePage() {
                 </Grid>
                 <Grid item xs={6} sx={{ alignItems: "center" }}>
                   <Item>
-                    <Outlet />
+                    <Outlet context={user} />
                   </Item>
                 </Grid>
                 <Grid item xs>
@@ -98,7 +106,7 @@ function HomePage() {
               <Grid container spacing={1} className={classes.contai}>
                 <Grid item xs={12} sx={{ alignItems: "center" }}>
                   <Item>
-                    <Outlet />
+                    <Outlet context={user} />
                   </Item>
                 </Grid>
               </Grid>

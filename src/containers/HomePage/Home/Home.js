@@ -36,8 +36,7 @@ import { db, auth, provider } from "../../../firebase";
 import { PostAddSharp } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { getData } from "emoji-mart/dist/utils";
-
+import PostDetail from "../../../compoments/Compoment/PostDetail";
 const useStyles = makeStyles({
   popupMore: {
     fontSize: "50px",
@@ -49,7 +48,7 @@ const useStyles = makeStyles({
   homePost: {
     marginBottom: "10px",
     width: "100%",
-    marginTop: "10px",
+    marginTop: "0px",
     marginLeft: "0 !important",
     marginRight: "0 !important",
   },
@@ -66,9 +65,16 @@ const useStyles = makeStyles({
   },
   homeBtnAction: {
     justifyContent: "space-around",
+    padding: "0 30px !important",
   },
   homeImage: {
     width: "350px !important",
+  },
+  homeCommentIcon: {
+    justifyContent: "center !important",
+    borderRadius: "10px !important",
+    margin: "5px 40px !important",
+    height: "45px",
   },
   loading: {
     padding: 20,
@@ -99,22 +105,26 @@ function Home() {
   const [expanded, setExpanded] = React.useState(false);
   const classes = useStyles();
   const userInfor = useSelector((state) => state.userInfor);
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(userInfor);
   const [dataPosts, setDataPosts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [apods, setAPods] = useState();
-  const [showComment, setShowComment] = useState();
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
+  useEffect(() => {
+    // console.log("user in useEffect", user);
+    setUser(userInfor);
+  }, userInfor);
   useEffect(() => {
     (async () => {
-      const postData = await db.collection("posts").limit(3).get();
-      // console.log('postData ', postData);
+      const postData = await db
+        .collection("posts")
+        .where("type", "==", "image")
+        .limit(3)
+        .get();
+
       if (postData) {
         let arr = [];
         postData.forEach((doc) => {
+          // console.log(doc.data());
           arr.push(doc.data());
         });
         if (arr.length === 3) {
@@ -124,27 +134,25 @@ function Home() {
       }
     })();
   }, []);
-  const handleShowComment = (e) => {
-    e.preventDefault();
-    var index = e.target.value;
-    console.log(index);
-    setShowComment(index);
-    console.log(showComment);
-  };
   return (
     <>
-      <Card
-        elevation={4}
-        className={classes.homePost}
-        sx={{
-          ml: 2,
-          mr: 2,
-          alignItems: "center",
-          mb: 5,
-        }}
-      >
-        <Post />
-      </Card>
+      {user && user.displayName ? (
+        <Card
+          elevation={4}
+          className={classes.homePost}
+          sx={{
+            ml: 2,
+            mr: 2,
+            alignItems: "center",
+            mb: 5,
+          }}
+        >
+          <Post />
+        </Card>
+      ) : (
+        ""
+      )}
+
       {loading ? (
         ""
       ) : (
@@ -152,131 +160,14 @@ function Home() {
           <CircularProgress color="primary" />
         </>
       )}
-
       {dataPosts.map((post, index) => {
-        console.log("post in home, ", post);
         return (
-          <Card
-            sx={{
-              ml: 2,
-              mr: 2,
-              alignItems: "center",
-              mb: 5,
-            }}
-            elevation={8}
-            className={classes.cardMobile}
-          >
-            <CardHeader
-              className={classes.homeCard}
-              avatar={
-                <Avatar
-                  sx={{ bgcolor: red[500] }}
-                  aria-label="recipe"
-                  src={post.photoURL}
-                ></Avatar>
-              }
-              action={
-                <PopupState variant="popper" popupId="demo-popup-popper">
-                  {(popupState) => (
-                    <div className={classes.popupMore}>
-                      <IconButton
-                        aria-label="settings"
-                        variant="contained"
-                        {...bindToggle(popupState)}
-                      >
-                        <MoreVertIcon />
-                      </IconButton>
-
-                      <Popper
-                        {...bindPopper(popupState)}
-                        transition
-                        placement="left-start"
-                      >
-                        {({ TransitionProps }) => (
-                          <Fade {...TransitionProps} timeout={350}>
-                            <Paper>
-                              <Typography>
-                                <List>
-                                  <ListItem disablePadding>
-                                    <ListItemButton>
-                                      <ListItemIcon>
-                                        <BookmarkIcon />
-                                      </ListItemIcon>
-                                      <ListItemText primary="Save" />
-                                    </ListItemButton>
-                                  </ListItem>
-                                </List>
-                              </Typography>
-                            </Paper>
-                          </Fade>
-                        )}
-                      </Popper>
-                    </div>
-                  )}
-                </PopupState>
-              }
-              title={post.user_name}
-              subheader="September 14, 2016"
-            />
-            <CardContent>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                className={classes.homeContent}
-              >
-                {post.content}
-              </Typography>
-            </CardContent>
-            <Divider />
-            <div
-              className={
-                post.imageURL.length === 1
-                  ? "div-home-image-one"
-                  : "div-home-image"
-              }
-            >
-              {post.imageURL.map((img) => {
-                return (
-                  <CardMedia
-                    component="img"
-                    image={img}
-                    alt="Paella dish"
-                    className={classes.homeImage}
-                  />
-                );
-              })}
-            </div>
-            <Divider />
-            <CardActions disableSpacing className={classes.homeBtnAction}>
-              <IconButton aria-label="add to favorites">
-                <FavoriteIcon />
-                <span className="home-comment-icon">Thích</span>
-              </IconButton>
-
-              <IconButton
-                aria-label="comment"
-                onClick={(e) => handleShowComment(e)}
-                value={index}
-              >
-                <ChatBubbleOutlineOutlinedIcon />
-                <span className="home-comment-icon">Bình luận</span>
-              </IconButton>
-              <IconButton aria-label="share">
-                <ShareIcon />
-                <span className="home-comment-icon">Chia sẻ</span>
-              </IconButton>
-            </CardActions>
-            <Divider />
-            <div
-              className={
-                showComment == index
-                  ? "card-list-comment-mobile"
-                  : "cart-list-comment"
-              }
-            >
-              <Comment />
-            </div>
-          </Card>
+          <PostDetail
+            key={index}
+            post={post}
+            userId={user ? user.uid : ""}
+            index={index}
+          />
         );
       })}
     </>

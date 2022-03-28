@@ -21,6 +21,7 @@ import { db, auth, provider } from "../../firebase";
 import firebase from "firebase";
 import { useDispatch } from "react-redux";
 import { login } from "../../app/reudx/actions";
+import { useCookies } from "react-cookie";
 
 function Copyright(props) {
   return (
@@ -50,12 +51,22 @@ export default function Login() {
   });
   const [error, setError] = useState();
   const [checkUser, setCheckUser] = useState(false);
-
+  const [cookies, setCookie] = useCookies(["user"]);
+  const [remember, setRemember] = useState(true);
+  const handleCookie = (user) => {
+    setCookie("user", user, {
+      path: "/",
+    });
+  };
   const handleChangeInnput = (event) => {
+    // console.log("remember me , ", event.target);
     setInput({
       ...input,
       [event.target.name]: event.target.value,
     });
+  };
+  const handleChangeCheckbox = (event) => {
+    setRemember(!remember);
   };
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -65,16 +76,14 @@ export default function Login() {
       .then((userCredential) => {
         // Signed in
         var user = userCredential.user;
-        // ...
+        if (remember) {
+          handleCookie(user);
+        }
         setCheckUser(true);
       })
       .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
-        console.log(
-          "🚀 ~ file: Login.js ~ line 73 ~ handleSubmit ~ errorMessage",
-          errorMessage
-        );
         setError(errorMessage);
         // ..
       });
@@ -202,6 +211,9 @@ export default function Login() {
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
+                onClick={(event) => {
+                  handleChangeCheckbox(event);
+                }}
               />
               <Button
                 type="submit"

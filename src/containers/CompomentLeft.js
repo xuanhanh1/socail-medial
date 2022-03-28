@@ -72,7 +72,7 @@ function CompomentLeft(props) {
       <Grid item xs className={classes.listHomePage}>
         <ElevationScroll {...props}>
           <AppBar>
-            <Toolbar sx={{ position: "fixed", top: "70px", left: "6.4%" }}>
+            <Toolbar sx={{ position: "fixed", top: "70px", left: "5%" }}>
               <Typography>
                 <Item>
                   <Box sx={{ width: "240px", bgcolor: "background.paper" }}>
