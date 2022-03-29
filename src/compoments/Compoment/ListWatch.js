@@ -28,6 +28,7 @@ import { Paper, CardContent, Divider } from "@mui/material";
 import Comment from "./Comment";
 import { makeStyles } from "@mui/styles";
 import { db } from "../../firebase";
+import moment from "moment";
 const useStyles = makeStyles({
   popupMore: {
     fontSize: "50px",
@@ -93,6 +94,7 @@ export default function ListImageTrending(props) {
   const [like, setLike] = useState(false);
   const [numberLike, setNumberLike] = useState();
   const [showComment, setShowComment] = useState();
+  const [time, setTime] = useState();
   console.log("data in list watch", userId);
   useEffect(() => {
     if (userId !== "") {
@@ -101,6 +103,10 @@ export default function ListImageTrending(props) {
         // console.log("number like in useEffect ", post.likeBy);
         setNumberLike(post.likeBy.length);
       }
+    }
+    if (post.createdAt && post.createdAt.seconds) {
+      var time = moment.unix(post.createdAt.seconds).format("LL");
+      setTime(time);
     }
   }, []);
   const isLike = (id) => {
@@ -209,7 +215,7 @@ export default function ListImageTrending(props) {
             </PopupState>
           }
           title={post.user_name}
-          subheader="September 14, 2016"
+          subheader={time}
         />
         <CardContent>
           <Typography

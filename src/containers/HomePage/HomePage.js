@@ -78,7 +78,7 @@ function HomePage() {
     // console.log("user in useEffect", user);
     setUser(userInfor);
   }, userInfor);
-  console.log("user in home page ", user);
+  // console.log("user in home page ", user);
   return (
     <>
       <div className="bd">

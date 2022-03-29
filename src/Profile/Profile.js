@@ -20,7 +20,8 @@ import { styled } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { db } from "../firebase";
-const Input = styled("input")({
+import firebase from "firebase";
+const input = styled("input")({
   display: "none",
 });
 
@@ -46,34 +47,94 @@ function Profile(props) {
   const [expanded, setExpanded] = React.useState(false);
   const [user, setUser] = React.useState();
   const userInfor = useSelector((state) => state.userInfor);
-  const [dataPosts, setDataPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [photoURL, setPhotoURL] = useState();
+  const [bgURL, setBgURL] = useState();
+  const [bg, setBg] = useState();
+
   const { sx, ...other } = props;
   const classes = useStyles();
   useEffect(() => {
     setUser(userInfor);
   }, userInfor);
   useEffect(() => {
-    (async () => {
-      const postData = await db
-        .collection("posts")
-        .where("type", "==", "image")
-        .limit(3)
-        .get();
+    if (photoURL) {
+      var userPhoto = db.collection("users").doc(user.uid);
 
-      if (postData) {
-        let arr = [];
-        postData.forEach((doc) => {
-          // console.log(doc.data());
-          arr.push(doc.data());
+      return userPhoto
+        .update({
+          photoURL: photoURL,
+        })
+        .then(() => {
+          console.log("Document successfully updated!");
+        })
+        .catch((error) => {
+          // The document probably doesn't exist.
+          console.error("Error updating document: ", error);
         });
-        if (arr.length === 3) {
-          setLoading(true);
+    }
+    if (bgURL) {
+      var userPhoto = db.collection("users").doc(user.uid);
+
+      return userPhoto
+        .update({
+          backGroundImage: bgURL,
+        })
+        .then(() => {
+          console.log("Document successfully updated!");
+        })
+        .catch((error) => {
+          // The document probably doesn't exist.
+          console.error("Error updating document: ", error);
+        });
+    }
+  }, [photoURL, bgURL]);
+  const handleUpdateInform = async (event) => {
+    // e.preventDefault();
+    var file = event.target.files[0];
+    var bgId = event.target.id;
+    var isBackground = false;
+    if (bgId === "icon-button-bg") {
+      isBackground = true;
+    }
+    await onUpLoadComplete(file, isBackground);
+  };
+  const onUpLoadComplete = (file, isBackground) => {
+    var uploadTask = firebase
+      .storage()
+      .ref()
+      .child(`image/${file.name}`)
+      .put(file);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        // console.log("Upload is " + progress + "% done");
+        switch (snapshot.state) {
+          case firebase.storage.TaskState.PAUSED: // or 'paused'
+            console.log("Upload is paused");
+            break;
+          case firebase.storage.TaskState.RUNNING: // or 'running'
+            console.log("Upload is running");
+            break;
         }
-        setDataPosts(arr);
+      },
+      (error) => {
+        // Handle unsuccessful uploads
+      },
+      () => {
+        // Handle successful uploads on complete
+        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+          console.log("File available at", downloadURL);
+          if (isBackground == true) {
+            setBgURL(downloadURL);
+          } else {
+            setPhotoURL(downloadURL);
+          }
+        });
       }
-    })();
-  }, []);
+    );
+  };
   return (
     <div style={{ backgroundColor: "#f0f2f5" }}>
       <Container className={classes.contai}>
@@ -91,7 +152,9 @@ function Profile(props) {
         >
           <div className="profile-header">
             <div className="profile-header-img">
-              <img src={catanddog} />
+              <img
+                src={user && user.backGroundImage ? user.backGroundImage : ""}
+              />
             </div>
             <div className="profile-header-icon">
               <ListItemButton
@@ -103,10 +166,22 @@ function Profile(props) {
                   backgroundColor: "white",
                 }}
               >
-                <ListItemIcon>
-                  <SettingsIcon />
-                </ListItemIcon>
-                <ListItemText primary="Thay đổi" />
+                <label>
+                  <input
+                    accept="image/*"
+                    id="icon-button-bg"
+                    type="file"
+                    onChange={handleUpdateInform}
+                  ></input>
+                  <IconButton
+                    for="icon-button-bg"
+                    aria-label="upload picture"
+                    component="span"
+                  >
+                    <SettingsIcon />
+                  </IconButton>
+                  <ListItemText primary="Thay đổi" />
+                </label>
               </ListItemButton>
             </div>
           </div>
@@ -114,12 +189,18 @@ function Profile(props) {
             <div className="profile-content-left">
               <div className="profile-content-img">
                 <img src={user && user.photoURL ? user.photoURL : ""} />
-                <label htmlFor="icon-button-file" className="profile-label">
-                  <Input accept="image/*" id="icon-button-file" type="file" />
+                <label className="profile-label">
+                  <input
+                    accept="image/*"
+                    id="icon-button-file"
+                    type="file"
+                    onChange={handleUpdateInform}
+                  />
                   <IconButton
                     color="primary"
                     aria-label="upload picture"
                     component="span"
+                    for="icon-button-file"
                   >
                     <PhotoCamera />
                   </IconButton>
@@ -159,14 +240,14 @@ function Profile(props) {
             <Button variant="outlined" className={classes.profileBtn}>
               <ListItemButton>
                 <PostAddIcon />
-                Post
+                Dòng thời gian
               </ListItemButton>
             </Button>
 
             <Button variant="outlined" className={classes.profileBtn}>
               <ListItemButton>
                 <BookmarkAddedIcon />
-                Save
+                Đã lưu
               </ListItemButton>
             </Button>
 

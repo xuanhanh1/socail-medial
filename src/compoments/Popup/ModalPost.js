@@ -113,6 +113,7 @@ export default function ModalPost(props) {
   const SubmitPost = () => {
     var createdAt = new Date();
     console.log("handle submit ", imageURL);
+    console.log(input, imageURL, user.uid, user.displayName, user.photoURL);
     var data = db.collection("posts");
     data
       .add({
@@ -123,6 +124,7 @@ export default function ModalPost(props) {
         user_name: user.displayName,
         type: isImage ? "image" : "video",
         photoURL: user.photoURL,
+        likeBy: [],
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       })
       .then((res) => {

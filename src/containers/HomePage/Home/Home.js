@@ -105,20 +105,21 @@ function Home() {
   const [expanded, setExpanded] = React.useState(false);
   const classes = useStyles();
   const userInfor = useSelector((state) => state.userInfor);
+  console.log("user redux ", userInfor);
   const [user, setUser] = useState(userInfor);
   const [dataPosts, setDataPosts] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // console.log("user in useEffect", user);
+    console.log("user in useEffect", userInfor);
     setUser(userInfor);
-  }, userInfor);
+  }, [userInfor]);
   useEffect(() => {
     (async () => {
       const postData = await db
         .collection("posts")
         .where("type", "==", "image")
-        .limit(3)
+        .limit(4)
         .get();
 
       if (postData) {
@@ -127,7 +128,7 @@ function Home() {
           // console.log(doc.data());
           arr.push(doc.data());
         });
-        if (arr.length === 3) {
+        if (arr.length === 4) {
           setLoading(true);
         }
         setDataPosts(arr);
@@ -165,7 +166,7 @@ function Home() {
           <PostDetail
             key={index}
             post={post}
-            userId={user ? user.uid : ""}
+            userId={user ? user.uid : null}
             index={index}
           />
         );

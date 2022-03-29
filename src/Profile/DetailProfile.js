@@ -1,46 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import List from "@mui/material/List";
 import Card from "@mui/material/Card";
-import { CardHeader, CardContent, CardActions, Divider } from "@mui/material";
-import CardMedia from "@mui/material/CardMedia";
-import Collapse from "@mui/material/Collapse";
-import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import { red } from "@mui/material/colors";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import ShareIcon from "@mui/icons-material/Share";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import Popper from "@mui/material/Popper";
-import PopupState, { bindToggle, bindPopper } from "material-ui-popup-state";
-import ListItem from "@mui/material/ListItem";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
-import Fade from "@mui/material/Fade";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import DraftsIcon from "@mui/icons-material/Drafts";
-import LogoAvata from "../image/avata.png";
 import ApartmentSharpIcon from "@mui/icons-material/ApartmentSharp";
 import WorkIcon from "@mui/icons-material/Work";
 import SchoolIcon from "@mui/icons-material/School";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
-import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import Home from "../containers/HomePage/Home/Home";
 import { makeStyles } from "@mui/styles";
-import Comment from "../compoments/Compoment/Comment";
-
+import File from "./Detail/File";
+import { db } from "../firebase";
 const useStyles = makeStyles({
   mobileProfileItem: {
     display: "none !important",
   },
   homeBtnAction: {
     justifyContent: "space-around",
+  },
+  detailProfile: {
+    paddingLeft: "40px !important",
+    paddingRight: "10px",
   },
   "@media only screen and (max-width: 1024px)": {
     profileItem: {
@@ -73,24 +60,42 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function DetailProfile(props) {
   const [selectedIndex, setSelectedIndex] = React.useState(1);
-  const { user } = props;
-  const [showComment, setShowComment] = useState();
+  const user = useOutletContext();
   const classes = useStyles();
+  const [dataPosts, setDataPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
   };
-  const [expanded, setExpanded] = React.useState(false);
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
-  const handleShowComment = (e) => {
-    e.preventDefault();
-    var index = e.target.value;
-    console.log(index);
-    setShowComment(index);
-    console.log(showComment);
-  };
-  console.log(user);
+  useEffect(() => {
+    console.log("user in detail profile", user);
+    (async () => {
+      try {
+        if (user.uid != undefined) {
+          const postData = await db
+            .collection("posts")
+            .where("user_id", "==", user.uid)
+            .limit(3)
+            .get();
+
+          if (postData) {
+            let arr = [];
+            postData.forEach((doc) => {
+              // console.log(doc.data());
+              arr.push(doc.data());
+            });
+            console.log("mang ", arr);
+            if (arr.length === 3) {
+              setLoading(true);
+            }
+            setDataPosts(arr);
+          }
+        }
+      } catch (error) {
+        console.log("try catch", error);
+      }
+    })();
+  }, [user]);
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>
@@ -155,110 +160,18 @@ export default function DetailProfile(props) {
               </List>
             </Card>
           </Grid>
-          <Grid item xs={9}>
-            <Card
-              sx={{
-                ml: 2,
-                mr: 2,
-                alignItems: "center",
-                mb: 5,
-              }}
-              elevation={8}
-              className={classes.cardMobile}
-            >
-              <CardHeader
-                avatar={
-                  <Avatar
-                    sx={{ bgcolor: red[500] }}
-                    aria-label="recipe"
-                    src={LogoAvata}
-                  >
-                    L
-                  </Avatar>
-                }
-                action={
-                  <PopupState variant="popper" popupId="demo-popup-popper">
-                    {(popupState) => (
-                      <div className={classes.popupMore}>
-                        <IconButton
-                          aria-label="settings"
-                          variant="contained"
-                          {...bindToggle(popupState)}
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
-
-                        <Popper
-                          {...bindPopper(popupState)}
-                          transition
-                          placement="left-start"
-                        >
-                          {({ TransitionProps }) => (
-                            <Fade {...TransitionProps} timeout={350}>
-                              <Paper>
-                                <Typography>
-                                  <List>
-                                    <ListItem disablePadding>
-                                      <ListItemButton>
-                                        <ListItemIcon>
-                                          <BookmarkIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Save" />
-                                      </ListItemButton>
-                                    </ListItem>
-                                  </List>
-                                </Typography>
-                              </Paper>
-                            </Fade>
-                          )}
-                        </Popper>
-                      </div>
-                    )}
-                  </PopupState>
-                }
-                title="xuan hanh"
-                subheader="September 14, 2016"
-              />
-              <CardContent>
-                <Typography variant="body2" color="text.secondary">
-                  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-                </Typography>
-              </CardContent>
-
-              <div className="div-home-image-one">
-                <CardMedia
-                  component="img"
-                  image={LogoAvata}
-                  alt="Paella dish"
-                  className={classes.homeImage}
-                />
-              </div>
-              <Divider />
-              <CardActions disableSpacing className={classes.homeBtnAction}>
-                <IconButton aria-label="add to favorites">
-                  <FavoriteIcon />
-                  <span className="home-comment-icon">Thích</span>
-                </IconButton>
-
-                <IconButton
-                  aria-label="comment"
-                  onClick={(e) => handleShowComment(e)}
-                  // value={index}
-                >
-                  <ChatBubbleOutlineOutlinedIcon />
-                  <span className="home-comment-icon">Bình luận</span>
-                </IconButton>
-                <IconButton aria-label="share">
-                  <ShareIcon />
-                  <span className="home-comment-icon">Chia sẻ</span>
-                </IconButton>
-              </CardActions>
-              <Divider />
-
-              <div className="cart-list-comment">
-                <Comment />
-              </div>
-            </Card>
+          <Grid item xs={9} className={classes.detailProfile}>
+            {dataPosts &&
+              dataPosts.map((data, index) => {
+                return (
+                  <File
+                    post={data}
+                    index={index}
+                    key={index}
+                    userId={user.uid}
+                  />
+                );
+              })}
           </Grid>
         </Grid>
         //grid responsive
@@ -269,7 +182,12 @@ export default function DetailProfile(props) {
           spacing={2}
           className={classes.mobileProfileItem}
         >
-          <Home />
+          {dataPosts &&
+            dataPosts.map((data, index) => {
+              return (
+                <File post={data} index={index} key={index} userId={user.uid} />
+              );
+            })}
         </Grid>
       </Box>
     </>
