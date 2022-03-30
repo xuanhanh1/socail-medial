@@ -61,6 +61,7 @@ export default function Comment(props) {
     db.collection("posts")
       .doc(postId)
       .collection("comments")
+      .orderBy("createdAt", "desc")
       .get()
       .then((querySnapshot) => {
         var arrComments = [];

@@ -76,9 +76,24 @@ export default function Login() {
       .then((userCredential) => {
         // Signed in
         var user = userCredential.user;
-        if (remember) {
-          handleCookie(user);
-        }
+        var docRef = db.collection("users").doc(user.uid);
+
+        docRef
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              console.log("Document data:", doc.data());
+              dispatch(login(doc.data()));
+              handleCookie(doc.data());
+            } else {
+              // doc.data() will be undefined in this case
+              console.log("No such document!");
+            }
+          })
+          .catch((error) => {
+            console.log("Error getting document:", error);
+          });
+
         setCheckUser(true);
       })
       .catch((error) => {
@@ -124,6 +139,24 @@ export default function Login() {
             })
             .then(() => {
               console.log("Updated");
+            });
+        } else {
+          var docRef = db.collection("users").doc(authUser.uid);
+
+          docRef
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                console.log("Document data:", doc.data());
+                dispatch(login(doc.data()));
+                handleCookie(doc.data());
+              } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+              }
+            })
+            .catch((error) => {
+              console.log("Error getting document:", error);
             });
         }
       })

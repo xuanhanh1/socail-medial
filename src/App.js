@@ -16,68 +16,13 @@ export default function App() {
   const [user, setUser] = useState();
   const dispatch = useDispatch();
   const [cookies, setCookie] = useCookies();
+  const userInform = useSelector((state) => state.userInfor);
+  console.log("🚀 ~ file: App.js ~ line 20 ~ App ~ userInform", userInform);
 
   useEffect(() => {
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        var uid = user.uid;
-        console.log("🚀 ~ file: App.js ~ line 24 ~ firebase.auth ~ uid", uid);
-        var docRef = db.collection("users").doc(uid);
-        docRef
-          .get()
-          .then((doc) => {
-            if (doc.exists) {
-              setUserRef(doc.data());
-              console.log(
-                "🚀 ~ file: App.js ~ line 31 ~ .then ~ setUserRef",
-                userRef
-              );
-              setCookie(doc.data());
-              setUser(doc.data());
-              console.log(
-                "🚀 ~ file: App.js ~ line 33 ~ .then ~ setCookie",
-                cookies
-              );
-            } else {
-              console.log("No such document!");
-            }
-          })
-          .catch((error) => {
-            console.log("Error getting document:", error);
-          });
-      } else {
-        // User is signed out
-        // ...
-      }
-    });
+    // console.log("cookies ", cookies.user);
+    dispatch(login(cookies.user));
   }, []);
-  console.log("🚀 ~ file: App.js ~ line 53 ~ App ~ user ref", userRef);
-  // useEffect(() => {
-  //   let userCookie = cookies.user;
-  //   console.log(
-  //     "🚀 ~ file: App.js ~ line 50 ~ useEffect ~ userCookie",
-  //     userCookie
-  //   );
-  //   if (userCookie) {
-  //     var docRef = db.collection("users").doc(userCookie.uid);
-  //     docRef
-  //       .get()
-  //       .then((doc) => {
-  //         if (doc.exists) {
-  //           setUser(doc.data());
-  //         } else {
-  //           // console.log("No such document!");
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.log("Error getting document:", error);
-  //       });
-  //   } else {
-  //     // console.log("k co cookies");
-  //   }
-  // }, [userRef]);
-  dispatch(login(user));
-  console.log("🚀 ~ file: App.js ~ line 70 ~ App ~ user", user);
   return (
     <>
       <ThemeProvider theme={theme}>

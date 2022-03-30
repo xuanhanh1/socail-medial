@@ -36,6 +36,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { getData } from "emoji-mart/dist/utils";
 import moment from "moment";
+import { toast } from "react-toastify";
 const useStyles = makeStyles({
   popupMore: {
     fontSize: "50px",
@@ -128,57 +129,62 @@ function PostDetail(props) {
     }
   };
   const handleLikePost = async (e) => {
-    var docRef = db.collection("posts").doc(post.post_id);
+    console.log("co ton tai user id ", userId);
+    if (userId) {
+      var docRef = db.collection("posts").doc(post.post_id);
+      docRef
+        .get()
+        .then((doc) => {
+          if (doc.exists) {
+            const likes = doc.data().likeBy;
+            if (likes.includes(userId)) {
+              const likesNew = likes.filter((like) => like !== userId);
+              var posts = db.collection("posts").doc(post.post_id);
 
-    docRef
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          const likes = doc.data().likeBy;
-          if (likes.includes(userId)) {
-            const likesNew = likes.filter((like) => like !== userId);
-            var posts = db.collection("posts").doc(post.post_id);
+              return posts
+                .update({
+                  likeBy: likesNew,
+                })
+                .then(() => {
+                  console.log(
+                    "Document successfully updated! (like thanh cong thi moi set lai like)"
+                  );
+                  setLike(!like);
+                  setNumberLike(likesNew.length);
+                })
+                .catch((error) => {
+                  console.error("Error updating document: ", error);
+                });
+            } else {
+              var posts = db.collection("posts").doc(post.post_id);
 
-            return posts
-              .update({
-                likeBy: likesNew,
-              })
-              .then(() => {
-                console.log(
-                  "Document successfully updated! (like thanh cong thi moi set lai like)"
-                );
-                setLike(!like);
-                setNumberLike(likesNew.length);
-              })
-              .catch((error) => {
-                console.error("Error updating document: ", error);
-              });
+              return posts
+                .update({
+                  likeBy: [...likes, userId],
+                })
+                .then(() => {
+                  console.log(
+                    "Document successfully updated! (like thanh cong thi moi set lai like)"
+                  );
+                  setLike(!like);
+                  setNumberLike([...likes, userId].length);
+                })
+                .catch((error) => {
+                  console.error("Error updating document: ", error);
+                });
+            }
           } else {
-            var posts = db.collection("posts").doc(post.post_id);
-
-            return posts
-              .update({
-                likeBy: [...likes, userId],
-              })
-              .then(() => {
-                console.log(
-                  "Document successfully updated! (like thanh cong thi moi set lai like)"
-                );
-                setLike(!like);
-                setNumberLike([...likes, userId].length);
-              })
-              .catch((error) => {
-                console.error("Error updating document: ", error);
-              });
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
           }
-        } else {
-          // doc.data() will be undefined in this case
-          console.log("No such document!");
-        }
-      })
-      .catch((error) => {
-        console.log("Error getting document:", error);
-      });
+        })
+        .catch((error) => {
+          console.log("Error getting document:", error);
+        });
+    } else {
+      toast.error("Mời bạn đăng nhập");
+      console.log("moi ban dang nhap ");
+    }
 
     // e.preventDefault();
     // var likeByUserId = userId;
