@@ -29,6 +29,7 @@ const useStyles = makeStyles({
     paddingLeft: "40px !important",
     paddingRight: "10px",
   },
+
   "@media only screen and (max-width: 1024px)": {
     profileItem: {
       display: "none !important",
@@ -81,7 +82,6 @@ export default function DetailProfile(props) {
           if (postData) {
             let arr = [];
             postData.forEach((doc) => {
-              // console.log(doc.data());
               arr.push(doc.data());
             });
             console.log("mang ", arr);
@@ -102,7 +102,6 @@ export default function DetailProfile(props) {
         <Grid container spacing={2} className={classes.profileItem}>
           <Grid item xs>
             <Card
-              // sx={{  , bgcolor: "background.paper" }}
               sx={{
                 ml: 2,
                 mr: 2,
@@ -174,7 +173,6 @@ export default function DetailProfile(props) {
               })}
           </Grid>
         </Grid>
-        //grid responsive
         <Grid
           item
           xs={12}

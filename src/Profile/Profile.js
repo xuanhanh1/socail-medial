@@ -19,6 +19,8 @@ import { useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
+import CircularProgress from "@mui/material/CircularProgress";
+import { toast } from "react-toastify";
 import { db } from "../firebase";
 import firebase from "firebase";
 const input = styled("input")({
@@ -35,6 +37,7 @@ const useStyles = makeStyles({
     bottom: 0,
     right: 0,
   },
+  profile: {},
   "@media only screen and (max-width:740px)": {
     contai: {
       padding: "0 !important",
@@ -47,15 +50,18 @@ function Profile(props) {
   const [expanded, setExpanded] = React.useState(false);
   const [user, setUser] = React.useState();
   const userInfor = useSelector((state) => state.userInfor);
+  console.log("userInfor", userInfor);
   const [photoURL, setPhotoURL] = useState();
   const [bgURL, setBgURL] = useState();
   const [bg, setBg] = useState();
-
   const { sx, ...other } = props;
   const classes = useStyles();
+
   useEffect(() => {
     setUser(userInfor);
-  }, userInfor);
+    console.log("useEffect user infor", userInfor);
+  }, [userInfor]);
+
   useEffect(() => {
     if (photoURL) {
       var userPhoto = db.collection("users").doc(user.uid);
@@ -88,6 +94,7 @@ function Profile(props) {
         });
     }
   }, [photoURL, bgURL]);
+
   const handleUpdateInform = async (event) => {
     // e.preventDefault();
     var file = event.target.files[0];
@@ -98,6 +105,7 @@ function Profile(props) {
     }
     await onUpLoadComplete(file, isBackground);
   };
+
   const onUpLoadComplete = (file, isBackground) => {
     var uploadTask = firebase
       .storage()
@@ -135,133 +143,142 @@ function Profile(props) {
       }
     );
   };
+
   return (
     <div style={{ backgroundColor: "#f0f2f5" }}>
       <Container className={classes.contai}>
         <Header />
-        <Card
-          sx={{
-            ml: 2,
-            mr: 2,
-            alignItems: "center",
-            mb: 5,
-            mt: "50px",
-            // height: '95vh'
-          }}
-          elevation={8}
-        >
-          <div className="profile-header">
-            <div className="profile-header-img">
-              <img
-                src={user && user.backGroundImage ? user.backGroundImage : ""}
-              />
-            </div>
-            <div className="profile-header-icon">
-              <ListItemButton
-                sx={{
-                  position: "absolute",
-                  bottom: 0,
-                  right: 0,
-                  fontSize: "28px",
-                  backgroundColor: "white",
-                }}
-              >
-                <label>
-                  <input
-                    accept="image/*"
-                    id="icon-button-bg"
-                    type="file"
-                    onChange={handleUpdateInform}
-                  ></input>
-                  <IconButton
-                    for="icon-button-bg"
-                    aria-label="upload picture"
-                    component="span"
-                  >
-                    <SettingsIcon />
-                  </IconButton>
-                  <ListItemText primary="Thay đổi" />
-                </label>
-              </ListItemButton>
-            </div>
-          </div>
-          <div className="profile-content">
-            <div className="profile-content-left">
-              <div className="profile-content-img">
-                <img src={user && user.photoURL ? user.photoURL : ""} />
-                <label className="profile-label">
-                  <input
-                    accept="image/*"
-                    id="icon-button-file"
-                    type="file"
-                    onChange={handleUpdateInform}
-                  />
-                  <IconButton
-                    color="primary"
-                    aria-label="upload picture"
-                    component="span"
-                    for="icon-button-file"
-                  >
-                    <PhotoCamera />
-                  </IconButton>
-                </label>
+        {user && user.uid ? (
+          <Card
+            sx={{
+              ml: 2,
+              mr: 2,
+              alignItems: "center",
+              mb: 5,
+              mt: "50px",
+              // height: '95vh'
+            }}
+            elevation={8}
+          >
+            <div className="profile-header">
+              <div className="profile-header-img">
+                <img
+                  src={user && user.backGroundImage ? user.backGroundImage : ""}
+                />
               </div>
-              <div className="profile-content-lable">
-                <h3> {user && user.displayName ? user.displayName : ""}</h3>
-                <AvatarGroup total={24}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-                  <Avatar
-                    alt="Travis Howard"
-                    src="/static/images/avatar/2.jpg"
-                  />
-                  <Avatar
-                    alt="Agnes Walker"
-                    src="/static/images/avatar/4.jpg"
-                  />
-                  <Avatar
-                    alt="Trevor Henderson"
-                    src="/static/images/avatar/5.jpg"
-                  />
-                </AvatarGroup>
+              <div className="profile-header-icon">
+                <ListItemButton
+                  sx={{
+                    position: "absolute",
+                    bottom: 0,
+                    right: 0,
+                    fontSize: "28px",
+                    backgroundColor: "white",
+                  }}
+                >
+                  <label>
+                    <input
+                      accept="image/*"
+                      id="icon-button-bg"
+                      type="file"
+                      onChange={handleUpdateInform}
+                    ></input>
+                    <IconButton
+                      for="icon-button-bg"
+                      aria-label="upload picture"
+                      component="span"
+                    >
+                      <SettingsIcon />
+                    </IconButton>
+                    <ListItemText primary="Thay đổi" />
+                  </label>
+                </ListItemButton>
               </div>
             </div>
-            <div className="profile-content-right">
-              <Button variant="contained" sx={{ mr: 2 }}>
-                Contained
+            <div className="profile-content">
+              <div className="profile-content-left">
+                <div className="profile-content-img">
+                  <img src={user && user.photoURL ? user.photoURL : ""} />
+                  <label className="profile-label">
+                    <input
+                      accept="image/*"
+                      id="icon-button-file"
+                      type="file"
+                      onChange={handleUpdateInform}
+                    />
+                    <IconButton
+                      color="primary"
+                      aria-label="upload picture"
+                      component="span"
+                      for="icon-button-file"
+                    >
+                      <PhotoCamera />
+                    </IconButton>
+                  </label>
+                </div>
+                <div className="profile-content-lable">
+                  <h3> {user && user.displayName ? user.displayName : ""}</h3>
+                  <AvatarGroup total={24}>
+                    <Avatar
+                      alt="Remy Sharp"
+                      src="/static/images/avatar/1.jpg"
+                    />
+                    <Avatar
+                      alt="Travis Howard"
+                      src="/static/images/avatar/2.jpg"
+                    />
+                    <Avatar
+                      alt="Agnes Walker"
+                      src="/static/images/avatar/4.jpg"
+                    />
+                    <Avatar
+                      alt="Trevor Henderson"
+                      src="/static/images/avatar/5.jpg"
+                    />
+                  </AvatarGroup>
+                </div>
+              </div>
+              <div className="profile-content-right">
+                <Button variant="contained" sx={{ mr: 2 }}>
+                  Contained
+                </Button>
+                <Button variant="contained">
+                  <BorderColorTwoToneIcon />
+                  Chỉnh sửa Profile
+                </Button>
+              </div>
+            </div>
+            <hr></hr>
+            <div className="profile-action">
+              <Button variant="outlined" className={classes.profileBtn}>
+                <ListItemButton>
+                  <PostAddIcon />
+                  Dòng thời gian
+                </ListItemButton>
               </Button>
-              <Button variant="contained">
-                <BorderColorTwoToneIcon />
-                Chỉnh sửa Profile
+
+              <Button variant="outlined" className={classes.profileBtn}>
+                <ListItemButton>
+                  <BookmarkAddedIcon />
+                  Đã lưu
+                </ListItemButton>
+              </Button>
+
+              <Button variant="outlined" className={classes.profileBtn}>
+                <ListItemButton>
+                  <ImportContactsRoundedIcon />
+                  Giới thiệu
+                </ListItemButton>
               </Button>
             </div>
-          </div>
-          <hr></hr>
-          <div className="profile-action">
-            <Button variant="outlined" className={classes.profileBtn}>
-              <ListItemButton>
-                <PostAddIcon />
-                Dòng thời gian
-              </ListItemButton>
-            </Button>
+            <hr></hr>
+            {user && user.uid ? <Outlet context={user} /> : ""}
 
-            <Button variant="outlined" className={classes.profileBtn}>
-              <ListItemButton>
-                <BookmarkAddedIcon />
-                Đã lưu
-              </ListItemButton>
-            </Button>
-
-            <Button variant="outlined" className={classes.profileBtn}>
-              <ListItemButton>
-                <ImportContactsRoundedIcon />
-                Giới thiệu
-              </ListItemButton>
-            </Button>
-          </div>
-          <hr></hr>
-          <Outlet context={user} />
-          {/* <DetailProfile user={user}></DetailProfile> */}
-        </Card>
+            {/* <DetailProfile user={user}></DetailProfile> */}
+          </Card>
+        ) : (
+          toast.warning("chờ loading user ")
+        )}
       </Container>
     </div>
   );

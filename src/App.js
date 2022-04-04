@@ -17,7 +17,7 @@ export default function App() {
   const dispatch = useDispatch();
   const [cookies, setCookie] = useCookies();
   const userInform = useSelector((state) => state.userInfor);
-  console.log("🚀 ~ file: App.js ~ line 20 ~ App ~ userInform", userInform);
+  // console.log("🚀 ~ file: App.js ~ line 20 ~ App ~ userInform", userInform);
 
   useEffect(() => {
     // console.log("cookies ", cookies.user);

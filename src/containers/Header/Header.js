@@ -37,6 +37,7 @@ import ListNav from "../../compoments/Compoment/ListNav";
 import { makeStyles } from "@mui/styles";
 import { useSelector } from "react-redux";
 import { logout } from "../../app/reudx/actions";
+import { useCookies } from "react-cookie";
 
 function notificationsLabel(count) {
   if (count === 0) {
@@ -135,6 +136,7 @@ export default function Header(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const userInfor = useSelector((state) => state.userInfor);
+  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
 
   useEffect(() => {
     setUser(userInfor);
@@ -142,16 +144,21 @@ export default function Header(props) {
 
   const signOut = () => {
     console.log("sign out");
-    firebase
-      .auth()
-      .signOut()
-      .then(() => {
-        setLogin(false);
-        dispatch(logout());
-      })
-      .catch((error) => {
-        // An error happened.
-      });
+    // firebase
+    //   .auth()
+    //   .signOut()
+    //   .then(() => {
+    //     setLogin(false);
+    //     dispatch(logout());
+    //     removeCookie("user");
+    //   })
+    //   .catch((error) => {
+    //     // An error happened.
+    // });
+
+    setLogin(false);
+    dispatch(logout());
+    removeCookie("user");
   };
   //open setting
   const handleToggle = () => {

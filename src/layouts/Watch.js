@@ -48,6 +48,7 @@ function Watch(props) {
           <CircularProgress color="primary" />
         </>
       )}
+
       {data && data.length > 0 && user
         ? Array.from(data).map((d, index) => {
             return (

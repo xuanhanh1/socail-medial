@@ -104,6 +104,20 @@ input {
     font-weight: 700;
   }
 }
+.add-comment {
+  text-align: left;
+  padding-left: 70px;
+  & span {
+    font-size: 13px;
+    font-weight: 500;
+    color: #3f696a;
+    text-decoration: underline;
+    cursor: pointer;
+    & :hover span {
+      font-size: 20px;
+    }
+  }
+}
 .icon-feel {
   margin: 0 !important;
 }

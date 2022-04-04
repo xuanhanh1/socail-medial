@@ -8,6 +8,7 @@ import {
   Typography,
   CardActions,
 } from "@mui/material";
+import { toast } from "react-toastify";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
 import Video from "../../image/video.mp4";
@@ -95,68 +96,92 @@ export default function ListImageTrending(props) {
   const [numberLike, setNumberLike] = useState();
   const [showComment, setShowComment] = useState();
   const [time, setTime] = useState();
-  console.log("data in list watch", userId);
+  const [arrLikes, setArrLikes] = useState([]);
+  const [focusInput, setFocusInput] = useState(false);
+  ///copy tuwf home
+
   useEffect(() => {
-    if (userId !== "") {
-      if (isLike(userId)) {
-        setLike(true);
-        // console.log("number like in useEffect ", post.likeBy);
-        setNumberLike(post.likeBy.length);
-      }
-    }
     if (post.createdAt && post.createdAt.seconds) {
       var time = moment.unix(post.createdAt.seconds).format("LL");
       setTime(time);
     }
-  }, []);
-  const isLike = (id) => {
-    var arrIsLike = post.likeBy;
-    if (arrIsLike !== undefined && arrIsLike.includes(id)) {
-      return true;
-    }
-  };
-  const handleLikePost = async (e) => {
-    e.preventDefault();
-    var likeByUserId = userId;
-    var index = e.currentTarget.getAttribute("value");
-    var arrPostLikeBy = [];
-    var arrIsLike = post.likeBy;
-    // console.log("so luong user da like bai viet ", post.likeBy);
-    if (post.likeBy === undefined) {
-      arrPostLikeBy.push(likeByUserId);
-    } else {
-      // var isLike = isLike(user.)
-      if (isLike(userId)) {
-        console.log("users were liked arr ", arrIsLike);
-        var newArr = arrIsLike.filter((item) => item !== userId);
-        console.log(newArr);
-        arrPostLikeBy = newArr.concat(arrPostLikeBy);
-      } else {
-        arrIsLike.push(likeByUserId); //
-        arrPostLikeBy = arrIsLike.concat(arrPostLikeBy);
-      }
-    }
-    console.log("arr last ", arrPostLikeBy);
-    var posts = await db.collection("posts").doc(post.post_id);
+  }, [userId]);
 
-    return posts
-      .update({
-        likeBy: arrPostLikeBy,
-      })
-      .then(() => {
-        console.log("Document successfully updated!");
-        setLike(!like);
-        setNumberLike(arrPostLikeBy.length);
-      })
-      .catch((error) => {
-        console.error("Error updating document: ", error);
-      });
-  };
+  useEffect(() => {
+    setArrLikes(post.likeBy);
+    setNumberLike(post.likeBy.length);
+
+    if (arrLikes.includes(userId)) {
+      setLike(!like);
+    } else {
+      setLike(false);
+    }
+  }, [post]);
+
+  useEffect(() => {
+    setNumberLike(arrLikes.length);
+    if (arrLikes.includes(userId)) {
+      setLike(!like);
+    } else {
+      setLike(false);
+    }
+  }, [arrLikes, userId]);
+
   const handleShowComment = (e) => {
     e.preventDefault();
     var index = e.target.value;
     setShowComment(index);
+    setFocusInput(true);
   };
+
+  const handleLikePost = async (e) => {
+    if (userId) {
+      var docRef = db.collection("posts").doc(post.post_id);
+      docRef
+        .get()
+        .then((doc) => {
+          if (doc.exists) {
+            const likes = doc.data().likeBy;
+            if (likes.includes(userId)) {
+              const likesNew = likes.filter((like) => like !== userId);
+              var posts = db.collection("posts").doc(post.post_id);
+              setLike(!like);
+              setArrLikes(likesNew);
+              setNumberLike(likesNew.length);
+              return posts
+                .update({
+                  likeBy: likesNew,
+                })
+                .then(() => {})
+                .catch((error) => {
+                  console.error("Error updating document: ", error);
+                });
+            } else {
+              var posts = db.collection("posts").doc(post.post_id);
+              setLike(!like);
+              return posts
+                .update({
+                  likeBy: [...likes, userId],
+                })
+                .then(() => {
+                  setNumberLike([...likes, userId].length);
+                })
+                .catch((error) => {
+                  console.error("Error updating document: ", error);
+                });
+            }
+          } else {
+            // doc.data() will be undefined in this case
+          }
+        })
+        .catch((error) => {
+          console.log("Error getting document:", error);
+        });
+    } else {
+      toast.error("Mời bạn đăng nhập");
+    }
+  };
+  /// copy tu home post
   return (
     <Box
       sx={{
@@ -261,6 +286,41 @@ export default function ListImageTrending(props) {
             <IconButton aria-label="add to favorites">
               <FavoriteIcon color={like ? "secondaryDark" : "blue"} />
             </IconButton>
+            {post.likeBy.includes(userId) ? (
+              <span className="home-comment-icon">{`${numberLike} like`}</span>
+            ) : (
+              <span className="home-comment-icon">{`${numberLike} like`}</span>
+            )}
+          </ListItemButton>
+
+          <ListItemButton
+            className={classes.homeCommentIcon}
+            onClick={(e) => handleShowComment(e)}
+            value={index}
+          >
+            <IconButton aria-label="comment">
+              <ChatBubbleOutlineOutlinedIcon />
+            </IconButton>
+            <span className="home-comment-icon">Bình luận</span>
+          </ListItemButton>
+
+          <ListItemButton className={classes.homeCommentIcon}>
+            <IconButton aria-label="share">
+              <ShareIcon />
+            </IconButton>
+            <span className="home-comment-icon">Chia sẻ</span>
+          </ListItemButton>
+        </CardActions>
+        {/* <CardActions disableSpacing className={classes.homeBtnAction}>
+          <ListItemButton
+            disablePadding
+            className={classes.homeCommentIcon}
+            value={index}
+            onClick={(e) => handleLikePost(e)}
+          >
+            <IconButton aria-label="add to favorites">
+              <FavoriteIcon color={like ? "secondaryDark" : "blue"} />
+            </IconButton>
             {like ? (
               <span className="home-comment-icon">{`${numberLike} like`}</span>
             ) : (
@@ -283,7 +343,7 @@ export default function ListImageTrending(props) {
             </IconButton>
             <span className="home-comment-icon">Chia sẻ</span>
           </ListItemButton>
-        </CardActions>
+        </CardActions> */}
         <Divider />
         <Comment postId={post.post_id} />
       </Card>

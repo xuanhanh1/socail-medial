@@ -101,40 +101,40 @@ const ExpandMore = styled((props) => {
     duration: theme.transitions.duration.shortest,
   }),
 }));
+
 function Home() {
   const [expanded, setExpanded] = React.useState(false);
   const classes = useStyles();
   const userInfor = useSelector((state) => state.userInfor);
-  console.log("user redux ", userInfor);
   const [user, setUser] = useState(userInfor);
   const [dataPosts, setDataPosts] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log("user in useEffect", userInfor);
     setUser(userInfor);
-  }, [userInfor]);
-  useEffect(() => {
+
     (async () => {
       const postData = await db
         .collection("posts")
         .where("type", "==", "image")
-        .limit(4)
+        .limit(3)
         .get();
 
       if (postData) {
         let arr = [];
         postData.forEach((doc) => {
-          // console.log(doc.data());
           arr.push(doc.data());
         });
-        if (arr.length === 4) {
+
+        if (arr.length === 3) {
           setLoading(true);
         }
+
         setDataPosts(arr);
       }
     })();
-  }, []);
+  }, [userInfor]);
+
   return (
     <>
       {user && user.displayName ? (
@@ -161,16 +161,19 @@ function Home() {
           <CircularProgress color="primary" />
         </>
       )}
-      {dataPosts.map((post, index) => {
-        return (
-          <PostDetail
-            key={index}
-            post={post}
-            userId={user ? user.uid : null}
-            index={index}
-          />
-        );
-      })}
+
+      {dataPosts.length > 0
+        ? dataPosts.map((post, index) => {
+            return (
+              <PostDetail
+                key={index}
+                post={post}
+                userId={user ? user.uid : null}
+                index={index}
+              />
+            );
+          })
+        : null}
     </>
   );
 }

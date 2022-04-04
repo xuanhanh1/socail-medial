@@ -108,28 +108,45 @@ function PostDetail(props) {
   const [numberLike, setNumberLike] = useState();
   const [showComment, setShowComment] = useState();
   const [time, setTime] = useState();
-  const [likes, setLikes] = useState();
+  const [arrLikes, setArrLikes] = useState([]);
+  const [focusInput, setFocusInput] = useState(false);
+
   useEffect(() => {
-    var arrPostLikeBy = post.likeBy;
-    setNumberLike(post.likeBy.length);
     if (post.createdAt && post.createdAt.seconds) {
       var time = moment.unix(post.createdAt.seconds).format("LL");
       setTime(time);
     }
   }, [userId]);
+
+  useEffect(() => {
+    setArrLikes(post.likeBy);
+    setNumberLike(post.likeBy.length);
+
+    if (arrLikes.includes(userId)) {
+      setLike(!like);
+    } else {
+      setLike(false);
+    }
+  }, [post]);
+
+  useEffect(() => {
+    setNumberLike(arrLikes.length);
+
+    if (arrLikes.includes(userId)) {
+      setLike(!like);
+    } else {
+      setLike(false);
+    }
+  }, [arrLikes, userId]);
+
   const handleShowComment = (e) => {
     e.preventDefault();
     var index = e.target.value;
     setShowComment(index);
+    setFocusInput(true);
   };
-  const isLike = (id) => {
-    var arrIsLike = post.likeBy;
-    if (arrIsLike !== undefined && arrIsLike.includes(id)) {
-      return true;
-    }
-  };
+
   const handleLikePost = async (e) => {
-    console.log("co ton tai user id ", userId);
     if (userId) {
       var docRef = db.collection("posts").doc(post.post_id);
       docRef
@@ -140,33 +157,25 @@ function PostDetail(props) {
             if (likes.includes(userId)) {
               const likesNew = likes.filter((like) => like !== userId);
               var posts = db.collection("posts").doc(post.post_id);
-
+              setLike(!like);
+              setArrLikes(likesNew);
+              setNumberLike(likesNew.length);
               return posts
                 .update({
                   likeBy: likesNew,
                 })
-                .then(() => {
-                  console.log(
-                    "Document successfully updated! (like thanh cong thi moi set lai like)"
-                  );
-                  setLike(!like);
-                  setNumberLike(likesNew.length);
-                })
+                .then(() => {})
                 .catch((error) => {
                   console.error("Error updating document: ", error);
                 });
             } else {
               var posts = db.collection("posts").doc(post.post_id);
-
+              setLike(!like);
               return posts
                 .update({
                   likeBy: [...likes, userId],
                 })
                 .then(() => {
-                  console.log(
-                    "Document successfully updated! (like thanh cong thi moi set lai like)"
-                  );
-                  setLike(!like);
                   setNumberLike([...likes, userId].length);
                 })
                 .catch((error) => {
@@ -175,7 +184,6 @@ function PostDetail(props) {
             }
           } else {
             // doc.data() will be undefined in this case
-            console.log("No such document!");
           }
         })
         .catch((error) => {
@@ -183,53 +191,9 @@ function PostDetail(props) {
         });
     } else {
       toast.error("Mời bạn đăng nhập");
-      console.log("moi ban dang nhap ");
     }
-
-    // e.preventDefault();
-    // var likeByUserId = userId;
-    // var arrPostLikeBy = [];
-    // var arrIsLike = post.likeBy;
-    // console.log("so luong user da like bai viet ", post.likeBy);
-    // if (post.likeBy === undefined) {
-    //   arrPostLikeBy.push(likeByUserId);
-    // } else {
-    //   // var isLike = isLike(user.)
-    //   // console.log("co user trong mang ", arrPostLikeBy.includes(userId));
-    //   // console.log("kieu cua user id", typeof userId);
-    //   console.log(arrIsLike, userId);
-    //   if (arrIsLike.includes(userId)) {
-    //     console.log("co user trong mang", arrPostLikeBy);
-    //     console.log("users were liked arr ", arrIsLike);
-    //     var newArr = arrIsLike.filter((item) => item !== userId);
-    //     console.log(newArr);
-    //     arrPostLikeBy = newArr.concat(arrPostLikeBy);
-    //   } else {
-    //     console.log("khong co user trong mang");
-    //     arrIsLike.push(likeByUserId); //
-    //     console.log("mang da like ", arrIsLike);
-    //     arrPostLikeBy = arrIsLike.concat(arrPostLikeBy);
-    //   }
-    // }
-    // console.log("arr last ", arrPostLikeBy);
-    // var posts = await db.collection("posts").doc(post.post_id);
-
-    // return posts
-    //   .update({
-    //     likeBy: arrPostLikeBy,
-    //   })
-    //   .then(() => {
-    //     console.log(
-    //       "Document successfully updated! (like thanh cong thi moi set lai like)"
-    //     );
-    //     setLike(!like);
-    //     setNumberLike(arrPostLikeBy.length);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error updating document: ", error);
-    //   });
   };
-  // console.log("chuyen doi thoi gian ", post.createdAt.seconds);
+
   return (
     <>
       <Card
@@ -328,17 +292,8 @@ function PostDetail(props) {
             value={index}
             onClick={(e) => handleLikePost(e)}
           >
-            <IconButton
-              aria-label="add to favorites"
-              onClick={(e) => console.log("btn ", e)}
-            >
-              <FavoriteIcon
-                color={
-                  post.likeBy.includes(userId) || like
-                    ? "secondaryDark"
-                    : "blue"
-                }
-              />
+            <IconButton aria-label="add to favorites">
+              <FavoriteIcon color={like ? "secondaryDark" : "blue"} />
             </IconButton>
             {post.likeBy.includes(userId) ? (
               <span className="home-comment-icon">{`${numberLike} like`}</span>
@@ -346,16 +301,18 @@ function PostDetail(props) {
               <span className="home-comment-icon">{`${numberLike} like`}</span>
             )}
           </ListItemButton>
-          <ListItemButton className={classes.homeCommentIcon}>
-            <IconButton
-              aria-label="comment"
-              onClick={(e) => handleShowComment(e)}
-              value={index}
-            >
+
+          <ListItemButton
+            className={classes.homeCommentIcon}
+            onClick={(e) => handleShowComment(e)}
+            value={index}
+          >
+            <IconButton aria-label="comment">
               <ChatBubbleOutlineOutlinedIcon />
             </IconButton>
             <span className="home-comment-icon">Bình luận</span>
           </ListItemButton>
+
           <ListItemButton className={classes.homeCommentIcon}>
             <IconButton aria-label="share">
               <ShareIcon />
@@ -371,7 +328,7 @@ function PostDetail(props) {
               : "cart-list-comment"
           }
         >
-          <Comment postId={post.post_id} />
+          <Comment postId={post.post_id} key={index} focusInput={focusInput} />
         </div>
       </Card>
     </>
