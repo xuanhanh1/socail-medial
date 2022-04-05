@@ -1,14 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { Routes, Route, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import firebase from "firebase";
 import { styled } from "@mui/material/styles";
-import Card from "@mui/material/Card";
-import { CardHeader, Divider } from "@mui/material";
-import CardMedia from "@mui/material/CardMedia";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
-import Collapse from "@mui/material/Collapse";
-import Avatar from "@mui/material/Avatar";
+
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
@@ -28,15 +23,12 @@ import Fade from "@mui/material/Fade";
 import Paper from "@mui/material/Paper";
 import { makeStyles } from "@mui/styles";
 import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
-import catanddog from "../../../image/catanddog.jpg";
-import "./Home.scss";
-import Post from "../../../compoments/Compoment/Post";
-import Comment from "../../../compoments/Compoment/Comment";
-import { db, auth, provider } from "../../../firebase";
+import "../containers/HomePage/Home/Home.scss";
+
+import { db, auth, provider } from "../firebase";
 import { PostAddSharp } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
-import InfiniteScroll from "react-infinite-scroll-component";
-import PostDetail from "../../../compoments/Compoment/PostDetail";
+import PostDetail from "../compoments/Compoment/PostDetail";
 const useStyles = makeStyles({
   popupMore: {
     fontSize: "50px",
@@ -79,12 +71,12 @@ const useStyles = makeStyles({
   loading: {
     padding: 20,
   },
-  "@media only screen and (max-width: 1024px)": {
+  "@media only screen and (maxWidth: 1024px)": {
     cardMobile: {
       //  marginRight: '0 !important'
     },
   },
-  "@media only screen and (max-width: 740px)": {
+  "@media only screen and (maxWidth: 740px)": {
     cardMobile: {
       marginLeft: "0 !important",
       marginRight: "0 !important",
@@ -102,81 +94,43 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-function Home() {
+function PostItem() {
   const [expanded, setExpanded] = React.useState(false);
   const classes = useStyles();
   const userInfor = useSelector((state) => state.userInfor);
   const [user, setUser] = useState(userInfor);
-  const [dataPosts, setDataPosts] = useState([]);
+  const [dataPosts, setDataPosts] = useState();
   const [loading, setLoading] = useState(false);
+  let { postId } = useParams();
 
   useEffect(() => {
     setUser(userInfor);
 
     (async () => {
-      const postData = await db
-        .collection("posts")
-        .where("type", "==", "image")
-        .orderBy("createdAt", "desc")
-        .limit(3)
-        .get();
+      var docRef = await db.collection("posts").doc(postId);
 
-      if (postData) {
-        let arr = [];
-        postData.forEach((doc) => {
-          arr.push(doc.data());
+      docRef
+        .get()
+        .then((doc) => {
+          if (doc.exists) {
+            setDataPosts(doc.data());
+          } else {
+            console.log("No such document!");
+          }
+        })
+        .catch((error) => {
+          console.log("Error getting document:", error);
         });
-
-        if (arr.length === 3) {
-          setLoading(true);
-        }
-
-        setDataPosts(arr);
-      }
     })();
   }, [userInfor]);
-
+  console.log("post id ing post item ", dataPosts);
   return (
     <>
-      {user && user.displayName ? (
-        <Card
-          elevation={4}
-          className={classes.homePost}
-          sx={{
-            ml: 2,
-            mr: 2,
-            alignItems: "center",
-            mb: 5,
-          }}
-        >
-          <Post />
-        </Card>
-      ) : (
-        ""
-      )}
-
-      {loading ? (
-        ""
-      ) : (
-        <>
-          <CircularProgress color="primary" />
-        </>
-      )}
-
-      {dataPosts.length > 0
-        ? dataPosts.map((post, index) => {
-            return (
-              <PostDetail
-                key={index}
-                post={post}
-                userId={user ? user.uid : null}
-                index={index}
-              />
-            );
-          })
-        : null}
+      {dataPosts ? (
+        <PostDetail post={dataPosts} userId={user ? user.uid : null} />
+      ) : null}
     </>
   );
 }
 
-export default Home;
+export default PostItem;

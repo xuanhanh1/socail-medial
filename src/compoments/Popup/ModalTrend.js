@@ -47,6 +47,9 @@ const useStyles = makeStyles({
     margin: "5px 40px !important",
     height: "45px",
   },
+  homeImage: {
+    width: "350px !important",
+  },
 });
 export default function ModalTrend(props) {
   const [expanded, setExpanded] = React.useState(false);
@@ -91,7 +94,7 @@ export default function ModalTrend(props) {
   };
 
   const changesNewRouter = () => {
-    navigate(`/`);
+    navigate(`/trend/${data.post_id}`);
   };
 
   const handleLikePost = async (e) => {
@@ -155,9 +158,17 @@ export default function ModalTrend(props) {
         title={data.user_name}
         subheader="September 14, 2016"
       />
+      <CardContent onClick={changesNewRouter}>
+        <Typography variant="body2" color="text.secondary">
+          {data.content}
+        </Typography>
+      </CardContent>
+      <Divider />
       <div
         className={
-          data.imageURL.length === 1 ? "div-home-image-one" : "div-home-image"
+          data.imageURL.length === 1
+            ? "modal-trend-image div-home-image-one"
+            : "modal-trend-image div-home-image"
         }
       >
         {data && data.imageURL.length > 0
@@ -165,22 +176,17 @@ export default function ModalTrend(props) {
               return (
                 <CardMedia
                   component="img"
-                  // height="194"
-
+                  maxHeight="380px"
                   image={d}
                   alt="Paella dish"
                   onClick={changesNewRouter}
+                  className={classes.homeImage}
                 />
               );
             })
           : ""}
       </div>
-      <CardContent onClick={changesNewRouter}>
-        <Typography variant="body2" color="text.secondary">
-          {data.content}
-        </Typography>
-      </CardContent>
-      <Divider />
+
       <CardActions disableSpacing className={classes.homeBtnAction}>
         <ListItemButton
           disablePadding

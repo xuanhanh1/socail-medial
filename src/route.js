@@ -12,6 +12,7 @@ import Profile from "./Profile/Profile";
 import Message from "./layouts/Messenger";
 import EditProfile from "./Profile/EditProfile";
 import DetailProfile from "./Profile/DetailProfile";
+import PostItem from "./layouts/PostItem";
 export default function Router() {
   return useRoutes([
     {
@@ -20,6 +21,7 @@ export default function Router() {
       children: [
         { path: "/", element: <Home /> },
         { path: "trend", element: <Trending /> },
+        { path: "trend/:postId", element: <PostItem /> },
         { path: "watch", element: <Watch /> },
         { path: "friend", element: <Friend /> },
       ],

@@ -54,9 +54,9 @@ export default function Comment(props) {
   const [comments, setComments] = useState([]);
   const [valueComment, setValueComment] = useState("");
   const [addComment, setAddComment] = useState(true);
-  const [imageComment, setImageComment] = useState();
+  const [imageComment, setImageComment] = useState([]);
   const [show, setShow] = useState(true);
-  const [image, setImage] = useState();
+  const [image, setImage] = useState([]);
   const textInput = useRef(null);
 
   useEffect(() => {
@@ -112,7 +112,7 @@ export default function Comment(props) {
     setValueComment(valueInput);
   };
 
-  const handleSubmitComment = () => {
+  const handleSubmitComment = async () => {
     console.log(
       "image url in handle submit comment (dau ham handle submit )",
       imageComment
@@ -126,9 +126,11 @@ export default function Comment(props) {
         commentImage: imageComment ? imageComment : "",
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       };
+      console.log("data submit ", data);
       const time = Date.now();
 
-      db.collection("posts")
+      await db
+        .collection("posts")
         .doc(postId)
         .collection("comments")
         .add(data)
@@ -198,7 +200,9 @@ export default function Comment(props) {
         // For instance, get the download URL: https://firebasestorage.googleapis.com/...
         uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
           console.log("File available at", downloadURL);
-          setImageComment((prevImage) => prevImage.concat(downloadURL));
+          setImageComment((prevImageComment) =>
+            prevImageComment.concat(downloadURL)
+          );
         });
       }
     );

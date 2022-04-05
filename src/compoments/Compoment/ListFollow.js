@@ -22,6 +22,11 @@ function ListFollow(props) {
   const [user, setUser] = React.useState();
   const classes = useStyles();
   const [isActive, setIsActive] = useState();
+  const { userFollow } = props;
+  console.log(
+    "🚀 ~ file: ListFollow.js ~ line 26 ~ ListFollow ~ userFollow",
+    userFollow
+  );
 
   const tabSelected = (e) => {
     let currentValue = e.currentTarget.value;

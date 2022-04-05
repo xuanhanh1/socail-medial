@@ -243,18 +243,20 @@ function File(props) {
           post.imageURL.length === 1 ? "div-home-image-one" : "div-home-image"
         }
       >
-        {post.imageURL.map((img) => {
-          console.log("post in map", post);
-          return (
-            <CardMedia
-              component={post.type === "image" ? "image" : "video"}
-              image={img}
-              alt="Paella dish"
-              controls
-              className={classes.homeImage}
-            />
-          );
-        })}
+        {post &&
+          post.imageURL.length > 0 &&
+          post.imageURL.map((img) => {
+            console.log("post in map", img);
+            return (
+              <CardMedia
+                component={post.type === "image" ? "img" : "video"}
+                image={img}
+                alt="Paella dish"
+                // controls
+                className={classes.homeImage}
+              />
+            );
+          })}
       </div>
       <Divider />
       <CardActions disableSpacing className={classes.homeBtnAction}>

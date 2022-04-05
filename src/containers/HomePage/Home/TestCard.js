@@ -12,6 +12,7 @@ import AddTaskTwoToneIcon from "@mui/icons-material/AddTaskTwoTone";
 import { makeStyles } from "@mui/styles";
 import ListFollow from "../../../compoments/Compoment/ListFollow";
 import { useSelector } from "react-redux";
+import { db } from "../../../firebase";
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -67,7 +68,35 @@ function CompomentLeft(props) {
   const userInfor = useSelector((state) => state.userInfor);
   const [user, setUser] = React.useState(userInfor);
   const classes = useStyles();
+  const [allUser, setAllUser] = useState();
 
+  useEffect(() => {
+    getAllUsers();
+  }, []);
+
+  const getAllUsers = async () => {
+    var arr = [];
+    await db
+      .collection("users")
+      .limit(5)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+
+          if (user.uid == doc.data().uid) {
+            console.log("doc. data trung voi user follower");
+          } else {
+            arr.push(doc.data());
+          }
+        });
+      })
+      .catch((error) => {
+        console.log("err", error);
+      });
+    setAllUser(arr);
+  };
+  console.log("all user ", allUser);
   return (
     <>
       <Grid item xs className={classes.listHomePage}>
@@ -81,7 +110,11 @@ function CompomentLeft(props) {
                   height: "50vh",
                 }}
               >
-                <ListFollow />
+                {allUser && allUser.length > 0
+                  ? allUser.map((user, index) => {
+                      <ListFollow userFollow={user} key={index} />;
+                    })
+                  : null}
               </Box>
             </Item>
           </Typography>

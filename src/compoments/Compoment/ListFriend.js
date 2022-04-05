@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import List from "@mui/material/List";
@@ -19,6 +19,7 @@ import {
 import logoAvata from "../../image/avata.png";
 import EmailIcon from "@mui/icons-material/Email";
 import { makeStyles } from "@mui/styles";
+import { db } from "../../firebase";
 const useStyles = makeStyles({
   friendIcon: {
     marginRight: 10,
@@ -33,32 +34,46 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ListFriend() {
+export default function ListFriend(props) {
   const classes = useStyles();
+  const { followerId, ParentHandleUnFollower } = props;
+  const [userFollower, setUserFollower] = useState();
+  useEffect(() => {
+    (async () => {
+      if (followerId) {
+        const userData = await db.collection("users").doc(followerId);
+        userData
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              setUserFollower(doc.data());
+            } else {
+              // doc.data() will be undefined in this case
+              console.log("No such document in friend list!");
+            }
+          })
+          .catch((error) => {
+            console.log("Error getting document:", error);
+          });
+      }
+    })();
+  }, [followerId]);
+
+  const handleUnFollower = () => {
+    ParentHandleUnFollower(userFollower.uid);
+  };
+
   return (
-    <Box
-      sx={{
-        marginBottom: "10px",
-        height: "100vh",
-      }}
-    >
-      <div className="friend-header">
-        <h1>Danh sách bạn bè</h1>
-      </div>
-      <Grid
-        container
-        rowSpacing={1}
-        columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-        className={classes.listFriend}
-      >
-        <Grid item xs={6} className={classes.itemFriend}>
+    <>
+      <Grid item xs={6} className={classes.itemFriend}>
+        {userFollower ? (
           <Paper sx={{ mb: "10px" }} elevation={4}>
             <ListItem alignItems="flex-start">
               <ListItemButton>
                 <ListItemIcon>
-                  <Avatar alt="Remy Sharp" src={logoAvata} />
+                  <Avatar alt="Remy Sharp" src={userFollower.photoURL} />
                 </ListItemIcon>
-                <ListItemText primary="Xuân Hạnh" />
+                <ListItemText primary={userFollower.displayName} />
               </ListItemButton>
             </ListItem>
             <ListItem>
@@ -69,96 +84,17 @@ export default function ListFriend() {
                 />
                 <ListItemText primary="Nhắn tin" />
               </ListItemButton>
-              <ListItemButton>
+              <ListItemButton onClick={handleUnFollower}>
                 <CancelIcon
                   color="secondaryDark"
                   className={classes.friendIcon}
                 />
-                <ListItemText primary="Hủy kết bạn " />
+                <ListItemText primary="UnFollower" />
               </ListItemButton>
             </ListItem>
           </Paper>
-        </Grid>
-        <Grid item xs={6} className={classes.itemFriend}>
-          <Paper elevation={4}>
-            <ListItem alignItems="flex-start">
-              <ListItemButton>
-                <ListItemIcon>
-                  <Avatar alt="Remy Sharp" src={logoAvata} />
-                </ListItemIcon>
-                <ListItemText primary="Xuân Hạnh" />
-              </ListItemButton>
-            </ListItem>
-            <ListItem>
-              <ListItemButton>
-                <MapsUgcIcon
-                  color="secondaryLight"
-                  className={classes.friendIcon}
-                />
-                <ListItemText primary="Nhắn tin" />
-              </ListItemButton>
-              <ListItemButton>
-                <CancelIcon
-                  color="secondaryDark"
-                  className={classes.friendIcon}
-                />
-                <ListItemText primary="Hủy kết bạn" />
-              </ListItemButton>
-            </ListItem>
-          </Paper>
-        </Grid>
+        ) : null}
       </Grid>
-      <Divider />
-      <div className="friend-header">
-        <h1>Thêm bạn mới </h1>
-      </div>
-      <Grid
-        container
-        rowSpacing={1}
-        columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-        className={classes.listFriend}
-      >
-        <Grid item xs={6} className={classes.itemFriend}>
-          <Paper elevation={8}>
-            <ListItem alignItems="flex-start">
-              <ListItemButton>
-                <ListItemIcon>
-                  <Avatar alt="Remy Sharp" src={logoAvata} />
-                </ListItemIcon>
-                <ListItemText primary="Xuân Hạnh" />
-              </ListItemButton>
-
-              <ListItemButton>
-                <AddIcon
-                  color="secondaryLight"
-                  className={classes.friendIcon}
-                />
-                <ListItemText primary="Thêm bạn mới" />
-              </ListItemButton>
-            </ListItem>
-          </Paper>
-        </Grid>
-        <Grid item xs={6} className={classes.itemFriend}>
-          <Paper elevation={8}>
-            <ListItem alignItems="flex-start">
-              <ListItemButton>
-                <ListItemIcon>
-                  <Avatar alt="Remy Sharp" src={logoAvata} />
-                </ListItemIcon>
-                <ListItemText primary="Xuân Hạnh" />
-              </ListItemButton>
-
-              <ListItemButton>
-                <AddIcon
-                  color="secondaryLight"
-                  className={classes.friendIcon}
-                />
-                <ListItemText primary="Thêm bạn mới" />
-              </ListItemButton>
-            </ListItem>
-          </Paper>
-        </Grid>
-      </Grid>
-    </Box>
+    </>
   );
 }
