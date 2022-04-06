@@ -20,7 +20,6 @@ export default function App() {
   // console.log("🚀 ~ file: App.js ~ line 20 ~ App ~ userInform", userInform);
 
   useEffect(() => {
-    // console.log("cookies ", cookies.user);
     dispatch(login(cookies.user));
   }, []);
   return (

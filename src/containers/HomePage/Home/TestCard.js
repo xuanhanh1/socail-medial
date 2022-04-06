@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
+import { Paper, Divider } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import PropTypes from "prop-types";
 import AppBar from "@mui/material/AppBar";
@@ -10,9 +10,11 @@ import Typography from "@mui/material/Typography";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import AddTaskTwoToneIcon from "@mui/icons-material/AddTaskTwoTone";
 import { makeStyles } from "@mui/styles";
-import ListFollow from "../../../compoments/Compoment/ListFollow";
 import { useSelector } from "react-redux";
 import { db } from "../../../firebase";
+import ListFollow from "../../../compoments/Compoment/ListFollow";
+import { useDispatch } from "react-redux";
+import { login } from "../../../app/reudx/actions";
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -66,37 +68,49 @@ const useStyles = makeStyles({
 function CompomentLeft(props) {
   let trend = props.trend;
   const userInfor = useSelector((state) => state.userInfor);
-  const [user, setUser] = React.useState(userInfor);
+  const dispatch = useDispatch();
+
+  const [user, setUser] = useState(userInfor);
   const classes = useStyles();
   const [allUser, setAllUser] = useState();
 
   useEffect(() => {
-    getAllUsers();
-  }, []);
+    if (userInfor) {
+      setUser(userInfor);
+      getAllUsers(userInfor);
+    } else {
+      getAllUsers();
+    }
+  }, [userInfor]);
 
-  const getAllUsers = async () => {
+  const getAllUsers = async (user) => {
     var arr = [];
-    await db
-      .collection("users")
-      .limit(5)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-
-          if (user.uid == doc.data().uid) {
-            console.log("doc. data trung voi user follower");
+    console.log("user ", user);
+    try {
+      const userList = await db.collection("users").limit(5).get();
+      if (userList) {
+        userList.forEach((doc) => {
+          if (user && user.follower) {
+            if (
+              user.uid == doc.data().uid ||
+              user.follower.includes(doc.data().uid)
+            ) {
+            } else {
+              arr.push(doc.data());
+            }
           } else {
             arr.push(doc.data());
           }
         });
-      })
-      .catch((error) => {
-        console.log("err", error);
-      });
+      } else {
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+    console.log("arr ", arr);
     setAllUser(arr);
   };
-  console.log("all user ", allUser);
+
   return (
     <>
       <Grid item xs className={classes.listHomePage}>
@@ -107,14 +121,26 @@ function CompomentLeft(props) {
                 sx={{
                   width: "260px",
                   bgcolor: "background.paper",
-                  height: "50vh",
+                  height: "auto",
                 }}
               >
-                {allUser && allUser.length > 0
-                  ? allUser.map((user, index) => {
-                      <ListFollow userFollow={user} key={index} />;
-                    })
-                  : null}
+                <nav aria-label="main mailbox folders">
+                  <div className="test-card-header">
+                    <h3>Followers</h3>
+                  </div>
+                  <Divider />
+                  {allUser
+                    ? allUser.map((u, index) => {
+                        return (
+                          <ListFollow
+                            userFollow={u}
+                            key={index}
+                            userInform={user}
+                          />
+                        );
+                      })
+                    : null}
+                </nav>
               </Box>
             </Item>
           </Typography>

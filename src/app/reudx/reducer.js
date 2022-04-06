@@ -1,7 +1,7 @@
 import types from "./contains";
 
 const initialState = {
-  userInfor: {},
+  userInfor: null,
   posts: [],
 };
 

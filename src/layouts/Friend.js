@@ -40,6 +40,12 @@ function Friend() {
   const [followers, setFollowers] = useState([]);
   const [allUser, setAllUser] = useState();
 
+  const handleCookie = (user) => {
+    setCookie("user", user, {
+      path: "/",
+    });
+  };
+
   useEffect(() => {
     setUser(userInform);
     // console.log("loading user use effect user inform ");
@@ -91,6 +97,13 @@ function Friend() {
         })
         .then(() => {
           console.log("Document successfully updated!");
+          db.collection("users")
+            .doc(user.uid)
+            .onSnapshot((doc) => {
+              console.log("Current data: ", doc.data());
+              dispatch(login(doc.data()));
+              handleCookie(doc.data());
+            });
         })
         .catch((error) => {
           console.error("Error updating document: ", error);
