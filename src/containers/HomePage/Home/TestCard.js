@@ -65,51 +65,42 @@ ElevationScroll.propTypes = {
 const useStyles = makeStyles({
   "@media only screen and (max-width:1024px)": {},
 });
-function CompomentLeft(props) {
-  let trend = props.trend;
-  const userInfor = useSelector((state) => state.userInfor);
-  const dispatch = useDispatch();
 
-  const [user, setUser] = useState(userInfor);
+function TestCard({ userData }) {
   const classes = useStyles();
   const [allUser, setAllUser] = useState();
 
-  useEffect(() => {
-    if (userInfor) {
-      setUser(userInfor);
-      getAllUsers(userInfor);
-    } else {
-      getAllUsers();
-    }
-  }, [userInfor]);
+  // console.log("TestCard - userData", userData);
+  // useEffect(() => {
+  //   console.log("useEffect test card");
+  //   if (userData) {
+  //     updateListUserSuggest(userData);
+  //   }
+  // }, [userData]);
 
-  const getAllUsers = async (user) => {
-    var arr = [];
-    console.log("user ", user);
-    try {
-      const userList = await db.collection("users").limit(5).get();
-      if (userList) {
-        userList.forEach((doc) => {
-          if (user && user.follower) {
-            if (
-              user.uid == doc.data().uid ||
-              user.follower.includes(doc.data().uid)
-            ) {
-            } else {
-              arr.push(doc.data());
-            }
-          } else {
-            arr.push(doc.data());
-          }
-        });
-      } else {
-      }
-    } catch (error) {
-      console.log("error", error);
-    }
-    console.log("arr ", arr);
-    setAllUser(arr);
-  };
+  // const updateListUserSuggest = async (userData) => {
+  //   let arr = [];
+
+  //   try {
+  //     const userList = await db.collection("users").limit(5).get();
+  //     if (userList) {
+  //       userList.forEach((doc) => {
+  //         if (userData && userData.follower) {
+  //           const listFollowed = userData.follower;
+  //           const uid = doc.data().uid;
+  //           if (!listFollowed.includes(uid)) {
+  //             arr.push(doc.data());
+  //           }
+  //         }
+  //       });
+
+  //       console.log("arr ", arr);
+  //       setAllUser(arr);
+  //     }
+  //   } catch (error) {
+  //     console.log("error", error);
+  //   }
+  // };
 
   return (
     <>
@@ -135,7 +126,7 @@ function CompomentLeft(props) {
                           <ListFollow
                             userFollow={u}
                             key={index}
-                            userInform={user}
+                            userInform={userData}
                           />
                         );
                       })
@@ -150,4 +141,4 @@ function CompomentLeft(props) {
   );
 }
 
-export default CompomentLeft;
+export default TestCard;

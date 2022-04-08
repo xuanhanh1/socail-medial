@@ -82,7 +82,6 @@ export default function Login() {
           .get()
           .then((doc) => {
             if (doc.exists) {
-              console.log("Document data:", doc.data());
               dispatch(login(doc.data()));
               handleCookie(doc.data());
             } else {

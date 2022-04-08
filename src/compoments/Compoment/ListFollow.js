@@ -24,13 +24,13 @@ const useStyles = makeStyles({
   },
 });
 function ListFollow(props) {
-  const [user, setUser] = React.useState();
   const classes = useStyles();
   const [isActive, setIsActive] = useState();
   const { userFollow, userInform } = props;
   const [isFollow, setIsFollow] = useState(false);
   const [cookies, setCookie] = useCookies(["user"]);
   const dispatch = useDispatch();
+
   const tabSelected = (e) => {
     let currentValue = e.currentTarget.value;
     setIsActive(currentValue);
@@ -42,34 +42,23 @@ function ListFollow(props) {
   };
 
   const handleAddFollow = () => {
-    var followers = userInform.follower;
-    followers.push(userFollow.uid); //
-    // console.log(
-    //   "🚀 ~ file: ListFollow.js ~ line 38 ~ handleAddFollow ~ followers",
-    //   followers
-    // );
-    var users = db.collection("users").doc(userInform.uid);
-    return users
-      .update({
-        follower: followers,
-      })
-      .then(() => {
-        console.log("Document successfully updated!");
-
-        db.collection("users")
-          .doc(userInform.uid)
-          .onSnapshot((doc) => {
-            console.log("Current data: ", doc.data());
-            dispatch(login(doc.data()));
-            handleCookie(doc.data());
-          });
-
-        setIsFollow(true);
-        toast.success("follow thành công ");
-      })
-      .catch((error) => {
-        console.error("Error updating document: ", error);
-      });
+    // const followers = userInform.follower;
+    // followers.push(userFollow.uid);
+    // console.log("handleAddFollow - userInform", userInform);
+    // db.collection("users")
+    //   .doc(userInform.uid)
+    //   .update({
+    //     follower: followers,
+    //   })
+    //   .then(() => {
+    //     handleCookie(userInform);
+    //     console.log(".then - userInform", userInform);
+    //     setIsFollow(true);
+    //     toast.success("follow thành công ");
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error updating document: ", error);
+    //   });
   };
 
   return (
@@ -82,21 +71,24 @@ function ListFollow(props) {
             </ListItemIcon>
             <ListItemText
               primary={userFollow.displayName}
-              secondary={"Follow"}
+              secondary={isFollow ? "UnFollow" : "Follow"}
+              // secondary={"Follow"}
             />
           </ListItemButton>
         </Link>
         <div className="follow-icon" onClick={handleAddFollow}>
-          {/* {isFollow ? (
+          {isFollow ? (
             <IconButton>
               <CancelIcon color="secondaryDark" />
             </IconButton>
           ) : (
-            
-          )} */}
-          <IconButton>
+            <IconButton>
+              <AddTaskTwoToneIcon color="secondaryLight" />
+            </IconButton>
+          )}
+          {/* <IconButton>
             <AddTaskTwoToneIcon color="secondaryLight" />
-          </IconButton>
+          </IconButton> */}
         </div>
       </ListItem>
       <Divider />

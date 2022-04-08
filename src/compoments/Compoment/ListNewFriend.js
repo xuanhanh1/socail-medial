@@ -21,6 +21,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import { makeStyles } from "@mui/styles";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
+import { useCookies } from "react-cookie";
 const useStyles = makeStyles({
   friendIcon: {
     marginRight: 10,
@@ -37,26 +38,6 @@ const useStyles = makeStyles({
 
 export default function ListNewFriend(props) {
   const classes = useStyles();
-  const { followers, userId, userFollower } = props;
-  const [isFollow, setIsFollow] = useState(false);
-
-  const addUserFollower = () => {
-    followers.push(userFollower.uid);
-    console.log("user follower ", followers);
-    var users = db.collection("users").doc(userId);
-    return users
-      .update({
-        follower: followers,
-      })
-      .then(() => {
-        console.log("Document successfully updated!");
-        setIsFollow(true);
-        toast.success("follow thành công ");
-      })
-      .catch((error) => {
-        console.error("Error updating document: ", error);
-      });
-  };
 
   return (
     <>
@@ -65,12 +46,12 @@ export default function ListNewFriend(props) {
           <ListItem alignItems="flex-start">
             <ListItemButton>
               <ListItemIcon>
-                <Avatar alt="Remy Sharp" src={userFollower.photoURL} />
+                <Avatar alt="Remy Sharp" src="{userFollower.photoURL" />
               </ListItemIcon>
-              <ListItemText primary={userFollower.displayName} />
+              <ListItemText primary={"userFollower.displayName"} />
             </ListItemButton>
 
-            <ListItemButton onClick={addUserFollower}>
+            <ListItemButton>
               <AddIcon color="secondaryLight" className={classes.friendIcon} />
               <ListItemText primary="Follow" />
             </ListItemButton>

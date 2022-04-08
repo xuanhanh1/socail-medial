@@ -23,14 +23,10 @@ const useStyles = makeStyles({
 });
 function ListNav(props) {
   let trend = props.trend;
-  const userInfor = useSelector((state) => state.userInfor);
-
-  const [user, setUser] = React.useState();
+  const { user } = props;
   const classes = useStyles();
   const [isActive, setIsActive] = useState();
-  useEffect(() => {
-    setUser(userInfor);
-  }, [userInfor]);
+
   const tabSelected = (e) => {
     let currentValue = e.currentTarget.value;
     setIsActive(currentValue);

@@ -63,8 +63,7 @@ const useStyles = makeStyles({
 });
 function CompomentLeft(props) {
   let trend = props.trend;
-  const userInfor = useSelector((state) => state.userInfor);
-  const [user, setUser] = React.useState(userInfor);
+  const { user } = props;
   const classes = useStyles();
 
   return (
@@ -76,7 +75,7 @@ function CompomentLeft(props) {
               <Typography>
                 <Item>
                   <Box sx={{ width: "240px", bgcolor: "background.paper" }}>
-                    <ListNav />
+                    <ListNav user={user} />
                   </Box>
                 </Item>
               </Typography>

@@ -8,7 +8,6 @@ const initialState = {
 const rootReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.PROCESS_LOGIN:
-      // console.log("login cusses", action.userInfor);
       return {
         ...state,
         userInfor: action.userInfor,
