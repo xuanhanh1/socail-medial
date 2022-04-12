@@ -12,6 +12,11 @@ export const logout = () => {
     type: types.PROCESS_LOGOUT,
   };
 };
+export const count = () => {
+  return {
+    type: types.COUNT,
+  };
+};
 
 export const getAllPosts = (posts) => {
   return {

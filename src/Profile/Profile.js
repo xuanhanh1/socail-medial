@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { login } from "../app/reudx/actions";
 import { Card, Container, Button } from "@mui/material";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -50,11 +52,11 @@ function Profile(props) {
   const [expanded, setExpanded] = React.useState(false);
   const [user, setUser] = React.useState();
   const userInfor = useSelector((state) => state.userInfor);
-  console.log("userInfor", userInfor);
   const [photoURL, setPhotoURL] = useState();
   const [bgURL, setBgURL] = useState();
-  const [bg, setBg] = useState();
+  const [isChanged, setIsChanged] = useState(false);
   const { sx, ...other } = props;
+  const dispatch = useDispatch();
   const classes = useStyles();
 
   useEffect(() => {
@@ -64,14 +66,17 @@ function Profile(props) {
 
   useEffect(() => {
     if (photoURL) {
+      console.log("photoURL", photoURL);
       var userPhoto = db.collection("users").doc(user.uid);
-
+      user.photoURL = photoURL;
       return userPhoto
         .update({
           photoURL: photoURL,
         })
         .then(() => {
-          console.log("Document successfully updated!");
+          console.log("Document successfully updated!", user);
+          dispatch(login(user));
+          setIsChanged(!isChanged);
         })
         .catch((error) => {
           // The document probably doesn't exist.
@@ -79,14 +84,17 @@ function Profile(props) {
         });
     }
     if (bgURL) {
+      console.log("background image", bgURL);
       var userPhoto = db.collection("users").doc(user.uid);
-
+      user.backGroundImage = bgURL;
       return userPhoto
         .update({
-          backGroundImage: bgURL,
+          backGroundImage: bgURL ? bgURL : user.backGroundImage,
         })
         .then(() => {
-          console.log("Document successfully updated!");
+          console.log("Document successfully updated!", user);
+          dispatch(login(user));
+          setIsChanged(!isChanged);
         })
         .catch((error) => {
           // The document probably doesn't exist.
@@ -134,6 +142,7 @@ function Profile(props) {
         // For instance, get the download URL: https://firebasestorage.googleapis.com/...
         uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
           console.log("File available at", downloadURL);
+          console.log("is background, ", isBackground);
           if (isBackground == true) {
             setBgURL(downloadURL);
           } else {
@@ -144,10 +153,13 @@ function Profile(props) {
     );
   };
 
+  console.log("background image", bgURL);
+  console.log("photo image", photoURL);
+
   return (
     <div style={{ backgroundColor: "#f0f2f5" }}>
       <Container className={classes.contai}>
-        <Header />
+        <Header user={user} />
         {user && user.uid ? (
           <Card
             sx={{

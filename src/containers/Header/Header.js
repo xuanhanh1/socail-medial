@@ -129,36 +129,32 @@ export default function Header(props) {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
   const ariaLabel = { "aria-label": "description" };
-  const [login, setLogin] = React.useState(true);
-  const [user, setUser] = React.useState();
+  // const [login, setLogin] = React.useState(true);
+  // const [user, setUser] = React.useState();
+  const { user } = props;
   const [show, setShow] = React.useState(false);
   const [showSearch, setShowSearch] = React.useState(false);
   const classes = useStyles();
   const dispatch = useDispatch();
   const userInfor = useSelector((state) => state.userInfor);
-  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
-
-  useEffect(() => {
-    setUser(userInfor);
-  }, [userInfor, login]);
+  // const [cookies, setCookie, removeCookie] = useCookies(["user"]);
 
   const signOut = () => {
     console.log("sign out");
-    // firebase
-    //   .auth()
-    //   .signOut()
-    //   .then(() => {
-    //     setLogin(false);
-    //     dispatch(logout());
-    //     removeCookie("user");
-    //   })
-    //   .catch((error) => {
-    //     // An error happened.
-    // });
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        dispatch(logout());
+        localStorage.removeItem("user");
+      })
+      .catch((error) => {
+        // An error happened.
+      });
 
-    setLogin(false);
-    dispatch(logout());
-    removeCookie("user");
+    // setLogin(false);
+    // dispatch(logout());
+    // removeCookie("user");
   };
   //open setting
   const handleToggle = () => {

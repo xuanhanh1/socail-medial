@@ -11,6 +11,7 @@ import useScrollTrigger from "@mui/material/useScrollTrigger";
 import { makeStyles } from "@mui/styles";
 import ListNav from "../compoments/Compoment/ListNav";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -62,9 +63,7 @@ const useStyles = makeStyles({
   "@media only screen and (max-width:1024px)": {},
 });
 function CompomentLeft(props) {
-  let trend = props.trend;
-  const userInfor = useSelector((state) => state.userInfor);
-  const [user, setUser] = React.useState(userInfor);
+  const { user } = props;
   const classes = useStyles();
 
   return (
@@ -76,7 +75,7 @@ function CompomentLeft(props) {
               <Typography>
                 <Item>
                   <Box sx={{ width: "240px", bgcolor: "background.paper" }}>
-                    <ListNav />
+                    <ListNav user={user} />
                   </Box>
                 </Item>
               </Typography>

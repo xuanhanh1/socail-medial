@@ -111,9 +111,14 @@ function Home() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setUser(userInfor);
+    if (userInfor) {
+      setUser(userInfor);
+      getPostList();
+    }
+  }, [userInfor]);
 
-    (async () => {
+  const getPostList = async () => {
+    try {
       const postData = await db
         .collection("posts")
         .where("type", "==", "image")
@@ -133,8 +138,10 @@ function Home() {
 
         setDataPosts(arr);
       }
-    })();
-  }, [userInfor]);
+    } catch (error) {
+      console.log("🚀 ~ getPostList ~ error", error);
+    }
+  };
 
   return (
     <>
@@ -151,30 +158,28 @@ function Home() {
         >
           <Post />
         </Card>
-      ) : (
-        ""
-      )}
+      ) : null}
 
       {loading ? (
-        ""
+        <>
+          {dataPosts.length > 0
+            ? dataPosts.map((post, index) => {
+                return (
+                  <PostDetail
+                    key={index}
+                    post={post}
+                    userId={user ? user.uid : null}
+                    index={index}
+                  />
+                );
+              })
+            : null}
+        </>
       ) : (
         <>
           <CircularProgress color="primary" />
         </>
       )}
-
-      {dataPosts.length > 0
-        ? dataPosts.map((post, index) => {
-            return (
-              <PostDetail
-                key={index}
-                post={post}
-                userId={user ? user.uid : null}
-                index={index}
-              />
-            );
-          })
-        : null}
     </>
   );
 }

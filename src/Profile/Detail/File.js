@@ -246,7 +246,6 @@ function File(props) {
         {post &&
           post.imageURL.length > 0 &&
           post.imageURL.map((img) => {
-            console.log("post in map", img);
             return (
               <CardMedia
                 component={post.type === "image" ? "img" : "video"}

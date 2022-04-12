@@ -21,6 +21,10 @@ import EmailIcon from "@mui/icons-material/Email";
 import { makeStyles } from "@mui/styles";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
+import { useCookies } from "react-cookie";
+import { useDispatch, useSelector } from "react-redux";
+import { login, count } from "../../app/reudx/actions";
+
 const useStyles = makeStyles({
   friendIcon: {
     marginRight: 10,
@@ -37,20 +41,27 @@ const useStyles = makeStyles({
 
 export default function ListNewFriend(props) {
   const classes = useStyles();
-  const { followers, userId, userFollower } = props;
-  const [isFollow, setIsFollow] = useState(false);
+  const { user, userFollow, ParentHandleFollow } = props;
+  const dispatch = useDispatch();
 
-  const addUserFollower = () => {
-    followers.push(userFollower.uid);
-    console.log("user follower ", followers);
-    var users = db.collection("users").doc(userId);
+  const handleFollow = () => {
+    ParentHandleFollow();
+
+    user.follower.push({
+      uid: userFollow.uid,
+      displayName: userFollow.displayName,
+      photoURL: userFollow.photoURL,
+    });
+    user.countFollower = user.follower.length + 1;
+    var users = db.collection("users").doc(user.uid);
+
     return users
       .update({
-        follower: followers,
+        follower: user.follower,
       })
       .then(() => {
         console.log("Document successfully updated!");
-        setIsFollow(true);
+        dispatch(login(user));
         toast.success("follow thành công ");
       })
       .catch((error) => {
@@ -65,12 +76,12 @@ export default function ListNewFriend(props) {
           <ListItem alignItems="flex-start">
             <ListItemButton>
               <ListItemIcon>
-                <Avatar alt="Remy Sharp" src={userFollower.photoURL} />
+                <Avatar alt="Remy Sharp" src={userFollow.photoURL} />
               </ListItemIcon>
-              <ListItemText primary={userFollower.displayName} />
+              <ListItemText primary={userFollow.displayName} />
             </ListItemButton>
 
-            <ListItemButton onClick={addUserFollower}>
+            <ListItemButton onClick={handleFollow}>
               <AddIcon color="secondaryLight" className={classes.friendIcon} />
               <ListItemText primary="Follow" />
             </ListItemButton>

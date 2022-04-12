@@ -20,6 +20,7 @@ import logoAvata from "../../image/avata.png";
 import EmailIcon from "@mui/icons-material/Email";
 import { makeStyles } from "@mui/styles";
 import { db } from "../../firebase";
+import { useDispatch } from "react-redux";
 const useStyles = makeStyles({
   friendIcon: {
     marginRight: 10,
@@ -36,44 +37,24 @@ const useStyles = makeStyles({
 
 export default function ListFriend(props) {
   const classes = useStyles();
-  const { followerId, ParentHandleUnFollower } = props;
+  const { userFollow, ParentHandleUnFollower, index } = props;
   const [userFollower, setUserFollower] = useState();
-  useEffect(() => {
-    (async () => {
-      if (followerId) {
-        const userData = await db.collection("users").doc(followerId);
-        userData
-          .get()
-          .then((doc) => {
-            if (doc.exists) {
-              setUserFollower(doc.data());
-            } else {
-              // doc.data() will be undefined in this case
-              console.log("No such document in friend list!");
-            }
-          })
-          .catch((error) => {
-            console.log("Error getting document:", error);
-          });
-      }
-    })();
-  }, [followerId]);
 
   const handleUnFollower = () => {
-    ParentHandleUnFollower(userFollower.uid);
+    ParentHandleUnFollower(userFollow.uid);
   };
 
   return (
     <>
       <Grid item xs={6} className={classes.itemFriend}>
-        {userFollower ? (
+        {userFollow ? (
           <Paper sx={{ mb: "10px" }} elevation={4}>
             <ListItem alignItems="flex-start">
               <ListItemButton>
                 <ListItemIcon>
-                  <Avatar alt="Remy Sharp" src={userFollower.photoURL} />
+                  <Avatar alt="Remy Sharp" src={userFollow.photoURL} />
                 </ListItemIcon>
-                <ListItemText primary={userFollower.displayName} />
+                <ListItemText primary={userFollow.displayName} />
               </ListItemButton>
             </ListItem>
             <ListItem>

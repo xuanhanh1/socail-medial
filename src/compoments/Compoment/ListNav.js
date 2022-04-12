@@ -14,6 +14,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles({
   "@media only screen and (max-width:1024px)": {},
@@ -23,17 +24,15 @@ const useStyles = makeStyles({
 });
 function ListNav(props) {
   let trend = props.trend;
-  const userInfor = useSelector((state) => state.userInfor);
-
-  const [user, setUser] = React.useState();
+  const { user } = props;
   const classes = useStyles();
   const [isActive, setIsActive] = useState();
-  useEffect(() => {
-    setUser(userInfor);
-  }, [userInfor]);
+  const navigate = useNavigate();
+
   const tabSelected = (e) => {
     let currentValue = e.currentTarget.value;
     setIsActive(currentValue);
+    const isActiveFriend = createContext(currentValue);
   };
 
   return (

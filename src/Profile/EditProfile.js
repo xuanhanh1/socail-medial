@@ -1,4 +1,7 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { db } from "../firebase";
+import { toast } from "react-toastify";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
@@ -20,16 +23,50 @@ const useStyles = makeStyles({
     position: "absolute !important",
     right: "130px",
     bottom: 0,
+    marginBottom: "10px !important",
+  },
+  editProfileForm: {
+    paddingBottom: "40px",
   },
 });
 const ariaLabel = { "aria-label": "description" };
-export default function LabTabs() {
+export default function LabTabs(props) {
   const [value, setValue] = React.useState("1");
+  const [allInput, setAllInput] = useState({
+    address: "",
+    school: "",
+    work: "",
+    hobby: "",
+  });
+  const user = useSelector((state) => state.userInfor);
   const classes = useStyles();
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
+  const handleOnChangeInput = (event) => {
+    setAllInput({ ...allInput, [event.target.name]: event.target.value });
+  };
+
+  const updateProfile = () => {
+    console.log("all input ", allInput);
+    var users = db.collection("users").doc(user.uid);
+
+    return users
+      .update({
+        aboutMe: allInput,
+      })
+      .then(() => {
+        console.log("Document successfully updated!");
+
+        toast.success("follow thành công ");
+        setAllInput({ address: "", school: "", work: "", hobby: "" });
+      })
+      .catch((error) => {
+        console.error("Error updating document: ", error);
+      });
+  };
   return (
     <Box sx={{ width: "100%", typography: "body1" }}>
       <div className="edit-profile-header">
@@ -70,6 +107,7 @@ export default function LabTabs() {
               }}
               noValidate
               autoComplete="off"
+              className={classes.editProfileForm}
             >
               <div className="form">
                 <ListItem>
@@ -80,7 +118,11 @@ export default function LabTabs() {
                 </ListItem>
                 <Input
                   placeholder="Phú Hòa, Phú Yên"
+                  name="address"
+                  value={allInput.address}
+                  id="address"
                   inputProps={ariaLabel}
+                  onChange={handleOnChangeInput}
                   sx={{
                     marginTop: 0,
                     paddingLeft: 1,
@@ -99,6 +141,10 @@ export default function LabTabs() {
                 </ListItem>
                 <Input
                   placeholder="Trường THPT Trần Quốc Tuấn"
+                  name="school"
+                  value={allInput.school}
+                  id="school"
+                  onChange={handleOnChangeInput}
                   inputProps={ariaLabel}
                   sx={{
                     marginTop: 0,
@@ -118,6 +164,10 @@ export default function LabTabs() {
                 </ListItem>
                 <Input
                   placeholder="133 Tân Cảng"
+                  name="work"
+                  value={allInput.work}
+                  id="work"
+                  onChange={handleOnChangeInput}
                   inputProps={ariaLabel}
                   sx={{
                     marginTop: 0,
@@ -137,6 +187,10 @@ export default function LabTabs() {
                 </ListItem>
                 <Input
                   placeholder="Chơi game"
+                  name="hobby"
+                  value={allInput.hobby}
+                  id="hobby"
+                  onChange={handleOnChangeInput}
                   inputProps={ariaLabel}
                   sx={{
                     marginTop: 0,
@@ -152,6 +206,7 @@ export default function LabTabs() {
               variant="contained"
               color="primary"
               className={classes.editProfileBtn}
+              onClick={updateProfile}
             >
               save
             </Button>

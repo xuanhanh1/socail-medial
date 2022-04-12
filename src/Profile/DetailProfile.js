@@ -84,7 +84,6 @@ export default function DetailProfile(props) {
             postData.forEach((doc) => {
               arr.push(doc.data());
             });
-            console.log("mang ", arr);
             if (arr.length === 3) {
               setLoading(true);
             }
@@ -118,45 +117,48 @@ export default function DetailProfile(props) {
                 </span>
               </div>
               <hr></hr>
-
-              <List component="nav" aria-label="main mailbox folders">
-                <ListItemButton
-                  selected={selectedIndex === 1}
-                  onClick={(event) => handleListItemClick(event, 1)}
-                >
-                  <ListItemIcon>
-                    <ApartmentSharpIcon color="backgroundColorDark" />
-                  </ListItemIcon>
-                  <ListItemText primary="Phú Hòa, Phú Yên" />
-                </ListItemButton>
-                <ListItemButton
-                  selected={selectedIndex === 2}
-                  onClick={(event) => handleListItemClick(event, 2)}
-                >
-                  <ListItemIcon>
-                    <WorkIcon color="backgroundColorDark" />
-                  </ListItemIcon>
-                  <ListItemText primary="133 Tân Cảng, Bình Thạnh" />
-                </ListItemButton>
-                <ListItemButton
-                  selected={selectedIndex === 4}
-                  onClick={(event) => handleListItemClick(event, 4)}
-                >
-                  <ListItemIcon>
-                    <SchoolIcon color="backgroundColorDark" />
-                  </ListItemIcon>
-                  <ListItemText primary="Đh Công Nghệ Thông Tin" />
-                </ListItemButton>
-                <ListItemButton
-                  selected={selectedIndex === 3}
-                  onClick={(event) => handleListItemClick(event, 3)}
-                >
-                  <ListItemIcon>
-                    <SportsEsportsIcon color="backgroundColorDark" />
-                  </ListItemIcon>
-                  <ListItemText primary="Chơi game, nuôi chó" />
-                </ListItemButton>
-              </List>
+              {user && user.aboutMe ? (
+                <List component="nav" aria-label="main mailbox folders">
+                  <ListItemButton
+                    selected={selectedIndex === 1}
+                    onClick={(event) => handleListItemClick(event, 1)}
+                  >
+                    <ListItemIcon>
+                      <ApartmentSharpIcon color="backgroundColorDark" />
+                    </ListItemIcon>
+                    <ListItemText primary={user.aboutMe.address} />
+                  </ListItemButton>
+                  <ListItemButton
+                    selected={selectedIndex === 2}
+                    onClick={(event) => handleListItemClick(event, 2)}
+                  >
+                    <ListItemIcon>
+                      <WorkIcon color="backgroundColorDark" />
+                    </ListItemIcon>
+                    <ListItemText primary={user.aboutMe.work} />
+                  </ListItemButton>
+                  <ListItemButton
+                    selected={selectedIndex === 4}
+                    onClick={(event) => handleListItemClick(event, 4)}
+                  >
+                    <ListItemIcon>
+                      <SchoolIcon color="backgroundColorDark" />
+                    </ListItemIcon>
+                    <ListItemText primary={user.aboutMe.school} />
+                  </ListItemButton>
+                  <ListItemButton
+                    selected={selectedIndex === 3}
+                    onClick={(event) => handleListItemClick(event, 3)}
+                  >
+                    <ListItemIcon>
+                      <SportsEsportsIcon color="backgroundColorDark" />
+                    </ListItemIcon>
+                    <ListItemText primary={user.aboutMe.hobby} />
+                  </ListItemButton>
+                </List>
+              ) : (
+                <h3>Chưa có thông tin </h3>
+              )}
             </Card>
           </Grid>
           <Grid item xs={9} className={classes.detailProfile}>

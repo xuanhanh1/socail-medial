@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
+import { useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import { Paper, Divider } from "@mui/material";
@@ -13,8 +15,9 @@ import { makeStyles } from "@mui/styles";
 import { useSelector } from "react-redux";
 import { db } from "../../../firebase";
 import ListFollow from "../../../compoments/Compoment/ListFollow";
-import { useDispatch } from "react-redux";
+import { compareFollowerId } from "../../../compoments/FunCompoments/Function";
 import { login } from "../../../app/reudx/actions";
+
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -65,50 +68,75 @@ ElevationScroll.propTypes = {
 const useStyles = makeStyles({
   "@media only screen and (max-width:1024px)": {},
 });
-function CompomentLeft(props) {
-  let trend = props.trend;
-  const userInfor = useSelector((state) => state.userInfor);
-  const dispatch = useDispatch();
 
-  const [user, setUser] = useState(userInfor);
+function TestCard(props) {
   const classes = useStyles();
-  const [allUser, setAllUser] = useState();
+  const [allUsers, setAllUsers] = useState();
+  const { user } = props;
+  const [isChanged, setIsChanged] = useState();
+  const [show, setShow] = useState(false);
+  let location = useLocation();
 
   useEffect(() => {
-    if (userInfor) {
-      setUser(userInfor);
-      getAllUsers(userInfor);
+    if (location.pathname === "/friend") {
+      setShow(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log("user is not change ", user);
+    if (user) {
+      console.log("has user");
+      getAllUsers(user);
     } else {
+      console.log("not have user");
       getAllUsers();
     }
-  }, [userInfor]);
+  }, [user, isChanged]);
 
-  const getAllUsers = async (user) => {
-    var arr = [];
+  const getAllUsers = (user) => {
     console.log("user ", user);
-    try {
-      const userList = await db.collection("users").limit(5).get();
-      if (userList) {
-        userList.forEach((doc) => {
-          if (user && user.follower) {
-            if (
-              user.uid == doc.data().uid ||
-              user.follower.includes(doc.data().uid)
-            ) {
+    let arr = [];
+    if (user && user.follower) {
+      db.collection("users")
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+
+            let compareFollow = compareFollowerId(
+              user.follower,
+              doc.data().uid
+            );
+            if (user.uid == doc.data().uid || compareFollow.result) {
+              console.log(11);
             } else {
               arr.push(doc.data());
             }
-          } else {
-            arr.push(doc.data());
-          }
+          });
+          setAllUsers(arr);
+        })
+        .catch((error) => {
+          console.log("Error getting documents: ", error);
         });
-      } else {
-      }
-    } catch (error) {
-      console.log("error", error);
+    } else {
+      db.collection("users")
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            arr.push(doc.data());
+          });
+          setAllUsers(arr);
+        })
+        .catch((error) => {
+          console.log("Error getting documents: ", error);
+        });
+      console.log("not have user");
     }
-    console.log("arr ", arr);
-    setAllUser(arr);
+  };
+
+  const handleFollow = () => {
+    setIsChanged(!isChanged);
   };
 
   return (
@@ -129,13 +157,14 @@ function CompomentLeft(props) {
                     <h3>Followers</h3>
                   </div>
                   <Divider />
-                  {allUser
-                    ? allUser.map((u, index) => {
+                  {allUsers
+                    ? allUsers.map((u, index) => {
                         return (
                           <ListFollow
                             userFollow={u}
                             key={index}
-                            userInform={user}
+                            user={user}
+                            ParentHandleFollow={handleFollow}
                           />
                         );
                       })
@@ -150,4 +179,4 @@ function CompomentLeft(props) {
   );
 }
 
-export default CompomentLeft;
+export default TestCard;

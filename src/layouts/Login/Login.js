@@ -76,23 +76,31 @@ export default function Login() {
       .then((userCredential) => {
         // Signed in
         var user = userCredential.user;
+
+        db.collection("users")
+          .doc(user.uid)
+          .onSnapshot((doc) => {
+            console.log("login -", user);
+            dispatch(login(doc.data()));
+            handleCookie(doc.data());
+          });
+
         var docRef = db.collection("users").doc(user.uid);
 
-        docRef
-          .get()
-          .then((doc) => {
-            if (doc.exists) {
-              console.log("Document data:", doc.data());
-              dispatch(login(doc.data()));
-              handleCookie(doc.data());
-            } else {
-              // doc.data() will be undefined in this case
-              console.log("No such document!");
-            }
-          })
-          .catch((error) => {
-            console.log("Error getting document:", error);
-          });
+        // docRef
+        //   .get()
+        //   .then((doc) => {
+        //     if (doc.exists) {
+        //       dispatch(login(doc.data()));
+        //       handleCookie(doc.data());
+        //     } else {
+        //       // doc.data() will be undefined in this case
+        //       console.log("No such document!");
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     console.log("Error getting document:", error);
+        //   });
 
         setCheckUser(true);
       })
@@ -100,7 +108,7 @@ export default function Login() {
         var errorCode = error.code;
         var errorMessage = error.message;
         setError(errorMessage);
-        // ..
+        //   // ..
       });
   };
   const signUpGoogle = (event) => {

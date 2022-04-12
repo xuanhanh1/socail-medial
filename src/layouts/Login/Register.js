@@ -87,6 +87,9 @@ export default function SignUp() {
             email: email,
             gender: gender,
             uid: user.uid,
+            photoURL: "",
+            backGroundImage: "",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           })
           .then(() => {
             console.log("User created ", user);

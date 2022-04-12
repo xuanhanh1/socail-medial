@@ -3,6 +3,8 @@ const actionsTypes = Object.freeze({
   PROCESS_LOGOUT: "PROCESS_LOGOUT",
 
   GET_ALL_POSTS: "GET_ALL_POSTS",
+
+  COUNT: "COUNT",
 });
 
 export default actionsTypes;

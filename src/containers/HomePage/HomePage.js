@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -13,7 +15,6 @@ import Header from "../Header/Header";
 import CompomentLeft from "../CompomentLeft";
 import { makeStyles } from "@mui/styles";
 import TestCard from "./Home/TestCard";
-import { useSelector } from "react-redux";
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -72,24 +73,37 @@ const useStyles = makeStyles({
 });
 function HomePage() {
   const userInfor = useSelector((state) => state.userInfor);
-  const [user, setUser] = useState(userInfor);
+  const [user, setUser] = useState();
   const classes = useStyles();
+  const [show, setShow] = useState(false);
+  let location = useLocation();
+
   useEffect(() => {
-    // console.log("user in useEffect", user);
-    setUser(userInfor);
-  }, userInfor);
-  // console.log("user in home page ", user);
+    console.log("run useEffect in homePage (user redux changes)");
+    if (userInfor) {
+      setUser(userInfor);
+    } else {
+      setUser();
+    }
+
+    if (location.pathname === "/friend") {
+      setShow(true);
+    } else {
+      setShow(false);
+    }
+  }, [userInfor, location.pathname]);
+
   return (
     <>
       <div className="bd">
         <div style={{ backgroundColor: "#e2e8f0" }}>
           <div className={classes.contai}>
-            <Header />
+            <Header user={user} />
             <Box sx={{ flexGrow: 1, mt: 6 }} className={classes.main}>
               <CssBaseline />
               <Grid container spacing={1}>
                 <Grid item xs>
-                  <CompomentLeft />
+                  <CompomentLeft user={user} />
                 </Grid>
                 <Grid item xs={6} sx={{ alignItems: "center" }}>
                   <Item>
@@ -97,7 +111,7 @@ function HomePage() {
                   </Item>
                 </Grid>
                 <Grid item xs>
-                  <TestCard />
+                  {!show ? <TestCard user={user} /> : null}
                 </Grid>
               </Grid>
             </Box>

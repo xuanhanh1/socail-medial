@@ -10,12 +10,15 @@ import {
   ListItemButton,
   ListItemIcon,
 } from "@mui/material/";
-import { login } from "../app/reudx/actions";
+import { login, count } from "../app/reudx/actions";
 import EmailIcon from "@mui/icons-material/Email";
 import { makeStyles } from "@mui/styles";
 import ListFriend from "../compoments/Compoment/ListFriend";
 import ListNewFriend from "../compoments/Compoment/ListNewFriend";
 import { db } from "../firebase";
+import { compareFollowerId } from "../compoments/FunCompoments/Function";
+import Test from "../compoments/Compoment/test";
+
 const useStyles = makeStyles({
   friendIcon: {
     marginRight: 10,
@@ -32,78 +35,76 @@ const useStyles = makeStyles({
 
 function Friend() {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const [friend, setFriend] = useState(true);
   const userInform = useSelector((state) => state.userInfor);
   const [user, setUser] = useState();
-  const [cookies, setCookie] = useCookies();
-  const [followers, setFollowers] = useState([]);
-  const [allUser, setAllUser] = useState();
+  const [allUsers, setAllUsers] = useState();
+  const [isChanged, setIsChanged] = useState(false);
 
-  const handleCookie = (user) => {
-    setCookie("user", user, {
-      path: "/",
-    });
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log("user is not change ", user);
+    if (userInform) {
+      setUser(userInform);
+      getAllUsers(userInform);
+    } else {
+      getAllUsers();
+    }
+  }, [userInform, isChanged]);
+
+  const getAllUsers = (user) => {
+    let arr = [];
+    if (user && user.follower) {
+      db.collection("users")
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+
+            let compareFollow = compareFollowerId(
+              user.follower,
+              doc.data().uid
+            );
+            if (user.uid == doc.data().uid || compareFollow.result) {
+              console.log();
+            } else {
+              arr.push(doc.data());
+            }
+          });
+          setAllUsers(arr);
+        })
+        .catch((error) => {
+          console.log("Error getting documents: ", error);
+        });
+    } else {
+      db.collection("users")
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            arr.push(doc.data());
+          });
+          setAllUsers(arr);
+        })
+        .catch((error) => {
+          console.log("Error getting documents: ", error);
+        });
+      console.log("not have user");
+    }
   };
 
-  useEffect(() => {
-    setUser(userInform);
-    // console.log("loading user use effect user inform ");
-    if (userInform && userInform.follower) {
-      setFollowers(userInform.follower);
-      // console.log("set user follower by user inform");
-    }
-  }, [userInform]);
+  const handleUnFollow = (id) => {
+    let index = compareFollowerId(user.follower, id).index;
 
-  useEffect(() => {
-    // console.log("loading user from user cookies ");
-    db.collection("users")
-      .doc(cookies.user.uid)
-      .onSnapshot((doc) => {
-        // console.log("Current data: ", doc.data());
-        setUser(doc.data());
-        dispatch(login(doc.data()));
-      });
-    // var docRef = db.collection("users").doc(cookies.user.uid);
-
-    // docRef
-    //   .get()
-    //   .then((doc) => {
-    //     if (doc.exists) {
-    //       setUser(doc.data());
-    //       dispatch(login(doc.data()));
-    //     } else {
-    //       console.log("No such document!");
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log("Error getting document:", error);
-    //   });
-  }, []);
-
-  useEffect(() => {
-    getAllUsers();
-  }, [followers]);
-
-  const handleUnFollower = (id) => {
-    if (followers) {
-      const newFollowers = followers.filter((follower) => follower !== id);
-      setFollowers(newFollowers);
-
+    if (user.follower) {
+      const arrNewFollowers = user.follower.splice(index, 1);
       var users = db.collection("users").doc(user.uid);
       return users
         .update({
-          follower: newFollowers,
+          follower: user.follower,
         })
         .then(() => {
-          console.log("Document successfully updated!");
-          db.collection("users")
-            .doc(user.uid)
-            .onSnapshot((doc) => {
-              console.log("Current data: ", doc.data());
-              dispatch(login(doc.data()));
-              handleCookie(doc.data());
-            });
+          dispatch(login(user));
+          setIsChanged(!isChanged);
         })
         .catch((error) => {
           console.error("Error updating document: ", error);
@@ -111,34 +112,9 @@ function Friend() {
     }
   };
 
-  const getAllUsers = async () => {
-    var arr = [];
-    await db
-      .collection("users")
-      .limit(10)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-
-          if (followers) {
-            if (
-              followers.includes(doc.data().uid) ||
-              user.uid == doc.data().uid
-            ) {
-              console.log("doc. data trung voi user follower");
-            } else {
-              arr.push(doc.data());
-            }
-          }
-        });
-      })
-      .catch((error) => {
-        console.log("err", error);
-      });
-    setAllUser(arr);
+  const handleFollow = () => {
+    setIsChanged(!isChanged);
   };
-
   return (
     <Box
       sx={{
@@ -146,8 +122,9 @@ function Friend() {
         height: "100vh",
       }}
     >
+      <div>{count}</div>
       <div className="friend-header">
-        <h1>Danh sách bạn bè</h1>
+        <h1>Follower</h1>
       </div>
       <Grid
         container
@@ -155,14 +132,17 @@ function Friend() {
         columnSpacing={{ xs: 1, sm: 2, md: 3 }}
         className={classes.listFriend}
       >
-        {followers
-          ? followers.map((follower, index) => {
+        {user && user.follower && user.follower.length > 0
+          ? user.follower.map((follow, index) => {
               return (
-                <ListFriend
-                  followerId={follower}
-                  key={index}
-                  ParentHandleUnFollower={handleUnFollower}
-                />
+                <>
+                  <ListFriend
+                    key={index}
+                    index={index}
+                    userFollow={follow}
+                    ParentHandleUnFollower={handleUnFollow}
+                  />
+                </>
               );
             })
           : null}
@@ -170,7 +150,7 @@ function Friend() {
       <Divider />
 
       <div className="friend-header">
-        <h1>Thêm bạn mới </h1>
+        <h1> Suggest Follower </h1>
       </div>
       <Grid
         container
@@ -178,14 +158,17 @@ function Friend() {
         columnSpacing={{ xs: 1, sm: 2, md: 3 }}
         className={classes.listFriend}
       >
-        {allUser && allUser.length > 0
-          ? allUser.map((u) => (
-              <ListNewFriend
-                userFollower={u}
-                userId={user ? user.uid : null}
-                followers={followers}
-              />
-            ))
+        {allUsers
+          ? allUsers.map((userFollow, i) => {
+              return (
+                <ListNewFriend
+                  key={i}
+                  user={user}
+                  userFollow={userFollow}
+                  ParentHandleFollow={handleFollow}
+                />
+              );
+            })
           : null}
       </Grid>
     </Box>
