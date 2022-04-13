@@ -1,4 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  login,
+  count,
+  getAllUserFollowed,
+  suggestFollow,
+} from "../../app/reudx/actions";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import List from "@mui/material/List";
@@ -22,8 +29,6 @@ import { makeStyles } from "@mui/styles";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
-import { useDispatch, useSelector } from "react-redux";
-import { login, count } from "../../app/reudx/actions";
 
 const useStyles = makeStyles({
   friendIcon: {
@@ -41,34 +46,49 @@ const useStyles = makeStyles({
 
 export default function ListNewFriend(props) {
   const classes = useStyles();
-  const { user, userFollow, ParentHandleFollow } = props;
+  const { user, userFollow, ParentHandleFollow, index } = props;
+  const allUserSuggestFollow = useSelector(
+    (state) => state.allUserSuggestFollow
+  );
+  const allUserFollowed = useSelector((state) => state.allUserFollowed);
+
   const dispatch = useDispatch();
 
   const handleFollow = () => {
-    ParentHandleFollow();
+    const arrNewFollowers = allUserSuggestFollow.splice(index, 1);
+    console.log("handleFollow - arrNewFollowers", arrNewFollowers);
+    allUserSuggestFollow.filter((user) => user.uid === arrNewFollowers.uid);
+    // const arrNewUsersFollowed = allUserFollowed.concat(arrNewFollowers);
+    const arrNewUsersFollowed = allUserFollowed.concat([
+      {
+        uid: arrNewFollowers[0].uid,
+        photoURL: arrNewFollowers[0].photoURL,
+        displayName: arrNewFollowers[0].displayName,
+      },
+    ]);
 
-    user.follower.push({
-      uid: userFollow.uid,
-      displayName: userFollow.displayName,
-      photoURL: userFollow.photoURL,
-    });
-    user.countFollower = user.follower.length + 1;
+    console.log("allUserSuggestFollow", allUserSuggestFollow);
+    console.log("allUserFollowed", arrNewUsersFollowed);
+
+    user.follower = arrNewUsersFollowed;
+
     var users = db.collection("users").doc(user.uid);
 
     return users
       .update({
-        follower: user.follower,
+        follower: arrNewUsersFollowed,
       })
       .then(() => {
-        console.log("Document successfully updated!");
+        console.log("follow success", user);
         dispatch(login(user));
-        toast.success("follow thành công ");
+        dispatch(getAllUserFollowed(arrNewUsersFollowed));
+        dispatch(suggestFollow(allUserSuggestFollow));
+        // toast.success("follow thành công ");
       })
       .catch((error) => {
         console.error("Error updating document: ", error);
       });
   };
-
   return (
     <>
       <Grid item xs={6} className={classes.itemFriend}>

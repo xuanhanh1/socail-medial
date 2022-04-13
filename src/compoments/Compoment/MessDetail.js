@@ -56,56 +56,33 @@ ElevationScroll.propTypes = {
    */
   window: PropTypes.func,
 };
-function MessDetail() {
-  const [expanded, setExpanded] = React.useState(false);
+function MessDetail(props) {
+  const { user, userSelected } = props;
   const [input, setInput] = React.useState("");
   const [image, setImage] = useState([]);
   const [isImage, setIsImage] = useState(false);
-  const [user, setUser] = useState();
-  const userInfor = useSelector((state) => state.userInfor);
-  const [userContact, setUserContact] = useState();
+
+  useEffect(() => {
+    db.collection("chat")
+      .where("state", "==", "CA")
+      .onSnapshot((querySnapshot) => {
+        var cities = [];
+        querySnapshot.forEach((doc) => {
+          cities.push(doc.data().name);
+        });
+        console.log("Current cities in CA: ", cities.join(", "));
+      });
+  }, []);
+
   const getKeyByValue = (object, value) => {
     return Object.keys(object).find((key) => object[key] === value);
   };
 
-  useEffect(() => {
-    setUser(userInfor);
-  }, userInfor);
-  // useEffect(() =>{
-  //     if(user){
-  //         db.collection("chat").get().then((querySnapshot) => {
-  //             querySnapshot.forEach((doc) => {
-  //                 // doc.data() is never undefined for query doc snapshots
-  //                 // console.log(doc.id, " => ", doc.data());
-  //                 var userId = doc.data();
-  //                 var userSend = getKeyByValue(userId, user.uid)
-  //                 var userContactId = '';
-  //                 if(userSend === 'contact1'){
-  //                     userContactId = userId.contact2;
-  //                 } else {
-  //                     userContactId = userId.contact1;
-  //                 }
-  //                 db.collection("users").doc(userContactId).get()
-  //                 .then((doc) => {
-  //                     if (doc.exists) {
-  //                         console.log("Document data:", doc.data());
-  //                         // setUserContact(doc.data());
-  //                     } else {
-  //                         // doc.data() will be undefined in this case
-  //                         console.log("No such document!");
-  //                     }
-  //                 })
-  //             });
-  //         });
-  //     }
-  // }, [])
   const choseEmoji = (emoji, event) => {
     let emojiXX = emoji.native;
     setInput(input + emojiXX);
   };
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
+
   const handleChange = (event) => {
     const imageList = event.target.files;
     // console.log(imageList)
@@ -124,130 +101,134 @@ function MessDetail() {
   };
   return (
     <>
-      <Box
-        sx={{
-          boxShadow: 1,
-          width: "auto",
-          height: "auto",
-          bgcolor: (theme) =>
-            theme.palette.mode === "dark" ? "#101010" : "#fff",
-          color: (theme) =>
-            theme.palette.mode === "dark" ? "grey.300" : "grey.800",
-          p: 1,
-          m: 1,
-          borderRadius: 0,
-          textAlign: "center",
-          fontSize: "0.875rem",
-          fontWeight: "700",
-          height: "87vh",
-          position: "relative",
-        }}
-      >
-        <div className="mess-detail-header">
-          <ListItem disablePadding>
+      {userSelected ? (
+        <Box
+          sx={{
+            boxShadow: 1,
+            width: "auto",
+            height: "auto",
+            bgcolor: (theme) =>
+              theme.palette.mode === "dark" ? "#101010" : "#fff",
+            color: (theme) =>
+              theme.palette.mode === "dark" ? "grey.300" : "grey.800",
+            p: 1,
+            m: 1,
+            borderRadius: 0,
+            textAlign: "center",
+            fontSize: "0.875rem",
+            fontWeight: "700",
+            height: "90vh",
+            position: "relative",
+          }}
+        >
+          <div className="mess-detail-header">
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  <Avatar alt="Remy Sharp" src={userSelected.photoURL} />
+                </ListItemIcon>
+                <ListItemText primary={userSelected.displayName} />
+              </ListItemButton>
+            </ListItem>
             <ListItemButton>
               <ListItemIcon>
-                <Avatar alt="Remy Sharp" src={logoAvata} />
+                <MoreVertIcon />
               </ListItemIcon>
-              <ListItemText primary="Xuân Hạnh" />
             </ListItemButton>
-          </ListItem>
-          <ListItemButton>
-            <ListItemIcon>
-              <MoreVertIcon />
-            </ListItemIcon>
-          </ListItemButton>
-        </div>
-        <div className="mess-content">
-          <div className="mess-content-a">
-            <span>Messagener </span>
           </div>
-          <div className="mess-content-b">
-            <span>Messagener </span>
+          <div className="mess-content">
+            <div className="mess-content-a">
+              <span>Messagener </span>
+            </div>
+            <div className="mess-content-b">
+              <span>Messagener </span>
+            </div>
+            <div className="mess-content-a">
+              <span>Messagener </span>
+            </div>
           </div>
-          <div className="mess-content-a">
-            <span>Messagener </span>
-          </div>
-        </div>
-        <div className="mess-action">
-          <div className="mess-action-input">
-            <span className="input">
-              <input type="text" placeholder="Aa" />
-            </span>
+          <div className="mess-action">
+            <div className="mess-action-input">
+              <span className="input">
+                <input type="text" placeholder="Aa" />
+              </span>
 
-            <div className="mess-action-input-icon">
-              <CardActions disableSpacing>
-                <div className="file-action">
-                  <input
-                    id="file-input"
-                    accept="image/*|video/*"
-                    type="file"
-                    onChange={handleChange}
-                    multiple="multiple"
-                    style={{ display: "none" }}
-                    onClick={(e) => (e.target.value = null)}
-                    webkitdirectory
-                  />
-                  <IconButton>
-                    <label for="file-input">
-                      <AttachFileIcon
+              <div className="mess-action-input-icon">
+                <CardActions disableSpacing>
+                  <div className="file-action">
+                    <input
+                      id="file-input"
+                      accept="image/*|video/*"
+                      type="file"
+                      onChange={handleChange}
+                      multiple="multiple"
+                      style={{ display: "none" }}
+                      onClick={(e) => (e.target.value = null)}
+                      webkitdirectory
+                    />
+                    <IconButton>
+                      <label for="file-input">
+                        <AttachFileIcon
+                          color="secondaryLight"
+                          sx={{
+                            fontSize: "1.4rem",
+                          }}
+                        />
+                      </label>
+                    </IconButton>
+                  </div>
+                  <div className="icon-feel">
+                    <PopupState variant="popover" popupId="demo-popup-popover">
+                      {(popupState) => (
+                        <div>
+                          <IconButton
+                            aria-label="share"
+                            {...bindTrigger(popupState)}
+                          >
+                            <InsertEmoticonIcon
+                              color="secondaryLight"
+                              sx={{
+                                fontSize: "1.4rem",
+                              }}
+                            />
+                          </IconButton>
+                          <Popover
+                            {...bindPopover(popupState)}
+                            anchorOrigin={{
+                              vertical: "bottom",
+                              horizontal: "center",
+                            }}
+                            transformOrigin={{
+                              vertical: "top",
+                              horizontal: "center",
+                            }}
+                          >
+                            <div className="emoji">
+                              <Picker set="apple" onClick={choseEmoji} />
+                            </div>
+                          </Popover>
+                        </div>
+                      )}
+                    </PopupState>
+                  </div>
+                  <div className="input-send-icon">
+                    <IconButton>
+                      <SendOutlinedIcon
                         color="secondaryLight"
                         sx={{
                           fontSize: "1.4rem",
                         }}
                       />
-                    </label>
-                  </IconButton>
-                </div>
-                <div className="icon-feel">
-                  <PopupState variant="popover" popupId="demo-popup-popover">
-                    {(popupState) => (
-                      <div>
-                        <IconButton
-                          aria-label="share"
-                          {...bindTrigger(popupState)}
-                        >
-                          <InsertEmoticonIcon
-                            color="secondaryLight"
-                            sx={{
-                              fontSize: "1.4rem",
-                            }}
-                          />
-                        </IconButton>
-                        <Popover
-                          {...bindPopover(popupState)}
-                          anchorOrigin={{
-                            vertical: "bottom",
-                            horizontal: "center",
-                          }}
-                          transformOrigin={{
-                            vertical: "top",
-                            horizontal: "center",
-                          }}
-                        >
-                          <div className="emoji">
-                            <Picker set="apple" onClick={choseEmoji} />
-                          </div>
-                        </Popover>
-                      </div>
-                    )}
-                  </PopupState>
-                </div>
-                <div className="input-send-icon">
-                  <IconButton>
-                    <SendOutlinedIcon
-                      color="secondaryLight"
-                      sx={{
-                        fontSize: "1.4rem",
-                      }}
-                    />
-                  </IconButton>
-                </div>
-              </CardActions>
+                    </IconButton>
+                  </div>
+                </CardActions>
+              </div>
             </div>
           </div>
-        </div>
-      </Box>
+        </Box>
+      ) : (
+        ""
+      )}
     </>
   );
 }

@@ -131,6 +131,7 @@ function Home() {
         postData.forEach((doc) => {
           arr.push(doc.data());
         });
+        debugger;
 
         if (arr.length === 3) {
           setLoading(true);
@@ -142,7 +143,7 @@ function Home() {
       console.log("🚀 ~ getPostList ~ error", error);
     }
   };
-
+  console.log(dataPosts);
   return (
     <>
       {user && user.displayName ? (

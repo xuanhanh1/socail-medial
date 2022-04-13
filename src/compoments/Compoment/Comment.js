@@ -85,6 +85,8 @@ export default function Comment(props) {
           });
           setComments(arrComments);
         });
+
+      debugger;
     } else {
       db.collection("posts")
         .doc(postId)
@@ -143,8 +145,6 @@ export default function Comment(props) {
         .catch((error) => {
           console.error("Error adding document: ", error);
         });
-
-      setAddComment(!addComment);
     } else {
       console.log("no comments");
     }

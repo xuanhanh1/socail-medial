@@ -79,7 +79,6 @@ function HomePage() {
   let location = useLocation();
 
   useEffect(() => {
-    console.log("run useEffect in homePage (user redux changes)");
     if (userInfor) {
       setUser(userInfor);
     } else {

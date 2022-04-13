@@ -1,4 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  login,
+  count,
+  getAllUserFollowed,
+  suggestFollow,
+} from "../../app/reudx/actions";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import List from "@mui/material/List";
@@ -20,7 +27,7 @@ import logoAvata from "../../image/avata.png";
 import EmailIcon from "@mui/icons-material/Email";
 import { makeStyles } from "@mui/styles";
 import { db } from "../../firebase";
-import { useDispatch } from "react-redux";
+
 const useStyles = makeStyles({
   friendIcon: {
     marginRight: 10,
@@ -37,13 +44,38 @@ const useStyles = makeStyles({
 
 export default function ListFriend(props) {
   const classes = useStyles();
-  const { userFollow, ParentHandleUnFollower, index } = props;
-  const [userFollower, setUserFollower] = useState();
+  const { userFollow, ParentHandleUnFollower, index, user } = props;
+  const allUserSuggestFollow = useSelector(
+    (state) => state.allUserSuggestFollow
+  );
+  const allUserFollowed = useSelector((state) => state.allUserFollowed);
 
-  const handleUnFollower = () => {
-    ParentHandleUnFollower(userFollow.uid);
+  const dispatch = useDispatch();
+
+  const handleUnFollow = () => {
+    if (allUserFollowed.length > 0) {
+      const arrNewFollowers = allUserFollowed.splice(index, 1);
+      allUserFollowed.filter((user) => user.uid === arrNewFollowers.uid);
+      const arrSuggestFollow = allUserSuggestFollow.concat(arrNewFollowers);
+
+      user.follower = allUserFollowed;
+
+      var users = db.collection("users").doc(user.uid);
+      return users
+        .update({
+          follower: allUserFollowed,
+        })
+        .then(() => {
+          dispatch(login(user));
+          dispatch(getAllUserFollowed(allUserFollowed));
+          dispatch(suggestFollow(arrSuggestFollow));
+          console.log("update cusses");
+        })
+        .catch((error) => {
+          console.error("Error updating document: ", error);
+        });
+    }
   };
-
   return (
     <>
       <Grid item xs={6} className={classes.itemFriend}>
@@ -65,7 +97,7 @@ export default function ListFriend(props) {
                 />
                 <ListItemText primary="Nhắn tin" />
               </ListItemButton>
-              <ListItemButton onClick={handleUnFollower}>
+              <ListItemButton onClick={handleUnFollow}>
                 <CancelIcon
                   color="secondaryDark"
                   className={classes.friendIcon}

@@ -84,18 +84,14 @@ function TestCard(props) {
   }, []);
 
   useEffect(() => {
-    console.log("user is not change ", user);
     if (user) {
-      console.log("has user");
       getAllUsers(user);
     } else {
-      console.log("not have user");
       getAllUsers();
     }
   }, [user, isChanged]);
 
   const getAllUsers = (user) => {
-    console.log("user ", user);
     let arr = [];
     if (user && user.follower) {
       db.collection("users")
@@ -131,7 +127,6 @@ function TestCard(props) {
         .catch((error) => {
           console.log("Error getting documents: ", error);
         });
-      console.log("not have user");
     }
   };
 

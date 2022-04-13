@@ -7,6 +7,9 @@ const initialState = {
   userInfor: user,
   posts: [],
   count: 0,
+  allUserSuggestFollow: [],
+  allUserFollowed: [],
+  allUserContact: [],
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -33,6 +36,23 @@ const rootReducer = (state = initialState, action) => {
       return {
         ...state,
         posts: action.posts,
+      };
+
+    case types.GET_ALL_SUGGEST_USER:
+      return {
+        ...state,
+        allUserSuggestFollow: action.arrSuggestFollow,
+      };
+    case types.GET_ALL_USER_FOLLOWED:
+      return {
+        ...state,
+        allUserFollowed: action.userFollowed,
+      };
+
+    case types.GET_ALL_USER_CONTACT:
+      return {
+        ...state,
+        allUserContact: action.userContacts,
       };
     default:
       return state;

@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import {
+  login,
+  count,
+  getAllUserFollowed,
+  suggestFollow,
+} from "../app/reudx/actions";
+import { toast } from "react-toastify";
 import Box from "@mui/material/Box";
 import { useCookies } from "react-cookie";
 import {
@@ -10,7 +17,6 @@ import {
   ListItemButton,
   ListItemIcon,
 } from "@mui/material/";
-import { login, count } from "../app/reudx/actions";
 import EmailIcon from "@mui/icons-material/Email";
 import { makeStyles } from "@mui/styles";
 import ListFriend from "../compoments/Compoment/ListFriend";
@@ -35,24 +41,31 @@ const useStyles = makeStyles({
 
 function Friend() {
   const classes = useStyles();
-  const userInform = useSelector((state) => state.userInfor);
-  const [user, setUser] = useState();
-  const [allUsers, setAllUsers] = useState();
-  const [isChanged, setIsChanged] = useState(false);
+  const user = useSelector((state) => state.userInfor);
+  const allUserFollowed = useSelector((state) => state.allUserFollowed);
+  const allUserSuggestFollow = useSelector(
+    (state) => state.allUserSuggestFollow
+  );
+
+  const [usersFollowed, setUsersFollowed] = useState(allUserFollowed);
+  const [usersSuggestFollow, setUsersSuggestFollow] =
+    useState(allUserSuggestFollow);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log("user is not change ", user);
-    if (userInform) {
-      setUser(userInform);
-      getAllUsers(userInform);
-    } else {
-      getAllUsers();
+    if (user) {
+      getAllUsers(user);
     }
-  }, [userInform, isChanged]);
+  }, [user]);
+
+  useEffect(() => {
+    setUsersFollowed(allUserFollowed);
+    setUsersSuggestFollow(allUserSuggestFollow);
+  }, [allUserFollowed, allUserSuggestFollow]);
 
   const getAllUsers = (user) => {
+    console.log("getAllUsers");
     let arr = [];
     if (user && user.follower) {
       db.collection("users")
@@ -71,50 +84,15 @@ function Friend() {
               arr.push(doc.data());
             }
           });
-          setAllUsers(arr);
+          dispatch(getAllUserFollowed(user.follower));
+          dispatch(suggestFollow(arr));
         })
         .catch((error) => {
           console.log("Error getting documents: ", error);
         });
-    } else {
-      db.collection("users")
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            arr.push(doc.data());
-          });
-          setAllUsers(arr);
-        })
-        .catch((error) => {
-          console.log("Error getting documents: ", error);
-        });
-      console.log("not have user");
     }
   };
 
-  const handleUnFollow = (id) => {
-    let index = compareFollowerId(user.follower, id).index;
-
-    if (user.follower) {
-      const arrNewFollowers = user.follower.splice(index, 1);
-      var users = db.collection("users").doc(user.uid);
-      return users
-        .update({
-          follower: user.follower,
-        })
-        .then(() => {
-          dispatch(login(user));
-          setIsChanged(!isChanged);
-        })
-        .catch((error) => {
-          console.error("Error updating document: ", error);
-        });
-    }
-  };
-
-  const handleFollow = () => {
-    setIsChanged(!isChanged);
-  };
   return (
     <Box
       sx={{
@@ -132,15 +110,16 @@ function Friend() {
         columnSpacing={{ xs: 1, sm: 2, md: 3 }}
         className={classes.listFriend}
       >
-        {user && user.follower && user.follower.length > 0
-          ? user.follower.map((follow, index) => {
+        {usersFollowed && usersFollowed.length > 0
+          ? usersFollowed.map((follow, index) => {
               return (
                 <>
                   <ListFriend
                     key={index}
                     index={index}
                     userFollow={follow}
-                    ParentHandleUnFollower={handleUnFollow}
+                    user={user}
+                    // ParentHandleUnFollower={handleUnFollow}
                   />
                 </>
               );
@@ -158,14 +137,15 @@ function Friend() {
         columnSpacing={{ xs: 1, sm: 2, md: 3 }}
         className={classes.listFriend}
       >
-        {allUsers
-          ? allUsers.map((userFollow, i) => {
+        {usersSuggestFollow
+          ? usersSuggestFollow.map((userFollow, i) => {
               return (
                 <ListNewFriend
                   key={i}
                   user={user}
                   userFollow={userFollow}
-                  ParentHandleFollow={handleFollow}
+                  // ParentHandleFollow={handleFollow}
+                  index={i}
                 />
               );
             })
