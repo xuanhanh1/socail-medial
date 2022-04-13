@@ -63,6 +63,10 @@ const useStyles = makeStyles({
   "@media only screen and (max-width:1024px)": {},
 });
 function CompomentLeft(props) {
+<<<<<<< HEAD
+=======
+  let trend = props.trend;
+>>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
   const { user } = props;
   const classes = useStyles();
 

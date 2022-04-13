@@ -77,12 +77,28 @@ export default function Login() {
         // Signed in
         var user = userCredential.user;
 
+<<<<<<< HEAD
         db.collection("users")
           .doc(user.uid)
           .onSnapshot((doc) => {
             console.log("login -", user);
             dispatch(login(doc.data()));
             handleCookie(doc.data());
+=======
+        docRef
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              dispatch(login(doc.data()));
+              handleCookie(doc.data());
+            } else {
+              // doc.data() will be undefined in this case
+              console.log("No such document!");
+            }
+          })
+          .catch((error) => {
+            console.log("Error getting document:", error);
+>>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
           });
 
         var docRef = db.collection("users").doc(user.uid);

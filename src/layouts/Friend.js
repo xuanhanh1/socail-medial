@@ -41,6 +41,7 @@ const useStyles = makeStyles({
 
 function Friend() {
   const classes = useStyles();
+<<<<<<< HEAD
   const user = useSelector((state) => state.userInfor);
   const allUserFollowed = useSelector((state) => state.allUserFollowed);
   const allUserSuggestFollow = useSelector(
@@ -92,6 +93,8 @@ function Friend() {
         });
     }
   };
+=======
+>>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
 
   return (
     <Box
@@ -110,6 +113,7 @@ function Friend() {
         columnSpacing={{ xs: 1, sm: 2, md: 3 }}
         className={classes.listFriend}
       >
+<<<<<<< HEAD
         {usersFollowed && usersFollowed.length > 0
           ? usersFollowed.map((follow, index) => {
               return (
@@ -125,6 +129,9 @@ function Friend() {
               );
             })
           : null}
+=======
+        <ListFriend />
+>>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
       </Grid>
       <Divider />
 
@@ -137,6 +144,7 @@ function Friend() {
         columnSpacing={{ xs: 1, sm: 2, md: 3 }}
         className={classes.listFriend}
       >
+<<<<<<< HEAD
         {usersSuggestFollow
           ? usersSuggestFollow.map((userFollow, i) => {
               return (
@@ -150,6 +158,9 @@ function Friend() {
               );
             })
           : null}
+=======
+        <ListNewFriend />
+>>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
       </Grid>
     </Box>
   );
