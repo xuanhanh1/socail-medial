@@ -69,11 +69,7 @@ const useStyles = makeStyles({
   "@media only screen and (max-width:1024px)": {},
 });
 
-<<<<<<< HEAD
 function TestCard(props) {
-=======
-function TestCard({ userData }) {
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
   const classes = useStyles();
   const [allUsers, setAllUsers] = useState();
   const { user } = props;
@@ -87,7 +83,6 @@ function TestCard({ userData }) {
     }
   }, []);
 
-<<<<<<< HEAD
   useEffect(() => {
     if (user) {
       getAllUsers(user);
@@ -110,7 +105,7 @@ function TestCard({ userData }) {
               doc.data().uid
             );
             if (user.uid == doc.data().uid || compareFollow.result) {
-              console.log(11);
+              // console.log(11);
             } else {
               arr.push(doc.data());
             }
@@ -138,39 +133,6 @@ function TestCard({ userData }) {
   const handleFollow = () => {
     setIsChanged(!isChanged);
   };
-=======
-  // console.log("TestCard - userData", userData);
-  // useEffect(() => {
-  //   console.log("useEffect test card");
-  //   if (userData) {
-  //     updateListUserSuggest(userData);
-  //   }
-  // }, [userData]);
-
-  // const updateListUserSuggest = async (userData) => {
-  //   let arr = [];
-
-  //   try {
-  //     const userList = await db.collection("users").limit(5).get();
-  //     if (userList) {
-  //       userList.forEach((doc) => {
-  //         if (userData && userData.follower) {
-  //           const listFollowed = userData.follower;
-  //           const uid = doc.data().uid;
-  //           if (!listFollowed.includes(uid)) {
-  //             arr.push(doc.data());
-  //           }
-  //         }
-  //       });
-
-  //       console.log("arr ", arr);
-  //       setAllUser(arr);
-  //     }
-  //   } catch (error) {
-  //     console.log("error", error);
-  //   }
-  // };
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
 
   return (
     <>
@@ -196,12 +158,8 @@ function TestCard({ userData }) {
                           <ListFollow
                             userFollow={u}
                             key={index}
-<<<<<<< HEAD
                             user={user}
                             ParentHandleFollow={handleFollow}
-=======
-                            userInform={userData}
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
                           />
                         );
                       })

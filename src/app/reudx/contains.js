@@ -9,6 +9,9 @@ const actionsTypes = Object.freeze({
 
   GET_ALL_USER_CONTACT: "GET_ALL_USER_CONTACT",
 
+  GET_ALL_CONVERSATIONS: "GET_ALL_CONVERSATIONS",
+  GET_ALL_CHATS: "GET_ALL_CHATS",
+
   COUNT: "COUNT",
 });
 

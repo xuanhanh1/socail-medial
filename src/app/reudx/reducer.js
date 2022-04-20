@@ -10,15 +10,16 @@ const initialState = {
   allUserSuggestFollow: [],
   allUserFollowed: [],
   allUserContact: [],
+
+  conversations: [],
+  chats: [],
 };
 
 const rootReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.PROCESS_LOGIN:
-<<<<<<< HEAD
       localStorage.setItem("user", JSON.stringify(action.userInfor));
-=======
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
+
       return {
         ...state,
         userInfor: action.userInfor,
@@ -56,6 +57,16 @@ const rootReducer = (state = initialState, action) => {
       return {
         ...state,
         allUserContact: action.userContacts,
+      };
+    case types.GET_ALL_CONVERSATIONS:
+      return {
+        ...state,
+        conversations: action.conversations,
+      };
+    case types.GET_ALL_CHATS:
+      return {
+        ...state,
+        chats: action.chats,
       };
     default:
       return state;

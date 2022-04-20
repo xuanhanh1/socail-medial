@@ -44,3 +44,16 @@ export const getAllUserContact = (userContacts) => {
     userContacts: userContacts,
   };
 };
+export const getAllConversations = (conversations) => {
+  return {
+    type: types.GET_ALL_CONVERSATIONS,
+    conversations: conversations,
+  };
+};
+
+export const getAllChat = (chats) => {
+  return {
+    type: types.GET_ALL_CHATS,
+    chats: chats,
+  };
+};

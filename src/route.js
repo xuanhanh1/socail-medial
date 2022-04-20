@@ -45,6 +45,7 @@ export default function Router() {
     {
       path: "/message",
       element: <Message />,
+      children: [{ path: "/message/t/:roomId", element: <Message /> }],
     },
   ]);
 }

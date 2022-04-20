@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
+import { NavLink } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -28,6 +29,11 @@ const useStyles = makeStyles({
     paddingLeft: "4px",
     marginBottom: "4px",
     marginTop: "4px",
+    // color: "#262626",
+    // backgroundColor: "#efefef",
+    // "& $title": {
+    //   fontWeight: 600,
+    // },
   },
   messItemAvatar: {
     width: "60px !important",
@@ -51,18 +57,34 @@ const StyledFab = styled(Fab)({
 
 export default function MessItem(props) {
   const classes = useStyles();
-  const { currentContact, contact, index } = props;
-  const [active, setActive] = useState();
-  const [userContact, setUserContact] = useState();
+  const { currentContact, contact, arrUsersOnline } = props;
+  const [userContact, setUserContact] = useState({});
+  const [isOnline, setIsOnline] = useState(false);
+
   useEffect(() => {
-    var docRef = db.collection("users").doc(contact);
+    arrUsersOnline.forEach((obj) => {
+      if (obj.idUser === contact.idContact) {
+        setIsOnline(true);
+        console.log("set socket", obj.idSocket);
+        setUserContact((prevUserContact) => ({
+          ...prevUserContact,
+          idSocket: obj.idSocket,
+        }));
+      }
+    });
+  }, [arrUsersOnline]);
+
+  useEffect(() => {
+    var docRef = db.collection("users").doc(contact.idContact);
 
     docRef
       .get()
       .then((doc) => {
         if (doc.exists) {
-          console.log(doc.id, " ===>", doc.data());
-          setUserContact(doc.data());
+          setUserContact((prevUserContact) => ({
+            ...prevUserContact,
+            data: doc.data(),
+          }));
         } else {
           // doc.data() will be undefined in this case
           console.log("No such document!");
@@ -73,36 +95,30 @@ export default function MessItem(props) {
       });
   }, []);
 
-  const handleSelected = (e) => {
-    e.preventDefault();
-    console.log(e.target);
-    setActive(!active);
-    // console.log(e.target);
+  const handleSelected = () => {
+    console.log("handleSelected - userContact", userContact);
     currentContact(userContact);
   };
 
   return (
     <>
-      {/* <CustomScrollbars style={{ height: "100vh", width: "100%" }}> */}
       <ListItem
-        disablePadding
-        className={active ? classes.active : ""}
-        onClick={(e) => handleSelected(e)}
-        value={index}
+        component={NavLink}
+        to={`/message/t/${contact.roomId}`}
+        button
+        onClick={handleSelected}
       >
-        <ListItem button>
+        <ListItem>
           <ListItemAvatar>
             <Avatar
               alt="Profile Picture"
-              src={userContact ? userContact.photoURL : ""}
+              src={userContact.data ? userContact.data.photoURL : ""}
               className={classes.messItemAvatar}
-              value={index}
             />
           </ListItemAvatar>
           <ListItemText
-            primary={userContact ? userContact.displayName : ""}
-            secondary="abc"
-            value={index}
+            primary={userContact.data ? userContact.data.displayName : ""}
+            secondary={isOnline ? "online" : "offline"}
           />
         </ListItem>
       </ListItem>

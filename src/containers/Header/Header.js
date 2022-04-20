@@ -36,7 +36,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ListNav from "../../compoments/Compoment/ListNav";
 import { makeStyles } from "@mui/styles";
 import { useSelector } from "react-redux";
-import { logout } from "../../app/reudx/actions";
+import { logout, getAllConversations } from "../../app/reudx/actions";
 import { useCookies } from "react-cookie";
 
 function notificationsLabel(count) {
@@ -137,11 +137,7 @@ export default function Header(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const userInfor = useSelector((state) => state.userInfor);
-<<<<<<< HEAD
-  // const [cookies, setCookie, removeCookie] = useCookies(["user"]);
-=======
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
 
   const signOut = () => {
     console.log("sign out");
@@ -150,11 +146,8 @@ export default function Header(props) {
       .signOut()
       .then(() => {
         dispatch(logout());
-<<<<<<< HEAD
+        dispatch(getAllConversations());
         localStorage.removeItem("user");
-=======
-        removeCookie("user");
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
       })
       .catch((error) => {
         // An error happened.
@@ -450,7 +443,7 @@ export default function Header(props) {
             <CloseIcon />
           </ListItemButton>
         </div>
-        <ListNav />
+        <ListNav user={user} />
       </div>
     </div>
   );

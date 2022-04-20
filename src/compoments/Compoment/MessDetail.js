@@ -1,5 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
-import { ListItem, AppBar, Toolbar, Box } from "@mui/material/";
+import { useParams } from "react-router-dom";
+
+import { ListItem, AppBar, Toolbar, Box, Divider } from "@mui/material";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Avatar from "@mui/material/Avatar";
@@ -57,22 +59,82 @@ ElevationScroll.propTypes = {
   window: PropTypes.func,
 };
 function MessDetail(props) {
-  const { user, userSelected } = props;
+  const { user, userSelected, socket, newMsg } = props;
+  // console.log("MessDetail - newMsg", newMsg);
+  // console.log("MessDetail - userSelected", userSelected);
+
   const [input, setInput] = React.useState("");
   const [image, setImage] = useState([]);
   const [isImage, setIsImage] = useState(false);
+  const [arrChat, setArrChat] = useState([]);
+  const [arrNewMsg, setArrNewMsg] = useState([]);
+  // console.log("MessDetail - arrNewMsg", arrNewMsg);
+  const { roomId } = useParams();
 
   useEffect(() => {
     db.collection("chat")
-      .where("state", "==", "CA")
+      .doc(roomId)
+      .collection("messages")
+      .orderBy("updatedAt", "asc")
       .onSnapshot((querySnapshot) => {
-        var cities = [];
+        var chats = [];
         querySnapshot.forEach((doc) => {
-          cities.push(doc.data().name);
+          chats.push(doc.data());
         });
-        console.log("Current cities in CA: ", cities.join(", "));
+        setArrChat(chats);
       });
-  }, []);
+  }, [roomId]);
+
+  useEffect(() => {
+    if (newMsg) {
+      let data = arrNewMsg.concat(newMsg);
+      setArrNewMsg(data);
+    }
+    // console.log("soc ket disconnect ", socket.disconnected);
+    // if (socket.disconnected) {
+    //   db.collection("chat")
+    //     .doc(roomId)
+
+    //     .collection("messages")
+    //     .add(arrNewMsg)
+    //     .then((docRef) => {
+    //       console.log("Document written with ID: ", docRef.id);
+    //       db.collection("chat")
+    //         .doc(roomId)
+    //         .update({
+    //           updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    //         })
+    //         .then(() => {
+    //           console.log("update cusses");
+    //         })
+    //         .catch((err) => {
+    //           console.log("err ", err);
+    //         });
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error adding document: ", error);
+    //     });
+    // }
+  }, [newMsg]);
+
+  const handleSubmitMessage = () => {
+    // console.log("input ", input);
+    // io.to(`${userSelected.idSocket}`).emit("send-msg", "aaaaaaa");
+
+    let socketId = userSelected.idSocket;
+    let msg = {
+      text: input,
+      sender_id: user.uid,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      sender_name: user.displayName,
+    };
+    setArrNewMsg([...arrNewMsg, msg]);
+    socket.emit("send-msg", { socketId, msg });
+  };
+
+  const handleChangeInput = (e) => {
+    setInput(e.target.value);
+  };
 
   const getKeyByValue = (object, value) => {
     return Object.keys(object).find((key) => object[key] === value);
@@ -99,9 +161,10 @@ function MessDetail(props) {
       }
     }
   };
+
   return (
     <>
-      {userSelected ? (
+      {userSelected && user ? (
         <Box
           sx={{
             boxShadow: 1,
@@ -125,9 +188,9 @@ function MessDetail(props) {
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                  <Avatar alt="Remy Sharp" src={userSelected.photoURL} />
+                  <Avatar alt="Remy Sharp" src={userSelected.data.photoURL} />
                 </ListItemIcon>
-                <ListItemText primary={userSelected.displayName} />
+                <ListItemText primary={userSelected.data.displayName} />
               </ListItemButton>
             </ListItem>
             <ListItemButton>
@@ -136,21 +199,55 @@ function MessDetail(props) {
               </ListItemIcon>
             </ListItemButton>
           </div>
+          <Divider />
+          <Divider />
+          <Divider />
           <div className="mess-content">
-            <div className="mess-content-a">
-              <span>Messagener </span>
-            </div>
-            <div className="mess-content-b">
-              <span>Messagener </span>
-            </div>
-            <div className="mess-content-a">
-              <span>Messagener </span>
-            </div>
+            {arrChat && arrChat.length > 0 ? (
+              arrChat.map((chat, i) => {
+                return (
+                  <div
+                    key={i}
+                    className={
+                      chat.sender_id === user.uid
+                        ? "mess-content-a"
+                        : "mess-content-b"
+                    }
+                  >
+                    <span className="mess-detail-text">{chat.text}</span>
+                  </div>
+                );
+              })
+            ) : (
+              <p>not messages</p>
+            )}
+
+            {arrNewMsg && arrNewMsg.length > 0
+              ? arrNewMsg.map((msg, i) => {
+                  return (
+                    <div
+                      key={i}
+                      className={
+                        msg.sender_id === user.uid
+                          ? "mess-content-a"
+                          : "mess-content-b"
+                      }
+                    >
+                      <span className="mess-detail-text">{msg.text}</span>
+                    </div>
+                  );
+                })
+              : null}
           </div>
           <div className="mess-action">
             <div className="mess-action-input">
               <span className="input">
-                <input type="text" placeholder="Aa" />
+                <input
+                  type="text"
+                  placeholder="Aa"
+                  onChange={(e) => handleChangeInput(e)}
+                  value={input}
+                />
               </span>
 
               <div className="mess-action-input-icon">
@@ -160,10 +257,9 @@ function MessDetail(props) {
                       id="file-input"
                       accept="image/*|video/*"
                       type="file"
-                      onChange={handleChange}
-                      multiple="multiple"
+                      // multiple="multiple"
                       style={{ display: "none" }}
-                      onClick={(e) => (e.target.value = null)}
+                      // onClick={(e) => (e.target.value = null)}
                       webkitdirectory
                     />
                     <IconButton>
@@ -212,7 +308,7 @@ function MessDetail(props) {
                     </PopupState>
                   </div>
                   <div className="input-send-icon">
-                    <IconButton>
+                    <IconButton onClick={handleSubmitMessage}>
                       <SendOutlinedIcon
                         color="secondaryLight"
                         sx={{
@@ -234,3 +330,33 @@ function MessDetail(props) {
 }
 
 export default MessDetail;
+
+// const handleSubmitMessage = () => {
+//   db.collection("chat")
+//     .doc(roomId)
+
+//     .collection("messages")
+//     .add({
+//       text: input,
+//       sender_id: user.uid,
+//       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+//       sender_name: user.displayName,
+//     })
+//     .then((docRef) => {
+//       console.log("Document written with ID: ", docRef.id);
+//       db.collection("chat")
+//         .doc(roomId)
+//         .update({
+//           updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+//         })
+//         .then(() => {
+//           console.log("update cusses");
+//         })
+//         .catch((err) => {
+//           console.log("err ", err);
+//         });
+//     })
+//     .catch((error) => {
+//       console.error("Error adding document: ", error);
+//     });
+// };

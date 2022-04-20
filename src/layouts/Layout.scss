@@ -9,3 +9,12 @@
 .mess-header {
   text-align: center;
 }
+
+
+@media only screen and (max-width: 1024px) {
+  .mess-body{
+    padding-left: 10px;
+    padding-right: 10px;
+    height: auto;
+  }
+}

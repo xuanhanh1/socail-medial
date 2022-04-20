@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import io from "socket.io-client";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -18,9 +20,10 @@ import Header from "../containers/Header/Header";
 import MessDetail from "../compoments/Compoment/MessDetail";
 import { makeStyles } from "@mui/styles";
 import { db, auth } from "../firebase";
-import { useSelector } from "react-redux";
+
 import "./Layout.scss";
 import CustomScrollbars from "../compoments/Compoment/Scrollbar";
+import { getAllConversations } from "../app/reudx/actions";
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   ...theme.typography.body2,
@@ -74,6 +77,7 @@ const useStyles = makeStyles({
   messSearchIcon: {
     zIndex: 100,
   },
+  mobileMessItem: { display: "block" },
   "@media only screen and (max-width: 1024px)": {
     mess: {
       flexDirection: "column !important",
@@ -81,6 +85,8 @@ const useStyles = makeStyles({
     messDetail: {
       maxWidth: "100% !important",
     },
+    mobileMessItem: { display: "none" },
+
     messDetailMobile: {
       display: "none",
     },
@@ -88,46 +94,86 @@ const useStyles = makeStyles({
 });
 export default function Messenger() {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const userInfor = useSelector((state) => state.userInfor);
-  const [user, setUser] = React.useState(userInfor);
-  const [conversation, setConversation] = useState([]);
-  const [showDetail, setShowDetail] = useState(false);
+  const conversations = useSelector((state) => state.conversations);
+  const [user, setUser] = React.useState();
   const [userContacts, setUserContacts] = useState();
   const [currentContact, setCurrentContact] = useState();
+  // console.log("Messenger - currentContact", currentContact);
+  const [show, setShow] = useState(false);
+  const [arrUsersOnline, setArrUsersOnline] = useState([]);
+  const [socket, setSocket] = useState();
+  const [newMsg, setNewMsg] = useState();
+
   useEffect(() => {
     setUser(userInfor);
   }, userInfor);
 
   useEffect(() => {
-    let conversations = [];
+    if (user) {
+      setUserContacts(conversations);
+    }
+  }, [conversations]);
+
+  useEffect(() => {
+    if (user) {
+      const socket = io("localhost:6969");
+      setSocket(socket);
+      let data = { userLogin: user.uid };
+      socket.emit("connect-success", data);
+
+      socket.on("arr-connect", function (data) {
+        console.log("data from socket ", data);
+        setArrUsersOnline(data);
+      });
+
+      socket.on("send-msg", function (data) {
+        let arrData = [];
+        // console.log("--------> ", data);
+        arrData.push(data);
+        setNewMsg(arrData);
+      });
+      console.log("socket ", socket.connected);
+    }
+  }, [user]);
+
+  useEffect(() => {
     let arrContact = [];
     try {
-      if (user && user.uid) {
-        db.collection("chat")
-          .where("users", "array-contains", user.uid)
-          .onSnapshot((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              conversations.push(doc.data().users);
-            });
-            conversations.forEach((conversation) => {
-              conversation.forEach((id) => {
-                if (user.uid !== id) {
-                  arrContact.push(id);
-                }
+      if (user && user.uid && user.roomChat) {
+        user.roomChat.forEach((chat) => {
+          db.collection("chat")
+            .where("roomId", "==", chat)
+            .orderBy("updatedAt", "desc")
+            .onSnapshot((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                doc.data().users.forEach((id) => {
+                  if (id !== user.uid) {
+                    arrContact.push({
+                      idContact: id,
+                      roomId: doc.id,
+                    });
+                  }
+                });
               });
+
+              dispatch(getAllConversations(arrContact));
             });
-            setUserContacts(arrContact);
-          });
+        });
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log("error ", error);
+    }
   }, [user]);
 
   const getCurrentContact = (userSelected) => {
     if (userSelected) {
+      // console.log("getCurrentContact - userSelected", userSelected);
       setCurrentContact(userSelected);
     }
   };
-  console.log("id selected", currentContact);
+
   return (
     <div className="mess-body">
       <Header user={user} />
@@ -145,9 +191,7 @@ export default function Messenger() {
               item
               xs={6}
               md={4}
-              className={
-                showDetail ? classes.messDetailMobile : classes.messDetail
-              }
+              className={show ? classes.mobileMessItem : classes.messDetail}
             >
               <Card elevation={2} className={classes.bgCard}>
                 <div className="mess-header">
@@ -180,14 +224,12 @@ export default function Messenger() {
                     <List sx={{ mb: 2 }} className={classes.messItem}>
                       {userContacts && userContacts.length > 0
                         ? userContacts.map((contact, index) => {
-                            console.log("contact ", contact);
                             return (
                               <MessItem
                                 contact={contact}
                                 key={index}
-                                index={index}
                                 currentContact={getCurrentContact}
-                                // onSelect={(index) => onSelect(index)}
+                                arrUsersOnline={arrUsersOnline}
                               />
                             );
                           })
@@ -205,7 +247,12 @@ export default function Messenger() {
               className={classes.messDetail}
             >
               <Card elevation={4}>
-                <MessDetail userSelected={currentContact} user={user} />
+                <MessDetail
+                  userSelected={currentContact}
+                  user={user}
+                  socket={socket}
+                  newMsg={newMsg}
+                />
               </Card>
             </Grid>
           </Grid>

@@ -29,10 +29,6 @@ import { makeStyles } from "@mui/styles";
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
-<<<<<<< HEAD
-
-=======
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
 const useStyles = makeStyles({
   friendIcon: {
     marginRight: 10,
@@ -49,7 +45,7 @@ const useStyles = makeStyles({
 
 export default function ListNewFriend(props) {
   const classes = useStyles();
-<<<<<<< HEAD
+
   const { user, userFollow, ParentHandleFollow, index } = props;
   const allUserSuggestFollow = useSelector(
     (state) => state.allUserSuggestFollow
@@ -93,9 +89,7 @@ export default function ListNewFriend(props) {
         console.error("Error updating document: ", error);
       });
   };
-=======
 
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
   return (
     <>
       <Grid item xs={6} className={classes.itemFriend}>
@@ -103,21 +97,12 @@ export default function ListNewFriend(props) {
           <ListItem alignItems="flex-start">
             <ListItemButton>
               <ListItemIcon>
-<<<<<<< HEAD
                 <Avatar alt="Remy Sharp" src={userFollow.photoURL} />
               </ListItemIcon>
               <ListItemText primary={userFollow.displayName} />
             </ListItemButton>
 
             <ListItemButton onClick={handleFollow}>
-=======
-                <Avatar alt="Remy Sharp" src="{userFollower.photoURL" />
-              </ListItemIcon>
-              <ListItemText primary={"userFollower.displayName"} />
-            </ListItemButton>
-
-            <ListItemButton>
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
               <AddIcon color="secondaryLight" className={classes.friendIcon} />
               <ListItemText primary="Follow" />
             </ListItemButton>

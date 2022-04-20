@@ -52,7 +52,6 @@ function ListFollow(props) {
     console.log("user new", user);
     var users = db.collection("users").doc(user.uid);
 
-<<<<<<< HEAD
     return users
       .update({
         follower: user.follower,
@@ -66,26 +65,6 @@ function ListFollow(props) {
       .catch((error) => {
         console.error("Error updating document: ", error);
       });
-=======
-  const handleAddFollow = () => {
-    // const followers = userInform.follower;
-    // followers.push(userFollow.uid);
-    // console.log("handleAddFollow - userInform", userInform);
-    // db.collection("users")
-    //   .doc(userInform.uid)
-    //   .update({
-    //     follower: followers,
-    //   })
-    //   .then(() => {
-    //     handleCookie(userInform);
-    //     console.log(".then - userInform", userInform);
-    //     setIsFollow(true);
-    //     toast.success("follow thành công ");
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error updating document: ", error);
-    //   });
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
   };
   return (
     <List>
@@ -97,7 +76,6 @@ function ListFollow(props) {
             </ListItemIcon>
             <ListItemText
               primary={userFollow.displayName}
-<<<<<<< HEAD
               // secondary={isFollow ? "UnFollow" : "Follow"}
               secondary={"Follow"}
             />
@@ -105,15 +83,6 @@ function ListFollow(props) {
         </Link>
         <div className="follow-icon">
           {/* {isFollow ? (
-=======
-              secondary={isFollow ? "UnFollow" : "Follow"}
-              // secondary={"Follow"}
-            />
-          </ListItemButton>
-        </Link>
-        <div className="follow-icon" onClick={handleAddFollow}>
-          {isFollow ? (
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
             <IconButton>
               <CancelIcon color="secondaryDark" />
             </IconButton>
@@ -121,15 +90,10 @@ function ListFollow(props) {
             <IconButton>
               <AddTaskTwoToneIcon color="secondaryLight" />
             </IconButton>
-<<<<<<< HEAD
           )} */}
           <IconButton onClick={handleFollow}>
-=======
-          )}
-          {/* <IconButton>
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
             <AddTaskTwoToneIcon color="secondaryLight" />
-          </IconButton> */}
+          </IconButton>
         </div>
       </ListItem>
       <Divider />

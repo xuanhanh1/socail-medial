@@ -27,15 +27,11 @@ function ListNav(props) {
   const { user } = props;
   const classes = useStyles();
   const [isActive, setIsActive] = useState();
-<<<<<<< HEAD
   const navigate = useNavigate();
-=======
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
 
   const tabSelected = (e) => {
     let currentValue = e.currentTarget.value;
     setIsActive(currentValue);
-    const isActiveFriend = createContext(currentValue);
   };
 
   return (

@@ -28,9 +28,7 @@ export default function App() {
     <>
       <ThemeProvider theme={theme}>
         <CustomScrollbars style={{ height: "100vh", width: "100%" }}>
-          <Router
-          // userInfor={userInfor ? userInfor : ''}
-          />
+          <Router />
           <ToastContainer
             position="bottom-right"
             autoClose={5000}

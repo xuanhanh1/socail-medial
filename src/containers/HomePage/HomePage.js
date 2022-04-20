@@ -75,11 +75,8 @@ function HomePage() {
   const userInfor = useSelector((state) => state.userInfor);
   const [user, setUser] = useState();
   const classes = useStyles();
-<<<<<<< HEAD
   const [show, setShow] = useState(false);
   let location = useLocation();
-=======
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
 
   useEffect(() => {
     if (userInfor) {
@@ -87,7 +84,6 @@ function HomePage() {
     } else {
       setUser();
     }
-<<<<<<< HEAD
 
     if (location.pathname === "/friend") {
       setShow(true);
@@ -95,9 +91,6 @@ function HomePage() {
       setShow(false);
     }
   }, [userInfor, location.pathname]);
-=======
-  }, [userInfor]);
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
 
   return (
     <>
@@ -117,11 +110,7 @@ function HomePage() {
                   </Item>
                 </Grid>
                 <Grid item xs>
-<<<<<<< HEAD
                   {!show ? <TestCard user={user} /> : null}
-=======
-                  <TestCard userData={user} />
->>>>>>> e9896dc73e1ba59c7d6c372a5f2bdaacd42b632a
                 </Grid>
               </Grid>
             </Box>

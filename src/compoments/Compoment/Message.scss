@@ -17,21 +17,33 @@
   &-input {
     width: 100%;
     & .input {
-      width: 100%;
+      width: 96%;
       & input {
-        width: 100%;
+        width: 96%;
       }
     }
     &-icon {
       position: absolute;
-      right: 12px;
+      right: 30px;
       bottom: -10px;
     }
   }
 }
+.mess-detail-text{
+      background-color: #e4e6eb;
+    border-radius: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
 .mess-content {
   overflow-y: auto;
   height: 80%;
+  padding-top: 15px;
+  padding-left: 5px;
+  padding-right: 5px;
+    
   &-a {
     display: block;
     text-align: end;
@@ -120,6 +132,14 @@ input {
 }
 .icon-feel {
   margin: 0 !important;
+}
+
+.active{
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border-radius: 10px  !important;
+  padding-left: 4px !important;
+  margin-bottom: 4px !important;
+  margin-top: 4px !important;
 }
 @media only screen and (min-width: 1024px) {
   .list-homepage {
