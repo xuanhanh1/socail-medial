@@ -95,26 +95,15 @@ const useStyles = makeStyles({
 export default function Messenger() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const userInfor = useSelector((state) => state.userInfor);
-  const conversations = useSelector((state) => state.conversations);
-  const [user, setUser] = React.useState();
-  const [userContacts, setUserContacts] = useState();
+  const user = useSelector((state) => state.userInfor);
+  const userContacts = useSelector((state) => state.conversations);
+
   const [currentContact, setCurrentContact] = useState();
   // console.log("Messenger - currentContact", currentContact);
   const [show, setShow] = useState(false);
   const [arrUsersOnline, setArrUsersOnline] = useState([]);
   const [socket, setSocket] = useState();
   const [newMsg, setNewMsg] = useState();
-
-  useEffect(() => {
-    setUser(userInfor);
-  }, userInfor);
-
-  useEffect(() => {
-    if (user) {
-      setUserContacts(conversations);
-    }
-  }, [conversations]);
 
   useEffect(() => {
     if (user) {

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 import { ListItem, AppBar, Toolbar, Box, Divider } from "@mui/material";
@@ -60,80 +60,111 @@ ElevationScroll.propTypes = {
 };
 function MessDetail(props) {
   const { user, userSelected, socket, newMsg } = props;
-  // console.log("MessDetail - newMsg", newMsg);
-  // console.log("MessDetail - userSelected", userSelected);
 
   const [input, setInput] = React.useState("");
   const [image, setImage] = useState([]);
   const [isImage, setIsImage] = useState(false);
   const [arrChat, setArrChat] = useState([]);
   const [arrNewMsg, setArrNewMsg] = useState([]);
-  // console.log("MessDetail - arrNewMsg", arrNewMsg);
+  const [currentId, setCurrentId] = useState();
+  const [arrRoomChat, setArrRoomChat] = useState([]);
   const { roomId } = useParams();
+  const [roomChatId, setRoomChatId] = useState("");
+  const [roomOldChatId, setRoomOldChatId] = useState("");
+  let scrollRef = useRef();
+  let roomIdRef = useRef();
 
   useEffect(() => {
-    db.collection("chat")
-      .doc(roomId)
-      .collection("messages")
-      .orderBy("updatedAt", "asc")
-      .onSnapshot((querySnapshot) => {
-        var chats = [];
-        querySnapshot.forEach((doc) => {
-          chats.push(doc.data());
-        });
-        setArrChat(chats);
-      });
+    debugger;
+    if (roomId) {
+      debugger;
+      saveMsg(roomId);
+    }
   }, [roomId]);
+
+  useEffect(() => {
+    console.log("call firebase");
+
+    if (roomChatId != "") {
+      db.collection("chat")
+        .doc(roomChatId)
+        .collection("messages")
+        .orderBy("updatedAt", "asc")
+        .onSnapshot((querySnapshot) => {
+          var chats = [];
+          querySnapshot.forEach((doc) => {
+            chats = chats.concat(doc.data().data);
+          });
+          setArrChat(chats);
+        });
+    }
+
+    setArrRoomChat([...arrRoomChat, roomId]);
+  }, [roomChatId]);
+
+  const saveMsg = (roomId) => {
+    debugger;
+    if (arrNewMsg.length > 0) {
+      db.collection("chat")
+        .doc(roomChatId)
+        .collection("messages")
+        .add({
+          data: arrNewMsg,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        })
+        .then((docRef) => {
+          console.log("Document written with ID: ", docRef.id);
+          debugger;
+          setRoomChatId(roomId);
+
+          setArrNewMsg([]);
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error);
+        });
+    } else {
+      setRoomChatId(roomId);
+    }
+  };
 
   useEffect(() => {
     if (newMsg) {
       let data = arrNewMsg.concat(newMsg);
       setArrNewMsg(data);
     }
-    // console.log("soc ket disconnect ", socket.disconnected);
-    // if (socket.disconnected) {
-    //   db.collection("chat")
-    //     .doc(roomId)
-
-    //     .collection("messages")
-    //     .add(arrNewMsg)
-    //     .then((docRef) => {
-    //       console.log("Document written with ID: ", docRef.id);
-    //       db.collection("chat")
-    //         .doc(roomId)
-    //         .update({
-    //           updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    //         })
-    //         .then(() => {
-    //           console.log("update cusses");
-    //         })
-    //         .catch((err) => {
-    //           console.log("err ", err);
-    //         });
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error adding document: ", error);
-    //     });
-    // }
   }, [newMsg]);
 
-  const handleSubmitMessage = () => {
-    // console.log("input ", input);
-    // io.to(`${userSelected.idSocket}`).emit("send-msg", "aaaaaaa");
+  useEffect(() => {
+    if (scrollRef && scrollRef.current) {
+      scrollRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+        inline: "nearest",
+      });
+    }
+  }, [arrChat, arrNewMsg]);
 
+  const handleSubmitMessage = () => {
     let socketId = userSelected.idSocket;
     let msg = {
       text: input,
       sender_id: user.uid,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: new Date(),
       sender_name: user.displayName,
     };
     setArrNewMsg([...arrNewMsg, msg]);
     socket.emit("send-msg", { socketId, msg });
+    setInput("");
   };
 
   const handleChangeInput = (e) => {
     setInput(e.target.value);
+  };
+
+  const handleOnKeyDown = (e) => {
+    if (e.keyCode === 13) {
+      handleSubmitMessage();
+    }
   };
 
   const getKeyByValue = (object, value) => {
@@ -238,6 +269,8 @@ function MessDetail(props) {
                   );
                 })
               : null}
+
+            <div ref={scrollRef} />
           </div>
           <div className="mess-action">
             <div className="mess-action-input">
@@ -246,6 +279,7 @@ function MessDetail(props) {
                   type="text"
                   placeholder="Aa"
                   onChange={(e) => handleChangeInput(e)}
+                  onKeyDown={(e) => handleOnKeyDown(e)}
                   value={input}
                 />
               </span>
