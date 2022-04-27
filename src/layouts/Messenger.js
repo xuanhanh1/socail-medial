@@ -97,13 +97,35 @@ export default function Messenger() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.userInfor);
   const userContacts = useSelector((state) => state.conversations);
-
-  const [currentContact, setCurrentContact] = useState();
-  // console.log("Messenger - currentContact", currentContact);
-  const [show, setShow] = useState(false);
-  const [arrUsersOnline, setArrUsersOnline] = useState([]);
   const [socket, setSocket] = useState();
+  const [arrUsersOnline, setArrUsersOnline] = useState();
+  const [show, setShow] = useState(false);
   const [newMsg, setNewMsg] = useState();
+  const [arrContactsId, setArrContactsId] = useState();
+  const [socketId, setSocketId] = useState();
+  const [conversation, setConversation] = useState();
+  useEffect(() => {
+    if (user) {
+      try {
+        db.collection("users")
+          .doc(user.uid)
+          .collection("messages")
+          .orderBy("updatedAt", "desc")
+
+          .onSnapshot((querySnapshot) => {
+            let contactId = [];
+            querySnapshot.forEach((doc) => {
+              // console.log(doc.data());
+              contactId.push(doc.data().contactId);
+              setConversation(doc.data());
+            });
+            setArrContactsId(contactId);
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -119,7 +141,6 @@ export default function Messenger() {
 
       socket.on("send-msg", function (data) {
         let arrData = [];
-        // console.log("--------> ", data);
         arrData.push(data);
         setNewMsg(arrData);
       });
@@ -127,42 +148,12 @@ export default function Messenger() {
     }
   }, [user]);
 
-  useEffect(() => {
-    let arrContact = [];
-    try {
-      if (user && user.uid && user.roomChat) {
-        user.roomChat.forEach((chat) => {
-          db.collection("chat")
-            .where("roomId", "==", chat)
-            .orderBy("updatedAt", "desc")
-            .onSnapshot((querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                doc.data().users.forEach((id) => {
-                  if (id !== user.uid) {
-                    arrContact.push({
-                      idContact: id,
-                      roomId: doc.id,
-                    });
-                  }
-                });
-              });
-
-              dispatch(getAllConversations(arrContact));
-            });
-        });
-      }
-    } catch (error) {
-      console.log("error ", error);
-    }
-  }, [user]);
-
-  const getCurrentContact = (userSelected) => {
-    if (userSelected) {
-      // console.log("getCurrentContact - userSelected", userSelected);
-      setCurrentContact(userSelected);
+  const currentSocketId = (id) => {
+    if (id) {
+      setSocketId(id);
     }
   };
-
+  console.log("re-render");
   return (
     <div className="mess-body">
       <Header user={user} />
@@ -211,14 +202,15 @@ export default function Messenger() {
                   </Typography>
                   <CustomScrollbars style={{ height: "100vh", width: "100%" }}>
                     <List sx={{ mb: 2 }} className={classes.messItem}>
-                      {userContacts && userContacts.length > 0
-                        ? userContacts.map((contact, index) => {
+                      {arrContactsId && arrContactsId.length > 0
+                        ? arrContactsId.map((id, index) => {
                             return (
                               <MessItem
-                                contact={contact}
                                 key={index}
-                                currentContact={getCurrentContact}
+                                id={id}
+                                conversation={conversation}
                                 arrUsersOnline={arrUsersOnline}
+                                currentSocketId={currentSocketId}
                               />
                             );
                           })
@@ -237,8 +229,9 @@ export default function Messenger() {
             >
               <Card elevation={4}>
                 <MessDetail
-                  userSelected={currentContact}
+                  // userSelected={currentContact}
                   user={user}
+                  socketId={socketId}
                   socket={socket}
                   newMsg={newMsg}
                 />

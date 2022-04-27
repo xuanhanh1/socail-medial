@@ -146,3 +146,59 @@ input {
     // display: none;
   }
 }
+
+
+
+
+// --------------------------------------------
+.mess-content-a {
+  & .mess{
+        display: flex;
+        justify-content: end;
+  }
+  & .mess-avatar{
+    display:none;
+  }
+  & .mess-content-text{
+    background-color: #0084ff;
+    padding: 8px 15px 8px 15px;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #ffffff;
+  }
+  
+}
+
+.mess-content-b {
+  & .mess{
+    display: flex;
+    align-items: center;
+    &-avatar{
+      border: 1px solid black;
+      border-radius: 100px;
+      margin-right: 10px;
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+
+    &-content-text{
+      background-color: #e4e6eb;
+      padding: 8px 15px 8px 15px;
+      border-radius: 20px;
+      font-size: 15px;
+      font-weight: 500;
+      color: black;
+    }
+  }
+
+  
+}
+
+.time span{
+  font-weight: 500;
+  font-style: italic;
+  font-size: 12px;
+}
+
+

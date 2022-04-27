@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-
+import moment from "moment";
 import { ListItem, AppBar, Toolbar, Box, Divider } from "@mui/material";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -59,7 +59,7 @@ ElevationScroll.propTypes = {
   window: PropTypes.func,
 };
 function MessDetail(props) {
-  const { user, userSelected, socket, newMsg } = props;
+  const { user, userSelected, socket, newMsg, socketId } = props;
 
   const [input, setInput] = React.useState("");
   const [image, setImage] = useState([]);
@@ -68,64 +68,14 @@ function MessDetail(props) {
   const [arrNewMsg, setArrNewMsg] = useState([]);
   const [currentId, setCurrentId] = useState();
   const [arrRoomChat, setArrRoomChat] = useState([]);
-  const { roomId } = useParams();
+  const { contactId } = useParams();
   const [roomChatId, setRoomChatId] = useState("");
   const [roomOldChatId, setRoomOldChatId] = useState("");
+
+  const [userContact, setUserContact] = useState();
+
   let scrollRef = useRef();
   let roomIdRef = useRef();
-
-  useEffect(() => {
-    debugger;
-    if (roomId) {
-      debugger;
-      saveMsg(roomId);
-    }
-  }, [roomId]);
-
-  useEffect(() => {
-    console.log("call firebase");
-
-    if (roomChatId != "") {
-      db.collection("chat")
-        .doc(roomChatId)
-        .collection("messages")
-        .orderBy("updatedAt", "asc")
-        .onSnapshot((querySnapshot) => {
-          var chats = [];
-          querySnapshot.forEach((doc) => {
-            chats = chats.concat(doc.data().data);
-          });
-          setArrChat(chats);
-        });
-    }
-
-    setArrRoomChat([...arrRoomChat, roomId]);
-  }, [roomChatId]);
-
-  const saveMsg = (roomId) => {
-    debugger;
-    if (arrNewMsg.length > 0) {
-      db.collection("chat")
-        .doc(roomChatId)
-        .collection("messages")
-        .add({
-          data: arrNewMsg,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        })
-        .then((docRef) => {
-          console.log("Document written with ID: ", docRef.id);
-          debugger;
-          setRoomChatId(roomId);
-
-          setArrNewMsg([]);
-        })
-        .catch((error) => {
-          console.error("Error adding document: ", error);
-        });
-    } else {
-      setRoomChatId(roomId);
-    }
-  };
 
   useEffect(() => {
     if (newMsg) {
@@ -135,6 +85,56 @@ function MessDetail(props) {
   }, [newMsg]);
 
   useEffect(() => {
+    console.log("user contact", userContact);
+    if (userContact && roomOldChatId && arrNewMsg.length > 0) {
+      let newArr = userContact.messages.concat(arrNewMsg);
+      var washingtonRef = db
+        .collection("users")
+        .doc(user.uid)
+        .collection("messages")
+        .doc(roomOldChatId);
+
+      // Set the "capital" field of the city 'DC'
+      return washingtonRef
+        .update({
+          messages: newArr,
+          lastMessage: newArr[newArr.length - 1],
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        })
+        .then(() => {
+          console.log("Document successfully updated!");
+          setArrNewMsg([]);
+          setUserContact({});
+        })
+        .catch((error) => {
+          // The document probably doesn't exist.
+          console.error("Error updating document: ", error);
+        });
+    }
+
+    if (contactId) {
+      try {
+        db.collection("users")
+          .doc(user.uid)
+          .collection("messages")
+          .where("contactId", "==", contactId)
+          .get()
+          .then((doc) => {
+            doc.forEach((data) => {
+              setUserContact(data.data());
+              setRoomOldChatId(data.data().roomId);
+            });
+          })
+          .catch((error) => {
+            console.log("Error getting document:", error);
+          });
+      } catch (error) {
+        console.log("Error: ", error);
+      }
+    }
+  }, [contactId]);
+
+  useEffect(() => {
     if (scrollRef && scrollRef.current) {
       scrollRef.current.scrollIntoView({
         behavior: "smooth",
@@ -142,14 +142,13 @@ function MessDetail(props) {
         inline: "nearest",
       });
     }
-  }, [arrChat, arrNewMsg]);
+  }, [userContact, arrNewMsg]);
 
   const handleSubmitMessage = () => {
-    let socketId = userSelected.idSocket;
     let msg = {
       text: input,
       sender_id: user.uid,
-      updatedAt: new Date(),
+      updatedAt: new Date().getTime(),
       sender_name: user.displayName,
     };
     setArrNewMsg([...arrNewMsg, msg]);
@@ -195,7 +194,7 @@ function MessDetail(props) {
 
   return (
     <>
-      {userSelected && user ? (
+      {contactId && user && userContact ? (
         <Box
           sx={{
             boxShadow: 1,
@@ -219,9 +218,9 @@ function MessDetail(props) {
             <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                  <Avatar alt="Remy Sharp" src={userSelected.data.photoURL} />
+                  <Avatar alt="Remy Sharp" src={userContact.contactPhotoURL} />
                 </ListItemIcon>
-                <ListItemText primary={userSelected.data.displayName} />
+                <ListItemText primary={userContact.contactName} />
               </ListItemButton>
             </ListItem>
             <ListItemButton>
@@ -234,18 +233,33 @@ function MessDetail(props) {
           <Divider />
           <Divider />
           <div className="mess-content">
-            {arrChat && arrChat.length > 0 ? (
-              arrChat.map((chat, i) => {
+            {userContact.messages && userContact.messages.length > 0 ? (
+              userContact.messages.map((chat, i) => {
+                const formatted = moment(chat.updatedAt).format(
+                  "MMMM Do, h:mm a"
+                );
+
                 return (
                   <div
-                    key={i}
                     className={
                       chat.sender_id === user.uid
                         ? "mess-content-a"
                         : "mess-content-b"
                     }
                   >
-                    <span className="mess-detail-text">{chat.text}</span>
+                    <div className="mess">
+                      <div className="mess-avatar">
+                        <Avatar
+                          alt="avatar messages"
+                          src={userContact.contactPhotoURL}
+                          className="mess-avatar-img"
+                        />
+                      </div>
+                      <div className="mess-content-text">{chat.text}</div>
+                    </div>
+                    <div className="time">
+                      <span>{formatted}</span>
+                    </div>
                   </div>
                 );
               })
@@ -255,16 +269,30 @@ function MessDetail(props) {
 
             {arrNewMsg && arrNewMsg.length > 0
               ? arrNewMsg.map((msg, i) => {
+                  const formatted = moment(msg.updatedAt).format(
+                    "MMMM Do, h:mm a"
+                  );
                   return (
                     <div
-                      key={i}
                       className={
                         msg.sender_id === user.uid
                           ? "mess-content-a"
                           : "mess-content-b"
                       }
                     >
-                      <span className="mess-detail-text">{msg.text}</span>
+                      <div className="mess">
+                        <div className="mess-avatar">
+                          <Avatar
+                            alt="avatar messages"
+                            src={userContact.contactPhotoURL}
+                            className="mess-avatar-img"
+                          />
+                        </div>
+                        <div className="mess-content-text">{msg.text}</div>
+                      </div>
+                      <div className="time">
+                        <span>{formatted}</span>
+                      </div>
                     </div>
                   );
                 })

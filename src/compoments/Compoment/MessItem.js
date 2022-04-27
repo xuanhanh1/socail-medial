@@ -57,54 +57,55 @@ const StyledFab = styled(Fab)({
 
 export default function MessItem(props) {
   const classes = useStyles();
-  const { currentContact, contact, arrUsersOnline } = props;
-  const [userContact, setUserContact] = useState({});
+  const { currentSocketId, contact, arrUsersOnline, id, conversation } = props;
+  console.log("MessItem - conversation", conversation);
   const [isOnline, setIsOnline] = useState(false);
+  const [userContact, setUserContact] = useState();
+  console.log("MessItem - userContact", userContact);
+  const [socketId, setSocketId] = useState();
+  // console.log("id contact ", id);
 
   useEffect(() => {
-    arrUsersOnline.forEach((obj) => {
-      if (obj.idUser === contact.idContact) {
-        setIsOnline(true);
-        console.log("set socket", obj.idSocket);
-        setUserContact((prevUserContact) => ({
-          ...prevUserContact,
-          idSocket: obj.idSocket,
-        }));
-      }
-    });
-  }, [arrUsersOnline]);
-
-  useEffect(() => {
-    var docRef = db.collection("users").doc(contact.idContact);
-
-    docRef
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          setUserContact((prevUserContact) => ({
-            ...prevUserContact,
-            data: doc.data(),
-          }));
-        } else {
-          // doc.data() will be undefined in this case
-          console.log("No such document!");
-        }
-      })
-      .catch((error) => {
-        console.log("Error getting document:", error);
-      });
+    if (id) {
+      var docRef = db.collection("users").doc(id);
+      docRef
+        .get()
+        .then((doc) => {
+          // console.log(doc.data());
+          setUserContact(doc.data());
+        })
+        .catch((err) => {
+          console.log("error", err);
+        });
+    }
   }, []);
 
+  useEffect(() => {
+    if (arrUsersOnline) {
+      arrUsersOnline.forEach((obj) => {
+        if (obj.idUser === id) {
+          setIsOnline(true);
+          // console.log("set socket", obj.idSocket);
+          // setUserContact((prevUserContact) => ({
+          //   ...prevUserContact,
+          //   idSocket: obj.idSocket,
+          // }));
+          setSocketId(obj.idSocket);
+        }
+      });
+    }
+  }, [arrUsersOnline]);
+
   const handleSelected = () => {
-    console.log("handleSelected - userContact", userContact);
-    currentContact(userContact);
+    // console.log("handleSelected - userContact", userContact);
+    currentSocketId(socketId);
   };
 
   return (
     <>
       <ListItem
         component={NavLink}
-        to={`/message/t/${contact.roomId}`}
+        to={`/message/t/${id}`}
         button
         onClick={handleSelected}
       >
@@ -112,13 +113,15 @@ export default function MessItem(props) {
           <ListItemAvatar>
             <Avatar
               alt="Profile Picture"
-              src={userContact.data ? userContact.data.photoURL : ""}
+              src={userContact ? userContact.photoURL : ""}
               className={classes.messItemAvatar}
             />
           </ListItemAvatar>
           <ListItemText
-            primary={userContact.data ? userContact.data.displayName : ""}
-            secondary={isOnline ? "online" : "offline"}
+            primary={userContact ? userContact.displayName : ""}
+            secondary={
+              conversation.lastMessage ? conversation.lastMessage.text : ""
+            }
           />
         </ListItem>
       </ListItem>
