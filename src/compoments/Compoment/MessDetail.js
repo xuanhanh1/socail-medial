@@ -66,14 +66,15 @@ function MessDetail(props) {
   useEffect(() => {
     if (userContact && roomOldChatId && arrNewMsg.length > 0) {
       let newArr = [];
+      let newArrFB = [];
 
       if (userContact.messagesWait) {
         newArr = userContact.messages.concat(userContact.messagesWait);
+        newArrFB = newArr.concat(arrNewMsg);
       } else {
-        newArr = userContact.messages;
+        newArrFB = userContact.messages.concat(arrNewMsg);
       }
-      let newArrFB = newArr.concat(arrNewMsg);
-      console.log("time ", firebase.firestore.FieldValue.serverTimestamp());
+
       var washingtonRef = db
         .collection("users")
         .doc(user.uid)

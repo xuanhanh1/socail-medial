@@ -291,7 +291,7 @@ export default function Header(props) {
                               horizontal: "center",
                             }}
                           >
-                            <PopupMess />
+                            <PopupMess user={user ? user : null} />
                           </Popover>
                         </div>
                       )}
