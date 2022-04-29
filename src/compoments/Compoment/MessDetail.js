@@ -59,7 +59,8 @@ ElevationScroll.propTypes = {
   window: PropTypes.func,
 };
 function MessDetail(props) {
-  const { user, userSelected, socket, newMsg, socketId } = props;
+  const { user, isOnline, socket, newMsg, socketId } = props;
+  console.log("MessDetail - isOnline", isOnline);
 
   const [input, setInput] = React.useState("");
   const [image, setImage] = useState([]);
@@ -85,7 +86,6 @@ function MessDetail(props) {
   }, [newMsg]);
 
   useEffect(() => {
-    console.log("user contact", userContact);
     if (userContact && roomOldChatId && arrNewMsg.length > 0) {
       let newArr = userContact.messages.concat(arrNewMsg);
       var washingtonRef = db
@@ -153,6 +153,10 @@ function MessDetail(props) {
     };
     setArrNewMsg([...arrNewMsg, msg]);
     socket.emit("send-msg", { socketId, msg });
+
+    if (!isOnline) {
+    }
+
     setInput("");
   };
 
@@ -220,7 +224,10 @@ function MessDetail(props) {
                 <ListItemIcon>
                   <Avatar alt="Remy Sharp" src={userContact.contactPhotoURL} />
                 </ListItemIcon>
-                <ListItemText primary={userContact.contactName} />
+                <ListItemText
+                  primary={userContact.contactName}
+                  secondary={isOnline ? "Đang hoạt động " : "Đang offline"}
+                />
               </ListItemButton>
             </ListItem>
             <ListItemButton>
@@ -269,9 +276,8 @@ function MessDetail(props) {
 
             {arrNewMsg && arrNewMsg.length > 0
               ? arrNewMsg.map((msg, i) => {
-                  const formatted = moment(msg.updatedAt).format(
-                    "MMMM Do, h:mm a"
-                  );
+                  const formatted = moment(msg.updatedAt).fromNow();
+
                   return (
                     <div
                       className={
@@ -392,33 +398,3 @@ function MessDetail(props) {
 }
 
 export default MessDetail;
-
-// const handleSubmitMessage = () => {
-//   db.collection("chat")
-//     .doc(roomId)
-
-//     .collection("messages")
-//     .add({
-//       text: input,
-//       sender_id: user.uid,
-//       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-//       sender_name: user.displayName,
-//     })
-//     .then((docRef) => {
-//       console.log("Document written with ID: ", docRef.id);
-//       db.collection("chat")
-//         .doc(roomId)
-//         .update({
-//           updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-//         })
-//         .then(() => {
-//           console.log("update cusses");
-//         })
-//         .catch((err) => {
-//           console.log("err ", err);
-//         });
-//     })
-//     .catch((error) => {
-//       console.error("Error adding document: ", error);
-//     });
-// };

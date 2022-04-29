@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
+import moment from "moment";
 import { NavLink } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
@@ -18,6 +19,7 @@ import { makeStyles } from "@mui/styles";
 import CustomScrollbars from "../Compoment/Scrollbar";
 import { db } from "../../firebase";
 import { Divider } from "@mui/material";
+import CircleIcon from "@mui/icons-material/Circle";
 const useStyles = makeStyles({
   messItem: {
     overflowY: "auto",
@@ -29,17 +31,37 @@ const useStyles = makeStyles({
     paddingLeft: "4px",
     marginBottom: "4px",
     marginTop: "4px",
-    // color: "#262626",
-    // backgroundColor: "#efefef",
-    // "& $title": {
-    //   fontWeight: 600,
-    // },
   },
   messItemAvatar: {
     width: "60px !important",
     height: "60px !important",
     marginRight: "15px !important",
+    boxShadow: "1px 1px 1px 1px #a79d9d",
   },
+  itemParent: {
+    position: "relative ",
+  },
+  itemChildOnline: {
+    position: "absolute",
+    right: "14px",
+    bottom: "0px",
+    color: "#31a24c",
+    boxShadow: " 2px 2px",
+    border: "1px solid #fff",
+    borderRadius: "100px",
+    fontSize: "15px !important",
+  },
+  itemChildOffline: {
+    position: "absolute",
+    right: "14px",
+    bottom: "0px",
+    color: "gray",
+    boxShadow: " 2px 2px",
+    border: "1px solid #fff",
+    borderRadius: "100px",
+    fontSize: "15px !important",
+  },
+
   "@media only screen and (max-width:1024px)": {
     inbox: {
       // display: 'none'
@@ -57,39 +79,24 @@ const StyledFab = styled(Fab)({
 
 export default function MessItem(props) {
   const classes = useStyles();
-  const { currentSocketId, contact, arrUsersOnline, id, conversation } = props;
-  console.log("MessItem - conversation", conversation);
-  const [isOnline, setIsOnline] = useState(false);
-  const [userContact, setUserContact] = useState();
-  console.log("MessItem - userContact", userContact);
-  const [socketId, setSocketId] = useState();
-  // console.log("id contact ", id);
+  const {
+    currentSocketId,
+    contact,
+    arrUsersOnline,
+    userContact,
+    conversation,
+  } = props;
 
-  useEffect(() => {
-    if (id) {
-      var docRef = db.collection("users").doc(id);
-      docRef
-        .get()
-        .then((doc) => {
-          // console.log(doc.data());
-          setUserContact(doc.data());
-        })
-        .catch((err) => {
-          console.log("error", err);
-        });
-    }
-  }, []);
+  const [isOnline, setIsOnline] = useState(false);
+
+  const [socketId, setSocketId] = useState();
 
   useEffect(() => {
     if (arrUsersOnline) {
       arrUsersOnline.forEach((obj) => {
-        if (obj.idUser === id) {
+        if (obj.idUser === userContact.contactId) {
           setIsOnline(true);
-          // console.log("set socket", obj.idSocket);
-          // setUserContact((prevUserContact) => ({
-          //   ...prevUserContact,
-          //   idSocket: obj.idSocket,
-          // }));
+
           setSocketId(obj.idSocket);
         }
       });
@@ -97,32 +104,43 @@ export default function MessItem(props) {
   }, [arrUsersOnline]);
 
   const handleSelected = () => {
-    // console.log("handleSelected - userContact", userContact);
-    currentSocketId(socketId);
+    currentSocketId(socketId, isOnline);
   };
 
   return (
     <>
       <ListItem
         component={NavLink}
-        to={`/message/t/${id}`}
+        to={`/message/t/${userContact.contactId}`}
         button
         onClick={handleSelected}
       >
         <ListItem>
-          <ListItemAvatar>
+          <ListItemAvatar className={classes.itemParent}>
             <Avatar
               alt="Profile Picture"
-              src={userContact ? userContact.photoURL : ""}
+              src={userContact ? userContact.contactPhotoURL : ""}
               className={classes.messItemAvatar}
+            />
+            <CircleIcon
+              className={
+                isOnline ? classes.itemChildOnline : classes.itemChildOffline
+              }
             />
           </ListItemAvatar>
           <ListItemText
-            primary={userContact ? userContact.displayName : ""}
+            primary={userContact ? userContact.contactName : ""}
             secondary={
-              conversation.lastMessage ? conversation.lastMessage.text : ""
+              userContact.lastMessage ? userContact.lastMessage.text : ""
             }
           />
+          <div className="time-item">
+            {userContact &&
+            userContact.updatedAt &&
+            userContact.updatedAt.seconds
+              ? moment(userContact.updatedAt.seconds).format("L")
+              : ""}
+          </div>
         </ListItem>
       </ListItem>
       <Divider />

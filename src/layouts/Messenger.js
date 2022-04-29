@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import io from "socket.io-client";
+import SearchItem from "../compoments/Compoment/Search";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -101,9 +102,10 @@ export default function Messenger() {
   const [arrUsersOnline, setArrUsersOnline] = useState();
   const [show, setShow] = useState(false);
   const [newMsg, setNewMsg] = useState();
-  const [arrContactsId, setArrContactsId] = useState();
+  const [arrContacts, setArrContacts] = useState();
   const [socketId, setSocketId] = useState();
   const [conversation, setConversation] = useState();
+  const [isOnline, setIsOnline] = useState();
   useEffect(() => {
     if (user) {
       try {
@@ -113,13 +115,12 @@ export default function Messenger() {
           .orderBy("updatedAt", "desc")
 
           .onSnapshot((querySnapshot) => {
-            let contactId = [];
+            let contact = [];
             querySnapshot.forEach((doc) => {
               // console.log(doc.data());
-              contactId.push(doc.data().contactId);
-              setConversation(doc.data());
+              contact.push(doc.data());
             });
-            setArrContactsId(contactId);
+            setArrContacts(contact);
           });
       } catch (error) {
         console.log(error);
@@ -148,10 +149,11 @@ export default function Messenger() {
     }
   }, [user]);
 
-  const currentSocketId = (id) => {
+  const currentSocketId = (id, online) => {
     if (id) {
       setSocketId(id);
     }
+    setIsOnline(online);
   };
   console.log("re-render");
   return (
@@ -178,7 +180,7 @@ export default function Messenger() {
                   <h2>Messagener</h2>
                   <Divider sx={{ mb: 2 }} />
                 </div>
-                <Search>
+                {/* <Search>
                   <SearchIconWrapper>
                     <SearchIcon
                       color="secondaryDark"
@@ -190,7 +192,12 @@ export default function Messenger() {
                     inputProps={{ "aria-label": "search" }}
                     className={classes.messSearchInput}
                   />
-                </Search>
+                </Search> */}
+                <SearchItem
+                  arrIdFollower={user ? user.follower : ""}
+                  user={user ? user : null}
+                  arrContacts={arrContacts}
+                />
                 <Paper square sx={{ pb: "50px" }} className={classes.inbox}>
                   <Typography
                     variant="h5"
@@ -202,12 +209,12 @@ export default function Messenger() {
                   </Typography>
                   <CustomScrollbars style={{ height: "100vh", width: "100%" }}>
                     <List sx={{ mb: 2 }} className={classes.messItem}>
-                      {arrContactsId && arrContactsId.length > 0
-                        ? arrContactsId.map((id, index) => {
+                      {arrContacts && arrContacts.length > 0
+                        ? arrContacts.map((id, index) => {
                             return (
                               <MessItem
                                 key={index}
-                                id={id}
+                                userContact={id}
                                 conversation={conversation}
                                 arrUsersOnline={arrUsersOnline}
                                 currentSocketId={currentSocketId}
@@ -234,6 +241,7 @@ export default function Messenger() {
                   socketId={socketId}
                   socket={socket}
                   newMsg={newMsg}
+                  isOnline={isOnline}
                 />
               </Card>
             </Grid>
