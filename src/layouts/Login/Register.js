@@ -88,6 +88,8 @@ export default function SignUp() {
             gender: gender,
             uid: user.uid,
             photoURL: "",
+            follower: [],
+            roomChat: [],
             backGroundImage: "",
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           })

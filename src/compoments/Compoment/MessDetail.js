@@ -1,44 +1,29 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { db } from "../../firebase";
+import { Picker } from "emoji-mart";
 import moment from "moment";
-import { ListItem, AppBar, Toolbar, Box, Divider } from "@mui/material";
+import firebase from "firebase";
+import "emoji-mart/css/emoji-mart.css";
+import "./Message.scss";
+import { ListItem, Box, Divider } from "@mui/material";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Avatar from "@mui/material/Avatar";
-import logoAvata from "../../image/avata.png";
 import ListItemText from "@mui/material/ListItemText";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
-import { styled } from "@mui/material/styles";
-import { Card } from "@mui/material";
-import CardHeader from "@mui/material/CardHeader";
 import CardActions from "@mui/material/CardActions";
-import Button from "@mui/material/Button";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import IconButton from "@mui/material/IconButton";
-import Stack from "@mui/material/Stack";
-import { red } from "@mui/material/colors";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import TextareaAutosize from "@mui/material/TextareaAutosize";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import Popover from "@mui/material/Popover";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
-import Grid from "@mui/material/Grid";
-import "emoji-mart/css/emoji-mart.css";
-import { Picker } from "emoji-mart";
 import PropTypes from "prop-types";
-import "./Message.scss";
-import { db, auth } from "../../firebase";
-import firebase from "firebase";
-import { useSelector } from "react-redux";
-// import userLogin from '../../App'
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
-
 function ElevationScroll(props) {
   const { children, window } = props;
-  // Note that you normally won't need to set the window ref as useScrollTrigger
-  // will default to window.
-  // This is only being set here because the demo is in an iframe.
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: 0,
@@ -52,16 +37,11 @@ function ElevationScroll(props) {
 
 ElevationScroll.propTypes = {
   children: PropTypes.element.isRequired,
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
   window: PropTypes.func,
 };
+
 function MessDetail(props) {
   const { user, isOnline, socket, newMsg, socketId } = props;
-  console.log("MessDetail - isOnline", isOnline);
-
   const [input, setInput] = React.useState("");
   const [image, setImage] = useState([]);
   const [isImage, setIsImage] = useState(false);
@@ -72,9 +52,7 @@ function MessDetail(props) {
   const { contactId } = useParams();
   const [roomChatId, setRoomChatId] = useState("");
   const [roomOldChatId, setRoomOldChatId] = useState("");
-
   const [userContact, setUserContact] = useState();
-
   let scrollRef = useRef();
   let roomIdRef = useRef();
 
@@ -87,19 +65,27 @@ function MessDetail(props) {
 
   useEffect(() => {
     if (userContact && roomOldChatId && arrNewMsg.length > 0) {
-      let newArr = userContact.messages.concat(arrNewMsg);
+      let newArr = [];
+
+      if (userContact.messagesWait) {
+        newArr = userContact.messages.concat(userContact.messagesWait);
+      } else {
+        newArr = userContact.messages;
+      }
+      let newArrFB = newArr.concat(arrNewMsg);
+      console.log("time ", firebase.firestore.FieldValue.serverTimestamp());
       var washingtonRef = db
         .collection("users")
         .doc(user.uid)
         .collection("messages")
         .doc(roomOldChatId);
 
-      // Set the "capital" field of the city 'DC'
       return washingtonRef
         .update({
-          messages: newArr,
+          messages: newArrFB,
           lastMessage: newArr[newArr.length - 1],
           updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          messagesWait: [],
         })
         .then(() => {
           console.log("Document successfully updated!");
@@ -107,12 +93,11 @@ function MessDetail(props) {
           setUserContact({});
         })
         .catch((error) => {
-          // The document probably doesn't exist.
           console.error("Error updating document: ", error);
         });
     }
 
-    if (contactId) {
+    if (contactId && user) {
       try {
         db.collection("users")
           .doc(user.uid)
@@ -155,6 +140,23 @@ function MessDetail(props) {
     socket.emit("send-msg", { socketId, msg });
 
     if (!isOnline) {
+      var users = db
+        .collection("users")
+        .doc(contactId)
+        .collection("messages")
+        .doc(user.uid);
+
+      return users
+        .update({
+          messagesWait: [msg],
+        })
+        .then(() => {
+          console.log("document successfully updated");
+          setInput("");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
 
     setInput("");
@@ -170,10 +172,6 @@ function MessDetail(props) {
     }
   };
 
-  const getKeyByValue = (object, value) => {
-    return Object.keys(object).find((key) => object[key] === value);
-  };
-
   const choseEmoji = (emoji, event) => {
     let emojiXX = emoji.native;
     setInput(input + emojiXX);
@@ -181,7 +179,7 @@ function MessDetail(props) {
 
   const handleChange = (event) => {
     const imageList = event.target.files;
-    // console.log(imageList)
+
     if (imageList) {
       const fileArray = Array.from(imageList).map((file) =>
         URL.createObjectURL(file)
@@ -189,6 +187,7 @@ function MessDetail(props) {
       console.log(fileArray);
       setImage((prevImage) => prevImage.concat(fileArray));
     }
+
     if (imageList.length > 0) {
       if (!isImage) {
         setIsImage(true);
@@ -273,6 +272,38 @@ function MessDetail(props) {
             ) : (
               <p>not messages</p>
             )}
+
+            {userContact.messagesWait && userContact.messagesWait.length > 0
+              ? userContact.messagesWait.map((chat, i) => {
+                  const formatted = moment(chat.updatedAt).format(
+                    "MMMM Do, h:mm a"
+                  );
+
+                  return (
+                    <div
+                      className={
+                        chat.sender_id === user.uid
+                          ? "mess-content-a"
+                          : "mess-content-b"
+                      }
+                    >
+                      <div className="mess">
+                        <div className="mess-avatar">
+                          <Avatar
+                            alt="avatar messages"
+                            src={userContact.contactPhotoURL}
+                            className="mess-avatar-img"
+                          />
+                        </div>
+                        <div className="mess-content-text">{chat.text}</div>
+                      </div>
+                      <div className="time">
+                        <span>{formatted}</span>
+                      </div>
+                    </div>
+                  );
+                })
+              : null}
 
             {arrNewMsg && arrNewMsg.length > 0
               ? arrNewMsg.map((msg, i) => {

@@ -86,6 +86,7 @@ export default function MessItem(props) {
     userContact,
     conversation,
   } = props;
+  console.log("user contact ", userContact);
 
   const [isOnline, setIsOnline] = useState(false);
 
@@ -134,11 +135,12 @@ export default function MessItem(props) {
               userContact.lastMessage ? userContact.lastMessage.text : ""
             }
           />
+
           <div className="time-item">
             {userContact &&
             userContact.updatedAt &&
             userContact.updatedAt.seconds
-              ? moment(userContact.updatedAt.seconds).format("L")
+              ? moment.unix(userContact.updatedAt.seconds).format("LL")
               : ""}
           </div>
         </ListItem>

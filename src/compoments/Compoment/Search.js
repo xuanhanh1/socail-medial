@@ -36,6 +36,7 @@ export default function Asynchronous(props) {
   const [options, setOptions] = React.useState([]);
   const loading = open && options.length === 0;
   const [value, setValue] = useState();
+  console.log("Asynchronous - value", value);
   React.useEffect(() => {
     let active = true;
 
@@ -98,6 +99,30 @@ export default function Asynchronous(props) {
         contactPhotoURL: value.photoURL,
         lastMessage: [],
         messages: [],
+        messagesWait: [],
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      })
+      .then(() => {
+        console.log("Document successfully written!");
+        setValue();
+      })
+      .catch((error) => {
+        console.error("Error writing document: ", error);
+      });
+
+    db.collection("users")
+      .doc(value.uid)
+      .collection("messages")
+      .doc(user.uid)
+      .set({
+        contactId: user.uid,
+        roomId: user.uid,
+        contactName: user.displayName,
+        contactPhotoURL: user.photoURL,
+        lastMessage: [],
+        messages: [],
+        messagesWait: [],
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       })
