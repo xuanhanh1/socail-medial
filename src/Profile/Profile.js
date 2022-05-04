@@ -25,6 +25,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { toast } from "react-toastify";
 import { db } from "../firebase";
 import firebase from "firebase";
+import { Link } from "react-router-dom";
+
 const input = styled("input")({
   display: "none",
 });
@@ -153,9 +155,6 @@ function Profile(props) {
     );
   };
 
-  console.log("background image", bgURL);
-  console.log("photo image", photoURL);
-
   return (
     <div style={{ backgroundColor: "#f0f2f5" }}>
       <Container className={classes.contai}>
@@ -254,34 +253,38 @@ function Profile(props) {
                 <Button variant="contained" sx={{ mr: 2 }}>
                   Contained
                 </Button>
-                <Button variant="contained">
-                  <BorderColorTwoToneIcon />
-                  Chỉnh sửa Profile
-                </Button>
+                <Link to="/profile/edit">
+                  <Button variant="contained">
+                    <BorderColorTwoToneIcon />
+                    Chỉnh sửa Profile
+                  </Button>
+                </Link>
               </div>
             </div>
             <hr></hr>
             <div className="profile-action">
-              <Button variant="outlined" className={classes.profileBtn}>
-                <ListItemButton>
-                  <PostAddIcon />
-                  Dòng thời gian
-                </ListItemButton>
-              </Button>
-
+              <Link to="/profile">
+                <Button variant="outlined" className={classes.profileBtn}>
+                  <ListItemButton>
+                    <PostAddIcon />
+                    Dòng thời gian
+                  </ListItemButton>
+                </Button>
+              </Link>
               <Button variant="outlined" className={classes.profileBtn}>
                 <ListItemButton>
                   <BookmarkAddedIcon />
                   Đã lưu
                 </ListItemButton>
               </Button>
-
-              <Button variant="outlined" className={classes.profileBtn}>
-                <ListItemButton>
-                  <ImportContactsRoundedIcon />
-                  Giới thiệu
-                </ListItemButton>
-              </Button>
+              <Link to="/profile/edit">
+                <Button variant="outlined" className={classes.profileBtn}>
+                  <ListItemButton>
+                    <ImportContactsRoundedIcon />
+                    Giới thiệu
+                  </ListItemButton>
+                </Button>
+              </Link>
             </div>
             <hr></hr>
             {user && user.uid ? <Outlet context={user} /> : ""}

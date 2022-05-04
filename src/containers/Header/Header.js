@@ -38,6 +38,7 @@ import { makeStyles } from "@mui/styles";
 import { useSelector } from "react-redux";
 import { logout, getAllConversations } from "../../app/reudx/actions";
 import { useCookies } from "react-cookie";
+import { db } from "../../firebase";
 
 function notificationsLabel(count) {
   if (count === 0) {
@@ -129,8 +130,6 @@ export default function Header(props) {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
   const ariaLabel = { "aria-label": "description" };
-  // const [login, setLogin] = React.useState(true);
-  // const [user, setUser] = React.useState();
   const { user } = props;
   const [show, setShow] = React.useState(false);
   const [showSearch, setShowSearch] = React.useState(false);
@@ -138,6 +137,42 @@ export default function Header(props) {
   const dispatch = useDispatch();
   const userInfor = useSelector((state) => state.userInfor);
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+  const [nameComment, setNameComment] = useState();
+  useEffect(() => {
+    if (user) {
+      handleChangeNotification();
+    }
+  }, [user]);
+
+  const handleChangeNotification = () => {
+    if (user && user.postId.length > 0) {
+      let arr = [];
+      user.postId.forEach((id) => {
+        try {
+          db.collection("posts")
+            .doc(id)
+            .collection("comments")
+            .onSnapshot((query) => {
+              query.forEach((doc) => {
+                if (doc.data().commentFromUserId !== user.uid) {
+                  arr.push({
+                    name: doc.data().commentFromUserDisplayName,
+                    avatar: doc.data().commentFromUserAvatar,
+                    postId: id,
+                    createdAt: doc.data().createdAt,
+                  });
+                  // console.log(doc.data());
+                }
+              });
+              console.log("arr ", arr);
+              setNameComment(arr);
+            });
+        } catch (error) {
+          console.log("err", error);
+        }
+      });
+    }
+  };
 
   const signOut = () => {
     console.log("sign out");
@@ -152,10 +187,6 @@ export default function Header(props) {
       .catch((error) => {
         // An error happened.
       });
-
-    // setLogin(false);
-    // dispatch(logout());
-    // removeCookie("user");
   };
   //open setting
   const handleToggle = () => {
@@ -272,7 +303,7 @@ export default function Header(props) {
                             {...bindTrigger(popupState)}
                           >
                             <Badge
-                              badgeContent={1}
+                              badgeContent={null}
                               color="primary"
                               sx={{ color: blue[400] }}
                             >
@@ -308,7 +339,7 @@ export default function Header(props) {
                             {...bindTrigger(popupState)}
                           >
                             <Badge
-                              badgeContent={3}
+                              badgeContent={1}
                               color="primary"
                               sx={{ color: blue[400] }}
                             >
@@ -327,7 +358,10 @@ export default function Header(props) {
                               horizontal: "center",
                             }}
                           >
-                            <PopupNotifi />
+                            <PopupNotifi
+                              user={user ? user : null}
+                              nameComment={nameComment ? nameComment : null}
+                            />
                           </Popover>
                         </div>
                       )}

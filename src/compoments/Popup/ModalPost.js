@@ -84,6 +84,7 @@ export default function ModalPost(props) {
   const [emoji, setEmoji] = useState(null);
   const classes = useStyles();
   const { user } = props;
+  console.log("ModalPost - user", user);
   const [file, setFile] = useState(null);
   const [base64URL, setBase64URL] = useState([]);
   const [imageURL, setImageURL] = useState([]);
@@ -128,6 +129,18 @@ export default function ModalPost(props) {
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       })
       .then((res) => {
+        db.collection("users")
+          .doc(user.uid)
+          .update({
+            postId: user.postId ? user.postId.push(res.id) : res.id,
+          })
+          .then((res) => {
+            console.log("them thanh cong ");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+
         var post = db.collection("posts").doc(res.id);
 
         // Set the "capital" field of the city 'DC'
@@ -137,6 +150,7 @@ export default function ModalPost(props) {
           })
           .then(() => {
             console.log("Document successfully updated!");
+
             const resolveAfter3Sec = new Promise((resolve) =>
               setTimeout(resolve, 3000)
             );

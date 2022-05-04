@@ -102,7 +102,7 @@ const ExpandMore = styled((props) => {
   }),
 }));
 function PostDetail(props) {
-  const { post, index, userId } = props;
+  const { post, index, userId, user } = props;
   const classes = useStyles();
   const [like, setLike] = useState(false);
   const [numberLike, setNumberLike] = useState();
@@ -321,6 +321,7 @@ function PostDetail(props) {
           </ListItemButton>
         </CardActions>
         <Divider />
+
         <div
           className={
             showComment == index

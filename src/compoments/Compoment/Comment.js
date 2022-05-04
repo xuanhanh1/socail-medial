@@ -302,14 +302,14 @@ export default function Comment(props) {
       ) : (
         ""
       )}
-      {image ? (
+      {/* {image ? (
         <CardMedia
           component="img"
           image={image}
           alt="Paella dish"
           className={classes.commentImage}
         />
-      ) : null}
+      ) : null} */}
 
       <div className="card-comment">
         <Avatar

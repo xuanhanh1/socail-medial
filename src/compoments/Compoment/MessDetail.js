@@ -74,6 +74,10 @@ function MessDetail(props) {
       } else {
         newArrFB = userContact.messages.concat(arrNewMsg);
       }
+      console.log("useEffect - newArrFB", newArrFB);
+      console.log("useEffect - newArrFB lát messages ", [
+        newArrFB[newArr.length],
+      ]);
 
       var washingtonRef = db
         .collection("users")
@@ -84,7 +88,7 @@ function MessDetail(props) {
       return washingtonRef
         .update({
           messages: newArrFB,
-          lastMessage: newArr[newArr.length - 1],
+          lastMessage: [newArr[newArr.length]] ? " " : [newArr[newArr.length]],
           updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
           messagesWait: [],
         })
@@ -118,6 +122,26 @@ function MessDetail(props) {
         console.log("Error: ", error);
       }
     }
+
+    // if (!isOnline && arrNewMsg.text !== "") {
+    //   var users = db
+    //     .collection("users")
+    //     .doc(contactId)
+    //     .collection("messages")
+    //     .doc(user.uid);
+
+    //   return users
+    //     .update({
+    //       messagesWait: [arrNewMsg] ? [arrNewMsg] : "",
+    //     })
+    //     .then(() => {
+    //       console.log("document successfully updated");
+    //       setInput("");
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // }
   }, [contactId]);
 
   useEffect(() => {
@@ -139,26 +163,6 @@ function MessDetail(props) {
     };
     setArrNewMsg([...arrNewMsg, msg]);
     socket.emit("send-msg", { socketId, msg });
-
-    if (!isOnline) {
-      var users = db
-        .collection("users")
-        .doc(contactId)
-        .collection("messages")
-        .doc(user.uid);
-
-      return users
-        .update({
-          messagesWait: [msg],
-        })
-        .then(() => {
-          console.log("document successfully updated");
-          setInput("");
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
 
     setInput("");
   };

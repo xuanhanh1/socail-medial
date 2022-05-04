@@ -139,6 +139,7 @@ export default function Messenger() {
       });
 
       socket.on("send-msg", function (data) {
+        console.log("data", data);
         let arrData = [];
         arrData.push(data);
         setNewMsg(arrData);

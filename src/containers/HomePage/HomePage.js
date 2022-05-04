@@ -97,7 +97,7 @@ function HomePage() {
       <div className="bd">
         <div style={{ backgroundColor: "#e2e8f0" }}>
           <div className={classes.contai}>
-            <Header user={user} />
+            <Header user={user ? user : null} />
             <Box sx={{ flexGrow: 1, mt: 6 }} className={classes.main}>
               <CssBaseline />
               <Grid container spacing={1}>

@@ -113,8 +113,8 @@ function Home() {
   useEffect(() => {
     if (userInfor) {
       setUser(userInfor);
-      getPostList();
     }
+    getPostList();
   }, [userInfor]);
 
   const getPostList = async () => {
@@ -168,6 +168,7 @@ function Home() {
                     key={index}
                     post={post}
                     userId={user ? user.uid : null}
+                    user={user ? user : null}
                     index={index}
                   />
                 );
