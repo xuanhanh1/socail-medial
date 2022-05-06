@@ -145,7 +145,7 @@ export default function Header(props) {
   }, [user]);
 
   const handleChangeNotification = () => {
-    if (user && user.postId.length > 0) {
+    if (user && user.postId && user.postId.length > 0) {
       let arr = [];
       user.postId.forEach((id) => {
         try {
