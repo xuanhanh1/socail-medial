@@ -132,7 +132,7 @@ export default function ModalPost(props) {
         db.collection("users")
           .doc(user.uid)
           .update({
-            postId: user.postId ? user.postId.push(res.id) : res.id,
+            postId: user.postId ? user.postId.concat([res.id]) : [res.id],
           })
           .then((res) => {
             console.log("them thanh cong ");
