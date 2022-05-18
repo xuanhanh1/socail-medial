@@ -90,6 +90,7 @@ export default function SignUp() {
             photoURL: "",
             follower: [],
             roomChat: [],
+            postId: [],
             backGroundImage: "",
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           })
